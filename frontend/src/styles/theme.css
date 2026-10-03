@@ -1,0 +1,267 @@
+/* === THEME VARIABLES === */
+
+/* App Scale Support */
+:root {
+  --app-scale: 1;
+}
+
+/* Dark Theme (по умолчанию) */
+:root,
+:root[data-theme="dark"] {
+  /* Backgrounds */
+  --bg-primary: #0A0D12;
+  --bg-secondary: #0F131C;
+  --bg-tertiary: #161D2B;
+  --bg-hover: #1E2636;
+  --bg-active: #252E3F;
+
+  /* Surface (alias for compatibility) */
+  --surface-1: #0F131C;
+  --surface-2: #161D2B;
+
+  /* Text */
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+  --text-h: #FFFFFF;
+
+  /* Borders */
+  --border-primary: #1F2937;
+  --border-secondary: #374151;
+  --border: #1F2937;
+
+  /* Accent */
+  --accent-primary: #3B82F6;
+  --accent-hover: #2563EB;
+  --accent-active: #1D4ED8;
+  --accent-light: rgba(59, 130, 246, 0.1);
+  --accent: #3B82F6;
+  --accent-bg: rgba(59, 130, 246, 0.15);
+  --accent-border: #2563EB;
+
+  /* Status colors */
+  --success: #10B981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --error: #EF4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+  --error-bg: rgba(239, 68, 68, 0.15);
+  --error-text: #FCA5A5;
+  --warning: #F59E0B;
+  --warning-light: rgba(245, 158, 11, 0.1);
+
+  /* Syntax Highlighting Colors */
+  --color-keyword: #A3D4A3;
+  --color-function: #FFD166;
+  --color-class: #A8DADC;
+  --color-string: #D4E157;
+  --color-number: #F48FB1;
+  --color-comment: #B0BEC5;
+  --color-variable: #FFAB91;
+  --color-error: #FF6B6B;
+  --color-warning: #FFD166;
+
+  /* Task Status Colors */
+  --status-pending: #F59E0B;
+  --status-in-progress: #3B82F6;
+  --status-completed: #10B981;
+  --status-cancelled: #6B7280;
+  --status-moved: #8B5CF6;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7);
+
+  /* Layout */
+  --toolbar-height: 40px;
+  --sidebar-width: 240px;
+
+  /* Fonts */
+  --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Consolas', monospace;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+
+  /* Social colors */
+  --social-bg: #1E2636;
+
+  /* Component color aliases */
+  --color-bg: var(--bg-primary);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--bg-hover);
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border: var(--border-primary);
+  --color-primary: var(--accent-primary);
+
+  /* Sites - Строгий дизайн */
+  --sites-bg-primary: #0A0E14;
+  --sites-bg-secondary: #0F141C;
+  --sites-bg-tertiary: #151B26;
+  --sites-text-primary: #E5E7EB;
+  --sites-text-secondary: #9CA3AF;
+  --sites-text-tertiary: #6B7280;
+  --sites-border: #1F2937;
+  --sites-border-hover: #374151;
+  --sites-accent: #3B82F6;
+  --sites-accent-hover: #2563EB;
+  --sites-danger: #EF4444;
+}
+
+/* Light Theme */
+:root[data-theme="light"] {
+  /* Backgrounds */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F9FAFB;
+  --bg-tertiary: #F3F4F6;
+  --bg-hover: #E5E7EB;
+  --bg-active: #D1D5DB;
+
+  /* Surface (alias for compatibility) */
+  --surface-1: #FFFFFF;
+  --surface-2: #F9FAFB;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --text-h: #000000;
+
+  /* Borders */
+  --border-primary: #E5E7EB;
+  --border-secondary: #D1D5DB;
+  --border: #E5E7EB;
+
+  /* Accent */
+  --accent-primary: #3B82F6;
+  --accent-hover: #2563EB;
+  --accent-active: #1D4ED8;
+  --accent-light: rgba(59, 130, 246, 0.1);
+  --accent: #3B82F6;
+  --accent-bg: rgba(59, 130, 246, 0.1);
+  --accent-border: #2563EB;
+
+  /* Status colors */
+  --success: #10B981;
+  --success-light: rgba(16, 185, 129, 0.1);
+  --error: #EF4444;
+  --error-light: rgba(239, 68, 68, 0.1);
+  --error-bg: rgba(239, 68, 68, 0.1);
+  --error-text: #DC2626;
+  --warning: #F59E0B;
+  --warning-light: rgba(245, 158, 11, 0.1);
+
+  /* Syntax Highlighting Colors (адаптировано для светлой темы) */
+  --color-keyword: #047857;
+  --color-function: #B45309;
+  --color-class: #0369A1;
+  --color-string: #4D7C0F;
+  --color-number: #BE185D;
+  --color-comment: #6B7280;
+  --color-variable: #C2410C;
+  --color-error: #DC2626;
+  --color-warning: #B45309;
+
+  /* Task Status Colors */
+  --status-pending: #F59E0B;
+  --status-in-progress: #3B82F6;
+  --status-completed: #10B981;
+  --status-cancelled: #6B7280;
+  --status-moved: #8B5CF6;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+
+  /* Layout */
+  --toolbar-height: 40px;
+  --sidebar-width: 240px;
+
+  /* Fonts */
+  --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Consolas', monospace;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+
+  /* Social colors */
+  --social-bg: #F3F4F6;
+
+  /* Component color aliases */
+  --color-bg: var(--bg-primary);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--bg-hover);
+  --color-text: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border: var(--border-primary);
+  --color-primary: var(--accent-primary);
+}
+
+/* === GLOBAL APP SCALE === */
+#root {
+  transform: scale(var(--app-scale));
+  transform-origin: top left;
+  width: calc(100% / var(--app-scale));
+  height: calc(100% / var(--app-scale));
+}
+
+/* === THEME TOGGLE BUTTON === */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+

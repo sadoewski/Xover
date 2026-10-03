@@ -1,0 +1,5 @@
+# Docker
+node_modules
+npm-debug.log
+dist
+.env.local

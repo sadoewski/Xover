@@ -1,0 +1,182 @@
+/* Sites Page - Строгий профессиональный дизайн */
+
+.sites-page {
+  --sites-bg-primary: #0A0E14;
+  --sites-bg-secondary: #0F141C;
+  --sites-bg-tertiary: #151B26;
+  --sites-border: #1F2937;
+  --sites-border-hover: #374151;
+  --sites-text-primary: #E5E7EB;
+  --sites-text-secondary: #9CA3AF;
+  --sites-text-tertiary: #6B7280;
+  --sites-accent: #3B82F6;
+  --sites-accent-hover: #2563EB;
+  --sites-success: #10B981;
+  --sites-danger: #EF4444;
+
+  padding: 2rem;
+  background: var(--sites-bg-primary);
+  min-height: 100vh;
+  color: var(--sites-text-primary);
+}
+
+.sites-page__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--sites-border);
+}
+
+.sites-page__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--sites-text-primary);
+  margin: 0;
+  text-transform: uppercase;
+  font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+}
+
+.sites-page__create-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--sites-accent);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sites-page__create-btn:hover {
+  background: var(--sites-accent-hover);
+  transform: translateY(-1px);
+}
+
+.sites-page__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: var(--sites-text-secondary);
+  font-family: monospace;
+}
+
+.sites-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1.5rem;
+}
+
+.sites-page__empty p {
+  color: var(--sites-text-tertiary);
+  font-size: 1rem;
+  font-family: monospace;
+}
+
+.sites-page__empty-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--sites-bg-tertiary);
+  color: var(--sites-text-primary);
+  border: 1px solid var(--sites-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sites-page__empty-btn:hover {
+  background: var(--sites-bg-secondary);
+  border-color: var(--sites-border-hover);
+}
+
+.sites-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Site Card - Строгие карточки с монокромным дизайном */
+
+.site-card {
+  background: var(--sites-bg-secondary);
+  border: 1px solid var(--sites-border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.site-card:hover {
+  background: var(--sites-bg-tertiary);
+  border-color: var(--sites-border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.site-card__icon {
+  font-size: 2.5rem;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sites-bg-tertiary);
+  border: 1px solid var(--sites-border);
+  border-radius: 8px;
+}
+
+.site-card__name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--sites-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+  font-family: 'SF Mono', monospace;
+}
+
+.site-card__date {
+  font-size: 0.75rem;
+  color: var(--sites-text-tertiary);
+  margin: 0;
+  font-family: monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+  .sites-page {
+    --sites-bg-primary: #F9FAFB;
+    --sites-bg-secondary: #FFFFFF;
+    --sites-bg-tertiary: #F3F4F6;
+    --sites-border: #E5E7EB;
+    --sites-border-hover: #D1D5DB;
+    --sites-text-primary: #111827;
+    --sites-text-secondary: #4B5563;
+    --sites-text-tertiary: #6B7280;
+    --sites-accent: #2563EB;
+    --sites-accent-hover: #1D4ED8;
+  }
+
+  .site-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  }
+}

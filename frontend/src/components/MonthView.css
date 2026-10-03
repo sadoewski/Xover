@@ -1,0 +1,192 @@
+.month-view-calendar {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.month-calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.month-weekday-header {
+  padding: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.month-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+}
+
+.month-day-cell {
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100px;
+}
+
+.month-day-cell:hover {
+  border-color: var(--color-keyword);
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.month-day-cell.today {
+  border-color: var(--color-keyword);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+  background: var(--bg-tertiary);
+}
+
+.month-day-cell.other-month {
+  opacity: 0.4;
+}
+
+.month-day-cell.weekend {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.month-day-cell.weekend.today {
+  background: #fee2e2;
+}
+
+.month-day-cell.weekend .month-day-number {
+  color: #dc2626;
+}
+
+.month-day-number {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.weekend-dot {
+  width: 6px;
+  height: 6px;
+  background: #dc2626;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.month-day-cell.today .month-day-number {
+  color: var(--color-keyword);
+}
+
+.month-day-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.month-task-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  font-size: 11px;
+  transition: background-color 0.2s;
+}
+
+.month-task-item:hover {
+  background: var(--bg-hover);
+}
+
+.month-task-title {
+  color: var(--text-primary);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.month-task-more {
+  padding: 4px 6px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-align: center;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+/* Многодневные задачи */
+.month-task-item.continuation {
+  position: relative;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.month-task-item.continuation::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 8px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.6;
+  transform: translateY(-50%);
+}
+
+.month-task-item.has-next-day {
+  position: relative;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.month-task-item.has-next-day::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  width: 8px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.6;
+  transform: translateY(-50%);
+}
+
+[data-theme="dark"] .month-day-cell.weekend {
+  background: rgba(220, 38, 38, 0.05);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+[data-theme="dark"] .month-day-cell.weekend.today {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .month-day-cell.weekend .month-day-number {
+  color: var(--error-text);
+}
+
+[data-theme="dark"] .weekend-dot {
+  background: var(--error-text);
+}

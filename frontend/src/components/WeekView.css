@@ -1,0 +1,236 @@
+.week-view-compact {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  padding: 16px;
+  height: 100%;
+}
+
+.week-day-compact {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.week-day-compact.today {
+  border-color: var(--color-keyword);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+.week-day-header-compact {
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-primary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.week-day-header-compact:hover {
+  background: var(--bg-hover);
+}
+
+.week-day-name-compact {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 2px;
+}
+
+.week-day-number-compact {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.week-day-compact.today .week-day-number-compact {
+  color: var(--color-keyword);
+}
+
+.week-day-compact.weekend {
+  background: #fef2f2;
+}
+
+.week-day-compact.weekend .week-day-header-compact {
+  background: #fee2e2;
+}
+
+.week-day-compact.weekend .week-day-number-compact {
+  color: #dc2626;
+}
+
+.weekend-indicator {
+  display: block;
+  font-size: 9px;
+  font-weight: 500;
+  color: #dc2626;
+  margin-top: 2px;
+}
+
+.week-day-tasks-list {
+  padding: 6px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.week-task-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  margin-bottom: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 2px solid transparent;
+}
+
+.week-task-item:last-child {
+  margin-bottom: 0;
+}
+
+.week-task-item:hover {
+  background: var(--bg-hover);
+}
+
+.week-task-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.week-task-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.week-task-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 9px;
+  padding-left: 20px;
+}
+
+.week-task-time {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.week-task-group {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  color: white;
+  max-width: fit-content;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.week-task-priority {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  color: white;
+  max-width: fit-content;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.week-task-badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* Многодневные задачи */
+.week-task-item.continuation {
+  position: relative;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.week-task-item.continuation::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 8px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.6;
+  transform: translateY(-50%);
+}
+
+.week-task-item.has-next-day {
+  position: relative;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.week-task-item.has-next-day::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  width: 8px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.6;
+  transform: translateY(-50%);
+}
+
+.continuation-badge {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .week-day-compact.weekend {
+  background: rgba(220, 38, 38, 0.05);
+}
+
+[data-theme="dark"] .week-day-compact.weekend .week-day-header-compact {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+[data-theme="dark"] .week-day-compact.weekend .week-day-number-compact {
+  color: var(--error-text);
+}
+
+[data-theme="dark"] .weekend-indicator {
+  color: var(--error-text);
+}

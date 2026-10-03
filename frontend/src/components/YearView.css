@@ -1,0 +1,100 @@
+.year-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.year-month-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  transition: all 0.15s;
+}
+
+.year-month-card.current-month {
+  border-color: var(--color-keyword);
+}
+
+.year-month-header {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-primary);
+  cursor: pointer;
+}
+
+.year-month-header:hover .year-month-name {
+  color: var(--color-keyword);
+}
+
+.year-month-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-class);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.15s;
+}
+
+.year-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.year-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  cursor: default;
+  transition: all 0.15s;
+  font-family: var(--font-mono);
+}
+
+.year-day.has-tasks {
+  background: rgba(86, 156, 214, 0.2);
+  color: var(--color-keyword);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.year-day.has-tasks:hover {
+  background: var(--color-keyword);
+  color: #1a1d23;
+  transform: scale(1.1);
+}
+
+.year-day.today {
+  background: var(--color-string);
+  color: #1a1d23;
+  font-weight: 700;
+}
+
+.year-day.today.has-tasks {
+  background: var(--color-keyword);
+  color: #ffffff;
+  box-shadow: 0 0 0 2px var(--color-string);
+}
+
+.year-day.weekend {
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.year-day.weekend.has-tasks {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.year-day.weekend.has-tasks:hover {
+  background: #b91c1c;
+}

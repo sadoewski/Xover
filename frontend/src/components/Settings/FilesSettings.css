@@ -1,0 +1,111 @@
+.files-settings h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 24px 0;
+}
+
+.files-settings.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  color: var(--color-text-secondary);
+}
+
+.files-tree {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.tree-item-group {
+  margin-bottom: 4px;
+}
+
+.environment-group {
+  margin-bottom: 16px;
+}
+
+.tree-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.tree-item:hover {
+  background: var(--color-surface-2);
+}
+
+.environment-item {
+  background: var(--color-surface-2);
+  margin-bottom: 4px;
+}
+
+.environment-item:hover {
+  background: var(--color-surface-3);
+}
+
+.tree-item-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tree-chevron {
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.tree-spacer {
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.tree-icon {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.tree-icon.folder {
+  color: #f59e0b;
+}
+
+.tree-icon.document {
+  color: #3b82f6;
+}
+
+.tree-label {
+  font-size: 14px;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.environment-label {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.environment-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.tree-children {
+  margin-top: 2px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}

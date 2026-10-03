@@ -1,0 +1,238 @@
+.datatasks-page {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.datatasks-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.datatasks-page-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.datatasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.datatasks-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.datatasks-actions {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.datatasks-action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border-primary);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.datatasks-action-btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-hover);
+}
+
+.datatasks-create-btn {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: white;
+}
+
+.datatasks-create-btn:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.datatasks-dropdown-menu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  z-index: 100;
+}
+
+.datatasks-menu-item {
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.datatasks-menu-item:hover:not(.disabled) {
+  background: var(--bg-secondary);
+}
+
+.datatasks-menu-item.danger {
+  color: var(--error-text);
+}
+
+.datatasks-menu-item.danger:hover {
+  background: var(--error-light);
+}
+
+.datatasks-menu-item.disabled {
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+.datatasks-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  color: var(--text-secondary);
+}
+
+.datatasks-empty svg {
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+.datatasks-empty p {
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+.datatasks-empty-create-btn {
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.datatasks-empty-create-btn:hover {
+  background: var(--accent-hover);
+}
+
+.datatasks-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.datatask-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.datatask-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.datatask-card.selected {
+  border-color: var(--accent-primary);
+  background: var(--bg-secondary);
+}
+
+.datatask-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.datatask-checkbox {
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.datatask-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+}
+
+.datatask-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.datatask-group {
+  display: flex;
+  align-items: center;
+}
+
+.datatask-group-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+}
+
+.datatask-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.datatask-dates-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.datatask-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .datatasks-menu-item.danger:hover {
+  background: rgba(220, 38, 38, 0.1);
+}

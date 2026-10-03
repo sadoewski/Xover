@@ -1,0 +1,49 @@
+/* Priorities Page - Compact Professional Style */
+
+.priority-list-item {
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.priority-list-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--color-keyword);
+}
+
+.priority-color-box {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.priority-level-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.priority-form {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+}
+
+.priority-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.priority-header-box {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+}

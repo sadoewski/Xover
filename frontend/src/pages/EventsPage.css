@@ -1,0 +1,164 @@
+/* Events Page - Compact Professional Style */
+
+.events-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+}
+
+.month-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+}
+
+.month-card .card-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-class);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calendar-day-cell {
+  padding: 4px;
+  text-align: center;
+  font-size: 10px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: default;
+  border: 1px solid transparent;
+  font-weight: 400;
+  font-family: var(--font-mono);
+  min-height: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day-cell.has-events {
+  background: rgba(86, 156, 214, 0.15);
+  color: var(--text-primary);
+  cursor: pointer;
+  border-color: var(--color-keyword);
+  font-weight: 500;
+}
+
+.calendar-day-cell.has-events:hover {
+  background: var(--color-keyword);
+  color: #1a1d23;
+  border-color: var(--color-keyword);
+}
+
+.event-detail-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  transition: all 0.15s;
+}
+
+.event-detail-card:hover {
+  border-color: var(--border-secondary);
+  background: var(--bg-hover);
+}
+
+.event-badge {
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.event-badge.birthday {
+  background: rgba(206, 145, 120, 0.2);
+  color: var(--color-string);
+}
+
+.event-badge.holiday {
+  background: rgba(86, 156, 214, 0.2);
+  color: var(--color-keyword);
+}
+
+.event-badge.day-off {
+  background: rgba(181, 206, 168, 0.2);
+  color: var(--color-number);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  max-width: 500px;
+  width: 100%;
+  margin: 12px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-class);
+  margin-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.note-history-item {
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.note-year {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-function);
+  font-family: var(--font-mono);
+}
+
+.note-date {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.note-text {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
+}
