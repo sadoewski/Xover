@@ -11,6 +11,12 @@
 		A10000001BAB000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000002 /* ContentView.swift */; };
 		A10000001BAB000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000003 /* Assets.xcassets */; };
 		A10000001BAB000000000004 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000005 /* Preview Assets.xcassets */; };
+		A10000001BAB000000000010 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000010 /* AppDelegate.swift */; };
+		A10000001BAB000000000011 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000011 /* SyncManager.swift */; };
+		A10000001BAB000000000012 /* MenuCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000012 /* MenuCommands.swift */; };
+		A10000001BAB000000000013 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000013 /* PreferencesView.swift */; };
+		A10000001BAB000000000014 /* WebViewBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000014 /* WebViewBridge.swift */; };
+		A10000001BAB000000000015 /* BackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000015 /* BackendManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +27,12 @@
 		A10000001BAA000000000004 /* Entitlements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Entitlements.plist; sourceTree = "<group>"; };
 		A10000001BAA000000000005 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		A10000001BAA000000000006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A10000001BAA000000000010 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A10000001BAA000000000011 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
+		A10000001BAA000000000012 /* MenuCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCommands.swift; sourceTree = "<group>"; };
+		A10000001BAA000000000013 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		A10000001BAA000000000014 /* WebViewBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewBridge.swift; sourceTree = "<group>"; };
+		A10000001BAA000000000015 /* BackendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,21 +66,27 @@
 			isa = PBXGroup;
 			children = (
 				A10000001BAA000000000001 /* XoverApp.swift */,
+				A10000001BAA000000000010 /* AppDelegate.swift */,
 				A10000001BAA000000000002 /* ContentView.swift */,
+				A10000001BAA000000000012 /* MenuCommands.swift */,
+				A10000001BAA000000000013 /* PreferencesView.swift */,
+				A10000001BAA000000000011 /* SyncManager.swift */,
+				A10000001BAA000000000015 /* BackendManager.swift */,
+				A10000001BAA000000000014 /* WebViewBridge.swift */,
 				A10000001BAA000000000003 /* Assets.xcassets */,
 				A10000001BAA000000000004 /* Entitlements.plist */,
 				A10000001BAA000000000006 /* Info.plist */,
-				A10000001BAA000000000008 /* Preview Content */,
+				A10000001BAA000000000008 /* PreviewContent */,
 			);
 			path = Xover;
 			sourceTree = "<group>";
 		};
-		A10000001BAA000000000008 /* Preview Content */ = {
+		A10000001BAA000000000008 /* PreviewContent */ = {
 			isa = PBXGroup;
 			children = (
 				A10000001BAA000000000005 /* Preview Assets.xcassets */,
 			);
-			path = "Preview Content";
+			path = PreviewContent;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,6 +161,12 @@
 			files = (
 				A10000001BAB000000000002 /* ContentView.swift in Sources */,
 				A10000001BAB000000000001 /* XoverApp.swift in Sources */,
+				A10000001BAB000000000010 /* AppDelegate.swift in Sources */,
+				A10000001BAB000000000011 /* SyncManager.swift in Sources */,
+				A10000001BAB000000000012 /* MenuCommands.swift in Sources */,
+				A10000001BAB000000000013 /* PreferencesView.swift in Sources */,
+				A10000001BAB000000000014 /* WebViewBridge.swift in Sources */,
+				A10000001BAB000000000015 /* BackendManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,7 +300,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Xover/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "Xover/PreviewContent";
+				DEVELOPMENT_TEAM = 5AL5BW7VZP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Xover/Info.plist;
@@ -304,7 +329,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Xover/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "Xover/PreviewContent";
+				DEVELOPMENT_TEAM = 5AL5BW7VZP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Xover/Info.plist;

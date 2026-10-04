@@ -9,18 +9,21 @@
 import Foundation
 import Network
 import Combine
+import AppKit
+import UserNotifications
 
 // MARK: - Sync Models
 
+// Using Data instead of [String: Any] for Codable compliance
 enum SyncOperation: Codable {
-    case create(data: [String: Any])
-    case update(id: String, data: [String: Any])
+    case create(data: Data)
+    case update(id: String, data: Data)
     case delete(id: String)
-    
+
     enum CodingKeys: String, CodingKey {
         case type, id, data
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
@@ -36,18 +39,18 @@ enum SyncOperation: Codable {
             try container.encode(id, forKey: .id)
         }
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(String.self, forKey: .type)
-        
+
         switch type {
         case "create":
-            let data = try container.decode([String: Any].self, forKey: .data)
+            let data = try container.decode(Data.self, forKey: .data)
             self = .create(data: data)
         case "update":
             let id = try container.decode(String.self, forKey: .id)
-            let data = try container.decode([String: Any].self, forKey: .data)
+            let data = try container.decode(Data.self, forKey: .data)
             self = .update(id: id, data: data)
         case "delete":
             let id = try container.decode(String.self, forKey: .id)
@@ -76,12 +79,12 @@ struct QueuedOperation: Codable, Identifiable {
     }
 }
 
-enum SyncStatus {
+enum SyncStatus: Equatable {
     case idle
     case syncing
     case error(String)
     case offline
-    
+
     var description: String {
         switch self {
         case .idle: return "Synchronized"
@@ -267,18 +270,22 @@ class SyncManager: ObservableObject {
         let url = URL(string: "\(baseURL)\(operation.endpoint)")!
         var request = URLRequest(url: url)
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+
         switch operation.operation {
         case .create(let data):
             request.httpMethod = "POST"
-            request.httpBody = try? JSONSerialization.data(withJSONObject: data)
-            
+            request.httpBody = data
+
         case .update(let id, let data):
             request.httpMethod = "PUT"
-            var updateData = data
-            updateData["id"] = id
-            request.httpBody = try? JSONSerialization.data(withJSONObject: updateData)
-            
+            // Merge id into data JSON
+            if var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                json["id"] = id
+                request.httpBody = try? JSONSerialization.data(withJSONObject: json)
+            } else {
+                request.httpBody = data
+            }
+
         case .delete(let id):
             request.httpMethod = "DELETE"
             request.url = URL(string: "\(baseURL)\(operation.endpoint)/\(id)")
@@ -329,9 +336,13 @@ class SyncManager: ObservableObject {
         case .local:
             // Force update with our version
             var newOperation = operation
-            if case .update(let id, var data) = operation.operation {
-                data["forceUpdate"] = true
-                newOperation = QueuedOperation(operation: .update(id: id, data: data), endpoint: operation.endpoint)
+            if case .update(let id, let data) = operation.operation {
+                if var json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    json["forceUpdate"] = true
+                    if let updatedData = try? JSONSerialization.data(withJSONObject: json) {
+                        newOperation = QueuedOperation(operation: .update(id: id, data: updatedData), endpoint: operation.endpoint)
+                    }
+                }
             }
             executeOperation(newOperation, completion: completion)
             

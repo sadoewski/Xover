@@ -39,3 +39,12 @@ tasks.db
 
 # Uploaded files
 uploads/
+
+# macOS app
+macos-app/backend-bundle/
+macos-app/*.app
+macos-app/Xover.xcodeproj/xcuserdata/
+macos-app/Xover.xcodeproj/project.xcworkspace/xcuserdata/
+macos-app/Xover.xcodeproj/project.xcworkspace/xcshareddata/
+*.xcworkspace
+DerivedData/

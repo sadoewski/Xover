@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import WebKit
+import AppKit
 
 struct PreferencesView: View {
     @EnvironmentObject var appState: AppState
@@ -65,7 +67,7 @@ struct PreferencesView: View {
                             
                             Text("Version 1.0.0")
                                 .font(.system(size: 11, design: .monospaced))
-                                .foregroundColor(.tertiary)
+                                .foregroundColor(Color(NSColor.tertiaryLabelColor))
                         }
                     }
                     .padding(.vertical, 8)
@@ -434,9 +436,9 @@ struct PreferencesView: View {
     }
     
     private func clearWebViewCache() {
-        let websiteDataTypes = Set([WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache])
+        let websiteDataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
         let date = Date(timeIntervalSince1970: 0)
-        
+
         WKWebsiteDataStore.default().removeData(ofTypes: websiteDataTypes, modifiedSince: date) {
             print("✓ WebView cache cleared")
         }

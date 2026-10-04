@@ -148,7 +148,7 @@ struct ContentView: View {
                 
                 Text(appState.serverURL)
                     .font(.system(size: 11, design: .monospaced))
-                    .foregroundColor(.tertiary)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -350,4 +350,5 @@ extension Notification.Name {
     static let webViewGoBack = Notification.Name("webViewGoBack")
     static let webViewGoForward = Notification.Name("webViewGoForward")
     static let restartBackend = Notification.Name("restartBackend")
+    // Backend status notifications are declared in BackendManager.swift
 }

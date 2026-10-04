@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AppKit
 import Combine
 
 class BackendManager: ObservableObject {
@@ -65,19 +66,44 @@ class BackendManager: ObservableObject {
         environment["NODE_ENV"] = "production"
         environment["PORT"] = "3001"
         environment["HOST"] = "127.0.0.1"
-        
+        environment["DB_TYPE"] = "sqlite"
+
         // Add app bundle resources to NODE_PATH
         if let resourcePath = Bundle.main.resourcePath {
-            let nodeModulesPath = "\(resourcePath)/backend/node_modules"
+            let nodeModulesPath = "\(resourcePath)/backend-bundle/node_modules"
             environment["NODE_PATH"] = nodeModulesPath
+
+            // Set database path to Application Support
+            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            let appDataDir = appSupport.appendingPathComponent("com.hostprint.Xover", isDirectory: true)
+
+            // Create directory if it doesn't exist
+            try? FileManager.default.createDirectory(at: appDataDir, withIntermediateDirectories: true)
+
+            let dbPath = appDataDir.appendingPathComponent("hostprint.db").path
+            environment["DB_PATH"] = dbPath
+            print("Database path: \(dbPath)")
+
+            // Generate or load JWT secret
+            let jwtSecretKey = "jwt_secret"
+            if let savedSecret = UserDefaults.standard.string(forKey: jwtSecretKey) {
+                environment["JWT_SECRET"] = savedSecret
+            } else {
+                let newSecret = UUID().uuidString + UUID().uuidString
+                UserDefaults.standard.set(newSecret, forKey: jwtSecretKey)
+                environment["JWT_SECRET"] = newSecret
+            }
         }
-        
+
         process.environment = environment
-        
-        // Set working directory to backend folder
+
+        // Set working directory to backend-bundle folder
         if let resourcePath = Bundle.main.resourcePath {
-            let backendPath = "\(resourcePath)/backend"
-            process.currentDirectoryURL = URL(fileURLWithPath: backendPath)
+            let backendPath = "\(resourcePath)/backend-bundle"
+            if FileManager.default.fileExists(atPath: backendPath) {
+                process.currentDirectoryURL = URL(fileURLWithPath: backendPath)
+                print("Working directory: \(backendPath)")
+            }
         }
         
         // Capture output
@@ -131,38 +157,48 @@ class BackendManager: ObservableObject {
         guard let resourcePath = Bundle.main.resourcePath else {
             return nil
         }
-        
-        // Check for bundled Node.js in various possible locations
+
+        // Check for bundled Node.js in backend-bundle
         let possiblePaths = [
-            "\(resourcePath)/node/bin/node",
+            "\(resourcePath)/backend-bundle/nodejs/bin/node",
             "\(resourcePath)/nodejs/bin/node",
-            "\(resourcePath)/runtime/node",
-            "/usr/local/bin/node",
-            "/opt/homebrew/bin/node"
+            "\(resourcePath)/node/bin/node",
+            "/opt/homebrew/bin/node",
+            "/usr/local/bin/node"
         ]
-        
+
         for path in possiblePaths {
             if FileManager.default.fileExists(atPath: path) {
                 print("Found Node.js runtime at: \(path)")
                 return path
             }
         }
-        
+
+        print("⚠️ Node.js runtime not found in bundle or system")
         return nil
     }
-    
+
     private func findBackendScript() -> String? {
         guard let resourcePath = Bundle.main.resourcePath else {
             return nil
         }
-        
-        let scriptPath = "\(resourcePath)/backend/src/index.js"
-        
-        if FileManager.default.fileExists(atPath: scriptPath) {
-            print("Found backend script at: \(scriptPath)")
-            return scriptPath
+
+        // Check for backend-bundle first (production)
+        let bundledScriptPath = "\(resourcePath)/backend-bundle/src/index.js"
+        if FileManager.default.fileExists(atPath: bundledScriptPath) {
+            print("Found backend script at: \(bundledScriptPath)")
+            return bundledScriptPath
         }
-        
+
+        // Fallback to development mode
+        let projectPath = FileManager.default.currentDirectoryPath
+        let devScriptPath = "\(projectPath)/../../backend/src/index.js"
+        if FileManager.default.fileExists(atPath: devScriptPath) {
+            print("Found backend script at: \(devScriptPath) (dev mode)")
+            return devScriptPath
+        }
+
+        print("⚠️ Backend script not found")
         return nil
     }
     
@@ -333,3 +369,5 @@ extension BackendManager {
         return isRunning && lastError == nil
     }
 }
+
+// Notification names are declared in AppDelegate.swift

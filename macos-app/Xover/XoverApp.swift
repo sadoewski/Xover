@@ -40,18 +40,20 @@ class AppState: ObservableObject {
     @Published var autoStartBackend: Bool
     
     init() {
-        // Load from UserDefaults
-        self.backendPort = UserDefaults.standard.integer(forKey: "backendPort")
-        if self.backendPort == 0 {
-            self.backendPort = 5000 // Default port
-        }
-        
-        self.serverURL = UserDefaults.standard.string(forKey: "serverURL") 
-            ?? "http://localhost:\(backendPort)"
-        
-        self.autoStartBackend = UserDefaults.standard.bool(forKey: "autoStartBackend")
-        if UserDefaults.standard.object(forKey: "autoStartBackend") == nil {
-            self.autoStartBackend = true // Default: auto-start
+        // Load backend port first
+        let port = UserDefaults.standard.integer(forKey: "backendPort")
+        let finalPort = (port == 0) ? 5000 : port
+        self.backendPort = finalPort
+
+        // Load auto-start setting
+        let autoStartObject = UserDefaults.standard.object(forKey: "autoStartBackend")
+        self.autoStartBackend = (autoStartObject == nil) ? true : UserDefaults.standard.bool(forKey: "autoStartBackend")
+
+        // Load server URL last (use local variable to avoid self reference)
+        if let savedURL = UserDefaults.standard.string(forKey: "serverURL") {
+            self.serverURL = savedURL
+        } else {
+            self.serverURL = "http://localhost:\(finalPort)"
         }
     }
     
@@ -69,7 +71,7 @@ class AppState: ObservableObject {
 
 // MARK: - Server Status
 
-enum ServerStatus {
+enum ServerStatus: Equatable {
     case unknown
     case starting
     case running

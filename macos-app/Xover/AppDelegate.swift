@@ -166,14 +166,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Helpers
     
     private func getBackendPath() -> String {
-        // Look for embedded backend in app bundle
+        // Look for embedded backend-bundle in app bundle
         if let bundlePath = Bundle.main.resourcePath {
-            let embeddedPath = "\(bundlePath)/backend"
+            let embeddedPath = "\(bundlePath)/backend-bundle"
             if FileManager.default.fileExists(atPath: embeddedPath) {
                 return embeddedPath
             }
         }
-        
+
         // Fallback: development mode (relative to Xcode)
         let projectPath = FileManager.default.currentDirectoryPath
         return "\(projectPath)/../../backend"
