@@ -5,9 +5,9 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 # Устанавливаем зависимости
-COPY package.json package-lock.json ./
+COPY package.json ./
 
-RUN npm ci
+RUN npm install
 
 # Копируем исходный код
 COPY . .
