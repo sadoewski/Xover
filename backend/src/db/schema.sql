@@ -97,16 +97,19 @@ CREATE TABLE IF NOT EXISTS events (
     color VARCHAR(7),
     is_day_off BOOLEAN DEFAULT FALSE,
     is_yearly BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Таблица заметок к событиям по годам
 CREATE TABLE IF NOT EXISTS event_year_notes (
     id SERIAL PRIMARY KEY,
     event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     year INTEGER NOT NULL,
     note TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(event_id, year)
 );
 
@@ -117,10 +120,14 @@ CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_group ON tasks(group_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_relations ON tasks USING GIN (task_relations);
 CREATE INDEX IF NOT EXISTS idx_tasks_checklist ON tasks USING GIN (checklist);
+CREATE INDEX IF NOT EXISTS idx_tasks_datatask_id ON tasks(datatask_id);
 CREATE INDEX IF NOT EXISTS idx_task_logs_task ON task_logs(task_id);
 CREATE INDEX IF NOT EXISTS idx_events_user ON events(user_id);
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
+CREATE INDEX IF NOT EXISTS idx_events_month_day ON events(month, day);
+CREATE INDEX IF NOT EXISTS idx_events_user_month ON events(user_id, month);
 CREATE INDEX IF NOT EXISTS idx_event_notes_event ON event_year_notes(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_year_notes_user ON event_year_notes(user_id);
 
 -- Функция для автоматического обновления updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -143,5 +150,19 @@ DROP TRIGGER IF EXISTS update_tasks_updated_at ON tasks;
 
 CREATE TRIGGER update_tasks_updated_at
 BEFORE UPDATE ON tasks
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_events_updated_at ON events;
+
+CREATE TRIGGER update_events_updated_at
+BEFORE UPDATE ON events
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_event_year_notes_updated_at ON event_year_notes;
+
+CREATE TRIGGER update_event_year_notes_updated_at
+BEFORE UPDATE ON event_year_notes
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
