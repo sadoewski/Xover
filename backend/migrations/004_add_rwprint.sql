@@ -1,4 +1,5 @@
 -- RW:Print Schema Migration
+-- Creates RWPrint environment, folders, documents, tags, and related tables
 
 -- Окружения (environments)
 CREATE TABLE IF NOT EXISTS rwprint_environments (
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS rwprint_documents (
     password_hash VARCHAR(255),
     word_count INTEGER DEFAULT 0,
     char_count INTEGER DEFAULT 0,
+    file_size INTEGER DEFAULT 0,
     is_bookmarked BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -67,30 +69,6 @@ CREATE TABLE IF NOT EXISTS rwprint_document_metadata (
     UNIQUE(document_id, key)
 );
 
--- Сайты (sites)
-CREATE TABLE IF NOT EXISTS rwprint_sites (
-    id SERIAL PRIMARY KEY,
-    environment_id INTEGER NOT NULL REFERENCES rwprint_environments(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    home_document_id INTEGER REFERENCES rwprint_documents(id) ON DELETE SET NULL,
-    theme_config JSONB,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Структура сайта (связь документов в сайт)
-CREATE TABLE IF NOT EXISTS rwprint_site_pages (
-    id SERIAL PRIMARY KEY,
-    site_id INTEGER NOT NULL REFERENCES rwprint_sites(id) ON DELETE CASCADE,
-    document_id INTEGER NOT NULL REFERENCES rwprint_documents(id) ON DELETE CASCADE,
-    parent_page_id INTEGER REFERENCES rwprint_site_pages(id) ON DELETE CASCADE,
-    sort_order INTEGER DEFAULT 0,
-    is_visible BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(site_id, document_id)
-);
-
 -- Создаем индексы для производительности
 CREATE INDEX IF NOT EXISTS idx_rwprint_folders_environment ON rwprint_folders(environment_id);
 CREATE INDEX IF NOT EXISTS idx_rwprint_folders_parent ON rwprint_folders(parent_folder_id);
@@ -98,4 +76,22 @@ CREATE INDEX IF NOT EXISTS idx_rwprint_documents_environment ON rwprint_document
 CREATE INDEX IF NOT EXISTS idx_rwprint_documents_folder ON rwprint_documents(folder_id);
 CREATE INDEX IF NOT EXISTS idx_rwprint_documents_bookmarked ON rwprint_documents(is_bookmarked);
 CREATE INDEX IF NOT EXISTS idx_rwprint_tags_environment ON rwprint_tags(environment_id);
-CREATE INDEX IF NOT EXISTS idx_rwprint_sites_environment ON rwprint_sites(environment_id);
+
+-- Триггеры для обновления updated_at
+DROP TRIGGER IF EXISTS update_rwprint_environments_updated_at ON rwprint_environments;
+CREATE TRIGGER update_rwprint_environments_updated_at
+BEFORE UPDATE ON rwprint_environments
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_rwprint_folders_updated_at ON rwprint_folders;
+CREATE TRIGGER update_rwprint_folders_updated_at
+BEFORE UPDATE ON rwprint_folders
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_rwprint_documents_updated_at ON rwprint_documents;
+CREATE TRIGGER update_rwprint_documents_updated_at
+BEFORE UPDATE ON rwprint_documents
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

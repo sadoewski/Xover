@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -294,13 +294,13 @@ export const dataTasksService = {
     return response.data;
   },
 
-  removeDate: async (id, year, month, day) => {
-    const response = await api.delete(`/datatasks/${id}/dates/${year}/${month}/${day}`);
+  removeDate: async (id, date) => {
+    const response = await api.delete(`/datatasks/${id}/dates/${date}`);
     return response.data;
   },
 
-  updateDateStatus: async (id, year, month, day, status) => {
-    const response = await api.put(`/datatasks/${id}/dates/${year}/${month}/${day}/status`, { status });
+  updateDateStatus: async (id, date, status) => {
+    const response = await api.put(`/datatasks/${id}/dates/${date}/status`, { status });
     return response.data;
   },
 };

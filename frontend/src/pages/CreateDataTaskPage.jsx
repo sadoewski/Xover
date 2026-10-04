@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { groupsService, dataTasksService } from '../services/api';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/CreateDataTaskPage.css';
 
@@ -25,11 +25,8 @@ const CreateDataTaskPage = () => {
 
   const loadGroups = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5001/api/groups', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setGroups(response.data.groups || []);
+      const response = await groupsService.getGroups();
+      setGroups(response.groups || []);
     } catch (error) {
       console.error('Error loading groups:', error);
     }
@@ -93,24 +90,17 @@ const CreateDataTaskPage = () => {
   const handleCreate = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:5001/api/datatasks',
-        {
-          name,
-          groupId: selectedGroup,
-          isTimeBound,
-          timeSlotStart: isTimeBound ? timeSlotStart : null,
-          timeSlotEnd: isTimeBound ? timeSlotEnd : null,
-          dates: selectedDates
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await dataTasksService.create({
+        name,
+        groupId: selectedGroup,
+        isTimeBound,
+        timeSlotStart: isTimeBound ? timeSlotStart : null,
+        timeSlotEnd: isTimeBound ? timeSlotEnd : null,
+        dates: selectedDates
+      });
 
       // Переходим в свойства созданного datatask
-      navigate(`/datatasks/${response.data.datatask.id}`);
+      navigate(`/datatasks/${response.datatask.id}`);
     } catch (error) {
       console.error('Error creating datatask:', error);
       alert('Ошибка при создании DataTask');

@@ -150,7 +150,7 @@ const ProfessionalLayout = ({ children }) => {
           <div className="user-info" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer' }}>
             {user?.avatar_url ? (
               <img
-                src={`http://localhost:5001${user.avatar_url}`}
+                src={getAvatarUrl(user.avatar_url)}
                 alt={user.name}
                 style={{
                   width: '24px',

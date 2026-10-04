@@ -1,0 +1,2899 @@
+openapi: 3.0.3
+info:
+  title: Hostprint API
+  description: |
+    REST API для системы управления задачами и документами Hostprint.
+
+    ## Аутентификация
+
+    API использует JWT токены для аутентификации. Получите токен через `/api/auth/login`,
+    затем передавайте его в заголовке `Authorization: Bearer <token>` для защищенных endpoints.
+
+    ## Базовый URL
+
+    - Development: `http://localhost:5000`
+    - Production: `https://your-domain.com`
+
+    ## Rate Limiting
+
+    - Auth endpoints (`/api/auth/login`, `/api/auth/register`): 5 запросов / 15 минут
+    - Остальные endpoints: без ограничений (рекомендуется добавить)
+
+  version: 1.0.0
+  contact:
+    name: Hostprint Team
+  license:
+    name: Private
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+  - url: http://localhost:5000/api
+    description: Development API (with prefix)
+
+tags:
+  - name: Authentication
+    description: Регистрация, вход, профиль пользователя
+  - name: Users
+    description: Управление пользователями
+  - name: Priorities
+    description: Приоритеты задач
+  - name: Groups
+    description: Группы задач и типы групп
+  - name: Tasks
+    description: Основные задачи
+  - name: Events
+    description: События календаря
+  - name: DataTasks
+    description: Data tasks с датами и статусами
+  - name: RWPrint
+    description: Система управления документами RWPrint
+  - name: Sites
+    description: Управление сайтами
+  - name: Morphology
+    description: Морфологический анализ текста
+  - name: Health
+    description: Health checks
+
+paths:
+  # ==================== HEALTH ====================
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Проверка доступности API
+      responses:
+        '200':
+          description: API работает
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  message:
+                    type: string
+                    example: API работает
+
+  # ==================== AUTHENTICATION ====================
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Регистрация нового пользователя
+      description: |
+        Создает нового пользователя и возвращает JWT токен.
+
+        Rate limit: 5 запросов / 15 минут.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                  example: john_doe
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: securePassword123
+      responses:
+        '201':
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT токен
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Пользователь уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Пользователь с таким email уже существует
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Вход в систему
+      description: |
+        Аутентификация пользователя и получение JWT токена.
+
+        Rate limit: 5 запросов / 15 минут.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  type: string
+                  example: securePassword123
+      responses:
+        '200':
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Неверные credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Неверный email или пароль
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+
+  /api/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Получить текущего пользователя
+      description: Возвращает информацию о текущем аутентифицированном пользователе
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/auth/profile:
+    put:
+      tags:
+        - Authentication
+      summary: Обновить профиль
+      description: Обновляет username и/или email текущего пользователя
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 50
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Профиль обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Профиль обновлён
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/auth/upload-avatar:
+    post:
+      tags:
+        - Authentication
+      summary: Загрузить аватар
+      description: Загружает изображение аватара (JPG, PNG)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - avatar
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: Изображение (JPG, PNG, max 5MB)
+      responses:
+        '200':
+          description: Аватар загружен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Аватар успешно загружен
+                  avatarUrl:
+                    type: string
+                    example: /uploads/avatars/1234567890-avatar.jpg
+        '400':
+          description: Неверный формат файла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Изменить пароль
+      description: Меняет пароль текущего пользователя
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                  example: oldPassword123
+                newPassword:
+                  type: string
+                  minLength: 6
+                  example: newSecurePassword456
+      responses:
+        '200':
+          description: Пароль изменен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Пароль успешно изменён
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Неверный старый пароль
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: Неверный старый пароль
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT токен, полученный через `/api/auth/login` или `/api/auth/register`
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: john_doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        avatar_url:
+          type: string
+          nullable: true
+          example: /uploads/avatars/1234567890-avatar.jpg
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-10-04T12:00:00Z"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Сообщение об ошибке
+          example: Произошла ошибка
+
+    ValidationErrors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: email
+              message:
+                type: string
+                example: Некорректный email
+
+  responses:
+    UnauthorizedError:
+      description: Не авторизован (отсутствует или неверный токен)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Не авторизован
+
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrors'
+
+    RateLimitError:
+      description: Превышен лимит запросов
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Слишком много попыток. Попробуйте позже.
+
+  # ==================== PRIORITIES ====================
+  /api/priorities:
+    get:
+      tags:
+        - Priorities
+      summary: Получить список приоритетов
+      description: Возвращает все приоритеты текущего пользователя
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список приоритетов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Priority'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Priorities
+      summary: Создать приоритет
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - color
+                - position
+              properties:
+                name:
+                  type: string
+                  example: Высокий
+                color:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#FF0000"
+                position:
+                  type: integer
+                  minimum: 0
+                  example: 1
+      responses:
+        '201':
+          description: Приоритет создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/priorities/{id}:
+    get:
+      tags:
+        - Priorities
+      summary: Получить приоритет по ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные приоритета
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Priorities
+      summary: Обновить приоритет
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                position:
+                  type: integer
+                  minimum: 0
+      responses:
+        '200':
+          description: Приоритет обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Priority'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Priorities
+      summary: Удалить приоритет
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Приоритет удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Приоритет удалён
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ==================== GROUPS ====================
+  /api/groups:
+    get:
+      tags:
+        - Groups
+      summary: Получить список групп
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список групп с типами
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroupWithTypes'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Groups
+      summary: Создать группу
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - color
+              properties:
+                name:
+                  type: string
+                  example: Работа
+                color:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+                  example: "#3B82F6"
+      responses:
+        '201':
+          description: Группа создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/groups/{id}:
+    get:
+      tags:
+        - Groups
+      summary: Получить группу по ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные группы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Groups
+      summary: Обновить группу
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+                  pattern: '^#[0-9A-Fa-f]{6}$'
+      responses:
+        '200':
+          description: Группа обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Groups
+      summary: Удалить группу
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Группа удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Группа удалена
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/groups/{groupId}/types:
+    post:
+      tags:
+        - Groups
+      summary: Создать тип группы
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Встреча
+      responses:
+        '201':
+          description: Тип создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupType'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/groups/types/{id}:
+    delete:
+      tags:
+        - Groups
+      summary: Удалить тип группы
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Тип удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Тип группы удалён
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # ==================== TASKS ====================
+  /api/tasks/date/{date}:
+    get:
+      tags:
+        - Tasks
+      summary: Получить задачи по дате
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+            example: "2026-10-04"
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/tasks/{id}:
+    get:
+      tags:
+        - Tasks
+      summary: Получить задачу по ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные задачи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Tasks
+      summary: Обновить задачу
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [pending, in_progress, completed, cancelled]
+                priority_id:
+                  type: integer
+                group_id:
+                  type: integer
+                group_type_id:
+                  type: integer
+                date:
+                  type: string
+                  format: date
+                time_slot_start:
+                  type: string
+                  pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+                  example: "09:00"
+                time_slot_end:
+                  type: string
+                  pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+                  example: "10:00"
+      responses:
+        '200':
+          description: Задача обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Tasks
+      summary: Удалить задачу
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Задача удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Задача удалена
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/tasks:
+    post:
+      tags:
+        - Tasks
+      summary: Создать задачу
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - date
+              properties:
+                title:
+                  type: string
+                  example: Важная встреча
+                description:
+                  type: string
+                  example: Обсудить проект
+                status:
+                  type: string
+                  enum: [pending, in_progress, completed, cancelled]
+                  default: pending
+                priority_id:
+                  type: integer
+                group_id:
+                  type: integer
+                group_type_id:
+                  type: integer
+                date:
+                  type: string
+                  format: date
+                  example: "2026-10-04"
+                time_slot_start:
+                  type: string
+                  pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+                  example: "09:00"
+                time_slot_end:
+                  type: string
+                  pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+                  example: "10:00"
+      responses:
+        '201':
+          description: Задача создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/tasks/{id}/logs:
+    get:
+      tags:
+        - Tasks
+      summary: Получить логи задачи
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: История изменений задачи
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskLog'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/tasks/by-ids:
+    post:
+      tags:
+        - Tasks
+      summary: Получить задачи по списку ID
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ids
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2, 3]
+      responses:
+        '200':
+          description: Список задач
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/tasks/link:
+    post:
+      tags:
+        - Tasks
+      summary: Связать задачи
+      description: Создает связь между двумя задачами (parent-child)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - parent_id
+                - child_id
+              properties:
+                parent_id:
+                  type: integer
+                child_id:
+                  type: integer
+      responses:
+        '200':
+          description: Задачи связаны
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Связь создана
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/tasks/unlink:
+    post:
+      tags:
+        - Tasks
+      summary: Отвязать задачи
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - parent_id
+                - child_id
+              properties:
+                parent_id:
+                  type: integer
+                child_id:
+                  type: integer
+      responses:
+        '200':
+          description: Связь удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Связь удалена
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ==================== EVENTS ====================
+  /api/events:
+    get:
+      tags:
+        - Events
+      summary: Получить все события
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список событий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Events
+      summary: Создать событие
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - date_year
+                - date_month
+                - date_day
+              properties:
+                type:
+                  type: string
+                  enum: [birthday, holiday, event]
+                title:
+                  type: string
+                  example: День рождения
+                description:
+                  type: string
+                date_year:
+                  type: integer
+                  minimum: 2000
+                  maximum: 2100
+                  example: 2026
+                date_month:
+                  type: integer
+                  minimum: 1
+                  maximum: 12
+                  example: 10
+                date_day:
+                  type: integer
+                  minimum: 1
+                  maximum: 31
+                  example: 15
+      responses:
+        '201':
+          description: Событие создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/events/month/{month}:
+    get:
+      tags:
+        - Events
+      summary: Получить события за месяц
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+      responses:
+        '200':
+          description: События за месяц
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/events/date/{month}/{day}:
+    get:
+      tags:
+        - Events
+      summary: Получить события на дату
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - name: day
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 31
+      responses:
+        '200':
+          description: События на дату
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/events/{id}:
+    get:
+      tags:
+        - Events
+      summary: Получить событие по ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные события
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Events
+      summary: Обновить событие
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [birthday, holiday, event]
+                title:
+                  type: string
+                description:
+                  type: string
+                date_year:
+                  type: integer
+                date_month:
+                  type: integer
+                date_day:
+                  type: integer
+      responses:
+        '200':
+          description: Событие обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Events
+      summary: Удалить событие
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Событие удалено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/events/{eventId}/notes:
+    get:
+      tags:
+        - Events
+      summary: Получить заметки события
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список заметок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventNote'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Events
+      summary: Добавить заметку к событию
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+      responses:
+        '201':
+          description: Заметка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventNote'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/events/{eventId}/notes/{noteId}:
+    delete:
+      tags:
+        - Events
+      summary: Удалить заметку
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: noteId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Заметка удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ==================== DATATASKS ====================
+  /api/datatasks:
+    get:
+      tags:
+        - DataTasks
+      summary: Получить все DataTasks
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список DataTasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataTask'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - DataTasks
+      summary: Создать DataTask
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Ежедневная проверка
+                description:
+                  type: string
+      responses:
+        '201':
+          description: DataTask создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTask'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/datatasks/{id}:
+    get:
+      tags:
+        - DataTasks
+      summary: Получить DataTask по ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные DataTask
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTask'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - DataTasks
+      summary: Обновить DataTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: DataTask обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTask'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - DataTasks
+      summary: Удалить DataTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: DataTask удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /api/datatasks/{id}/dates:
+    post:
+      tags:
+        - DataTasks
+      summary: Добавить дату к DataTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - date
+              properties:
+                date:
+                  type: string
+                  format: date
+                  example: "2026-10-04"
+      responses:
+        '201':
+          description: Дата добавлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTaskDate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/datatasks/{id}/dates/{date}:
+    delete:
+      tags:
+        - DataTasks
+      summary: Удалить дату из DataTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Дата удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/datatasks/{id}/dates/{date}/status:
+    put:
+      tags:
+        - DataTasks
+      summary: Обновить статус даты
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: date
+          in: path
+          required: true
+          schema:
+            type: string
+            format: date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [pending, completed]
+      responses:
+        '200':
+          description: Статус обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataTaskDate'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ==================== RWPRINT ====================
+  /api/rwprint/environments:
+    get:
+      tags:
+        - RWPrint
+      summary: Получить все окружения
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список окружений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RWPrintEnvironment'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - RWPrint
+      summary: Создать окружение
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Production
+      responses:
+        '201':
+          description: Окружение создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintEnvironment'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/environments/{id}:
+    put:
+      tags:
+        - RWPrint
+      summary: Обновить окружение
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Окружение обновлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintEnvironment'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - RWPrint
+      summary: Удалить окружение
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Окружение удалено
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/environments/{environmentId}/folders:
+    get:
+      tags:
+        - RWPrint
+      summary: Получить папки окружения
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список папок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RWPrintFolder'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - RWPrint
+      summary: Создать папку
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Папка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintFolder'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/folders/{id}:
+    put:
+      tags:
+        - RWPrint
+      summary: Обновить папку
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Папка обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintFolder'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - RWPrint
+      summary: Удалить папку
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Папка удалена
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/environments/{environmentId}/documents:
+    get:
+      tags:
+        - RWPrint
+      summary: Получить документы окружения
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список документов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RWPrintDocument'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - RWPrint
+      summary: Создать документ
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                folder_id:
+                  type: integer
+                  nullable: true
+                is_encrypted:
+                  type: boolean
+                  default: false
+      responses:
+        '201':
+          description: Документ создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintDocument'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/documents/{id}:
+    post:
+      tags:
+        - RWPrint
+      summary: Получить документ (с паролем если нужен)
+      description: POST используется для передачи пароля для зашифрованных документов
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Данные документа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintDocument'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Неверный пароль
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - RWPrint
+      summary: Обновить документ
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                folder_id:
+                  type: integer
+                  nullable: true
+                is_encrypted:
+                  type: boolean
+      responses:
+        '200':
+          description: Документ обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintDocument'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - RWPrint
+      summary: Удалить документ
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Документ удален
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/environments/{environmentId}/tags:
+    get:
+      tags:
+        - RWPrint
+      summary: Получить теги окружения
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список тегов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RWPrintTag'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - RWPrint
+      summary: Создать тег
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: environmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '201':
+          description: Тег создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RWPrintTag'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/tags/{id}:
+    delete:
+      tags:
+        - RWPrint
+      summary: Удалить тег
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Тег удален
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/documents/{documentId}/tags/{tagId}:
+    post:
+      tags:
+        - RWPrint
+      summary: Добавить тег к документу
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Тег добавлен
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - RWPrint
+      summary: Удалить тег из документа
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: tagId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Тег удален
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/documents/{documentId}/tags:
+    get:
+      tags:
+        - RWPrint
+      summary: Получить теги документа
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список тегов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RWPrintTag'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/rwprint/documents/{documentId}/metadata:
+    get:
+      tags:
+        - RWPrint
+      summary: Получить метаданные документа
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Метаданные документа
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  file_size:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ==================== SITES ====================
+  /api/sites:
+    get:
+      tags:
+        - Sites
+      summary: Получить все сайты
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Список сайтов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    post:
+      tags:
+        - Sites
+      summary: Создать сайт
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Мой блог
+                url:
+                  type: string
+                  example: https://example.com
+      responses:
+        '201':
+          description: Сайт создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/sites/{id}:
+    get:
+      tags:
+        - Sites
+      summary: Получить сайт по ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Данные сайта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Sites
+      summary: Обновить сайт
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                url:
+                  type: string
+      responses:
+        '200':
+          description: Сайт обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - Sites
+      summary: Удалить сайт
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Сайт удален
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/sites/{id}/items:
+    post:
+      tags:
+        - Sites
+      summary: Создать элемент сайта
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                level:
+                  type: integer
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '201':
+          description: Элемент создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/sites/{id}/items/{itemId}:
+    put:
+      tags:
+        - Sites
+      summary: Обновить элемент сайта
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                level:
+                  type: integer
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        '200':
+          description: Элемент обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    delete:
+      tags:
+        - Sites
+      summary: Удалить элемент сайта
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Элемент удален
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /api/sites/{id}/search:
+    get:
+      tags:
+        - Sites
+      summary: Поиск по сайту
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Результаты поиска
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SiteItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # ==================== MORPHOLOGY ====================
+  /api/morphology/analyze:
+    post:
+      tags:
+        - Morphology
+      summary: Морфологический анализ текста
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  example: Привет мир
+      responses:
+        '200':
+          description: Результат анализа
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        word:
+                          type: string
+                        normal_form:
+                          type: string
+                        pos:
+                          type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    Priority:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+        name:
+          type: string
+          example: Высокий
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#FF0000"
+        position:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+        name:
+          type: string
+          example: Работа
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: "#3B82F6"
+        created_at:
+          type: string
+          format: date-time
+
+    GroupType:
+      type: object
+      properties:
+        id:
+          type: integer
+        group_id:
+          type: integer
+        name:
+          type: string
+          example: Встреча
+        created_at:
+          type: string
+          format: date-time
+
+    GroupWithTypes:
+      allOf:
+        - $ref: '#/components/schemas/Group'
+        - type: object
+          properties:
+            types:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupType'
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+        title:
+          type: string
+          example: Важная встреча
+        description:
+          type: string
+          nullable: true
+          example: Обсудить проект
+        status:
+          type: string
+          enum: [pending, in_progress, completed, cancelled]
+          example: pending
+        priority_id:
+          type: integer
+          nullable: true
+        group_id:
+          type: integer
+          nullable: true
+        group_type_id:
+          type: integer
+          nullable: true
+        date:
+          type: string
+          format: date
+          example: "2026-10-04"
+        time_slot_start:
+          type: string
+          nullable: true
+          pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+          example: "09:00"
+        time_slot_end:
+          type: string
+          nullable: true
+          pattern: '^([01]\d|2[0-3]):([0-5]\d)$'
+          example: "10:00"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        priority:
+          $ref: '#/components/schemas/Priority'
+          nullable: true
+        group:
+          $ref: '#/components/schemas/Group'
+          nullable: true
+        group_type:
+          $ref: '#/components/schemas/GroupType'
+          nullable: true
+
+    TaskLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        task_id:
+          type: integer
+        field:
+          type: string
+          example: status
+        old_value:
+          type: string
+          nullable: true
+        new_value:
+          type: string
+          nullable: true
+        changed_at:
+          type: string
+          format: date-time
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+        type:
+          type: string
+          enum: [birthday, holiday, event]
+          example: birthday
+        title:
+          type: string
+          nullable: true
+          example: День рождения
+        description:
+          type: string
+          nullable: true
+        date_year:
+          type: integer
+          nullable: true
+          example: 2026
+        date_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+          example: 10
+        date_day:
+          type: integer
+          minimum: 1
+          maximum: 31
+          example: 15
+        created_at:
+          type: string
+          format: date-time
+
+    EventNote:
+      type: object
+      properties:
+        id:
+          type: integer
+        event_id:
+          type: integer
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    DataTask:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+        name:
+          type: string
+          example: Ежедневная проверка
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataTaskDate'
+
+    DataTaskDate:
+      type: object
+      properties:
+        id:
+          type: integer
+        datatask_id:
+          type: integer
+        date:
+          type: string
+          format: date
+          example: "2026-10-04"
+        status:
+          type: string
+          enum: [pending, completed]
+          example: pending
+        created_at:
+          type: string
+          format: date-time
+
+    RWPrintEnvironment:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        name:
+          type: string
+          example: Production
+        created_at:
+          type: string
+          format: date-time
+
+    RWPrintFolder:
+      type: object
+      properties:
+        id:
+          type: integer
+        environment_id:
+          type: integer
+        name:
+          type: string
+          example: Документация
+        parent_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    RWPrintDocument:
+      type: object
+      properties:
+        id:
+          type: integer
+        environment_id:
+          type: integer
+        folder_id:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          example: Техническое задание
+        content:
+          type: string
+          nullable: true
+        is_encrypted:
+          type: boolean
+          default: false
+        file_size:
+          type: integer
+          example: 1024
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RWPrintTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        environment_id:
+          type: integer
+        name:
+          type: string
+          example: Important
+        color:
+          type: string
+          nullable: true
+          example: "#FF5733"
+        created_at:
+          type: string
+          format: date-time
+
+    Site:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        name:
+          type: string
+          example: Мой блог
+        url:
+          type: string
+          nullable: true
+          example: https://example.com
+        created_at:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiteItem'
+
+    SiteItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        site_id:
+          type: integer
+        title:
+          type: string
+          example: Главная страница
+        content:
+          type: string
+          nullable: true
+        level:
+          type: integer
+          minimum: 1
+          example: 1
+        parent_id:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    NotFoundError:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Ресурс не найден

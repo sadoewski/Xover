@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { dataTasksService } from '../services/api';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/DataTasksPage.css';
 
@@ -19,11 +19,8 @@ const DataTasksPage = () => {
   const loadDatatasks = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5001/api/datatasks', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setDatatasks(response.data.datatasks || []);
+      const response = await dataTasksService.getAll();
+      setDatatasks(response.datatasks || []);
     } catch (error) {
       console.error('Error loading datatasks:', error);
     } finally {
@@ -56,13 +53,8 @@ const DataTasksPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
       await Promise.all(
-        selectedDatatasks.map(id =>
-          axios.delete(`http://localhost:5001/api/datatasks/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-        )
+        selectedDatatasks.map(id => dataTasksService.delete(id))
       );
       setSelectedDatatasks([]);
       setShowActionsMenu(false);

@@ -1,3 +1,6 @@
+-- Sites Schema Migration
+-- Creates sites and site_items tables
+
 -- Таблица сайтов
 CREATE TABLE IF NOT EXISTS sites (
     id SERIAL PRIMARY KEY,
@@ -31,7 +34,7 @@ CREATE INDEX IF NOT EXISTS idx_site_items_site_id ON site_items(site_id);
 CREATE INDEX IF NOT EXISTS idx_site_items_parent_id ON site_items(parent_id);
 CREATE INDEX IF NOT EXISTS idx_site_items_type ON site_items(type);
 
--- Функция обновления updated_at
+-- Функция обновления updated_at для sites
 CREATE OR REPLACE FUNCTION update_sites_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

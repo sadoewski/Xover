@@ -1,52 +1,11 @@
 import pool from '../config/database.js';
 
 export const datatasksController = {
-  // Инициализация таблиц (выполняется при первом запросе)
-  async initTables() {
-    try {
-      await pool.query(`
-        CREATE TABLE IF NOT EXISTS datatasks (
-          id SERIAL PRIMARY KEY,
-          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-          name VARCHAR(255) NOT NULL,
-          group_id INTEGER NOT NULL REFERENCES task_groups(id) ON DELETE CASCADE,
-          time_slot_start TIME,
-          time_slot_end TIME,
-          is_time_bound BOOLEAN DEFAULT FALSE,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-
-        CREATE TABLE IF NOT EXISTS datatask_dates (
-          id SERIAL PRIMARY KEY,
-          datatask_id INTEGER NOT NULL REFERENCES datatasks(id) ON DELETE CASCADE,
-          date DATE NOT NULL,
-          status VARCHAR(50) DEFAULT 'pending',
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE(datatask_id, date)
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_datatask_dates_datatask_id ON datatask_dates(datatask_id);
-        CREATE INDEX IF NOT EXISTS idx_datatask_dates_date ON datatask_dates(date);
-      `);
-
-      // Добавляем поле datatask_id в tasks если его нет
-      await pool.query(`
-        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS datatask_id INTEGER REFERENCES datatasks(id) ON DELETE SET NULL;
-        CREATE INDEX IF NOT EXISTS idx_tasks_datatask_id ON tasks(datatask_id);
-      `);
-    } catch (error) {
-      console.error('Error initializing datatasks tables:', error);
-    }
-  },
-
   // Получить все datatasks пользователя
   async getAllDatatasks(req, res) {
     const userId = req.userId;
 
     try {
-      await datatasksController.initTables();
-
       const result = await pool.query(
         `SELECT 
           d.*,
@@ -75,8 +34,6 @@ export const datatasksController = {
     const userId = req.userId;
 
     try {
-      await datatasksController.initTables();
-
       const datataskResult = await pool.query(
         `SELECT 
           d.*,
@@ -123,7 +80,6 @@ export const datatasksController = {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await datatasksController.initTables();
 
       // Создаем datatask
       const datataskResult = await client.query(
@@ -201,8 +157,6 @@ export const datatasksController = {
     const userId = req.userId;
 
     try {
-      await datatasksController.initTables();
-
       const result = await pool.query(
         `UPDATE datatasks
          SET name = COALESCE($1, name),
@@ -235,7 +189,6 @@ export const datatasksController = {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await datatasksController.initTables();
 
       // Проверяем существование datatask
       const checkResult = await client.query(
@@ -284,7 +237,6 @@ export const datatasksController = {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await datatasksController.initTables();
 
       // Получаем datatask
       const datataskResult = await client.query(
@@ -352,7 +304,6 @@ export const datatasksController = {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await datatasksController.initTables();
 
       // Проверяем существование datatask
       const checkResult = await client.query(
@@ -395,8 +346,6 @@ export const datatasksController = {
     const userId = req.userId;
 
     try {
-      await datatasksController.initTables();
-
       // Проверяем существование datatask
       const checkResult = await pool.query(
         `SELECT id FROM datatasks WHERE id = $1 AND user_id = $2`,

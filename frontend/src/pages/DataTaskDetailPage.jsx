@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { dataTasksService } from '../services/api';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/DataTaskDetailPage.css';
 
@@ -19,12 +19,9 @@ const DataTaskDetailPage = () => {
   const loadDatatask = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5001/api/datatasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setDatatask(response.data.datatask);
-      setEditedName(response.data.datatask.name);
+      const response = await dataTasksService.getById(id);
+      setDatatask(response.datatask);
+      setEditedName(response.datatask.name);
     } catch (error) {
       console.error('Error loading datatask:', error);
     } finally {
@@ -43,12 +40,7 @@ const DataTaskDetailPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `http://localhost:5001/api/datatasks/${id}`,
-        { name: editedName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await dataTasksService.update(id, { name: editedName });
       setIsEditing(false);
       await loadDatatask();
     } catch (error) {
@@ -63,10 +55,7 @@ const DataTaskDetailPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/api/datatasks/${id}/dates/${date}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await dataTasksService.removeDate(id, date);
       await loadDatatask();
     } catch (error) {
       console.error('Error deleting date:', error);
@@ -84,10 +73,7 @@ const DataTaskDetailPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5001/api/datatasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await dataTasksService.delete(id);
       navigate('/datatasks');
     } catch (error) {
       console.error('Error deleting datatask:', error);

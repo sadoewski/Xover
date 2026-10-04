@@ -13,9 +13,9 @@ RUN apk add --no-cache python3 py3-pip && \
 # Контроллер запускает анализатор через PYTHON_BIN
 ENV PYTHON_BIN=/opt/venv/bin/python3
 
-# Копируем package.json и устанавливаем зависимости
-COPY package.json ./
-RUN npm install --only=production
+# Копируем package.json и package-lock.json для reproducible builds
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
 
 # Копируем миграции и скрипты миграций
 COPY migrations ./migrations

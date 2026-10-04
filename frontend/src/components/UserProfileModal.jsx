@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Calendar, Key, Upload, X, Check } from 'lucide-react';
+import { getAvatarUrl } from '../utils/url';
 import './UserProfileModal.css';
 
 export default function UserProfileModal({ isOpen, onClose }) {
@@ -126,7 +127,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
               <div className="avatar-section">
                 <div className="avatar-display">
                   {avatarPreview || user?.avatar_url ? (
-                    <img src={avatarPreview || `http://localhost:5001${user.avatar_url}`} alt="Avatar" />
+                    <img src={avatarPreview || getAvatarUrl(user.avatar_url)} alt="Avatar" />
                   ) : (
                     <User size={48} />
                   )}

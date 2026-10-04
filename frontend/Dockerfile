@@ -1,13 +1,13 @@
 # Frontend Dockerfile
 
-FROM node:22-alpine AS build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Устанавливаем зависимости
-COPY package.json ./
+# Копируем package.json и package-lock.json для reproducible builds
+COPY package.json package-lock.json* ./
 
-RUN npm install
+RUN npm ci
 
 # Копируем исходный код
 COPY . .
