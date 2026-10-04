@@ -1,23 +1,28 @@
 # Frontend Dockerfile
-FROM node:18-alpine as build
+
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
-# Копируем package.json и устанавливаем зависимости
-COPY package*.json ./
+# Устанавливаем зависимости
+COPY package.json package-lock.json ./
+
 RUN npm ci
 
-# Копируем исходный код и собираем
+# Копируем исходный код
 COPY . .
+
+# Собираем production-версию
 RUN npm run build
+
 
 # Production stage
 FROM nginx:alpine
 
-# Копируем собранные файлы
+# Копируем собранное приложение
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Копируем конфигурацию nginx
+# Конфигурация nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
