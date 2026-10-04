@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { BarChart3, Calendar, Repeat, Folder, Star, FileText, Target } from 'lucide-react';
 import './HostlogSidebar.css';
 
 export default function HostlogSidebar() {
@@ -8,13 +9,13 @@ export default function HostlogSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Админ-панель', icon: '📊', path: '/' },
-    { id: 'calendar', label: 'Календарь', icon: '📅', path: '/calendar' },
-    { id: 'datatasks', label: 'DataTask', icon: '🔁', path: '/datatasks' },
-    { id: 'groups', label: 'Группы записей', icon: '📁', path: '/groups' },
-    { id: 'priorities', label: 'Приоритеты', icon: '⭐', path: '/priorities' },
-    { id: 'templates', label: 'Шаблоны задач', icon: '📝', path: '/templates' },
-    { id: 'events', label: 'События', icon: '🎯', path: '/events' },
+    { id: 'dashboard', label: 'Админ-панель', Icon: BarChart3, path: '/' },
+    { id: 'calendar', label: 'Календарь', Icon: Calendar, path: '/calendar' },
+    { id: 'datatasks', label: 'DataTask', Icon: Repeat, path: '/datatasks' },
+    { id: 'groups', label: 'Группы записей', Icon: Folder, path: '/groups' },
+    { id: 'priorities', label: 'Приоритеты', Icon: Star, path: '/priorities' },
+    { id: 'templates', label: 'Шаблоны задач', Icon: FileText, path: '/templates' },
+    { id: 'events', label: 'События', Icon: Target, path: '/events' },
   ];
 
   const isActive = (path) => {
@@ -33,7 +34,7 @@ export default function HostlogSidebar() {
               className={`hostlog-nav-item ${isActive(item.path) ? 'active' : ''}`}
               title={isCollapsed ? item.label : ''}
             >
-              <span className="hostlog-nav-icon">{item.icon}</span>
+              <item.Icon size={20} className="hostlog-nav-icon" />
               {!isCollapsed && <span className="hostlog-nav-label">{item.label}</span>}
             </button>
           ))}

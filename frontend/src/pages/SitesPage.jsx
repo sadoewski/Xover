@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import api from '../services/api';
 import CreateSiteModal from '../components/CreateSiteModal';
+import IconRenderer from '../components/IconRenderer';
 import './SitesPage.css';
 
 function SitesPage() {
@@ -40,30 +41,30 @@ function SitesPage() {
   };
 
   if (loading) {
-    return <div className="sites-page__loading">Loading...</div>;
+    return <div className="sites-page__loading">Загрузка...</div>;
   }
 
   return (
     <div className="sites-page">
       <div className="sites-page__header">
-        <h1 className="sites-page__title">Sites</h1>
+        <h1 className="sites-page__title">Сайты</h1>
         <button
           className="sites-page__create-btn"
           onClick={() => setShowCreateModal(true)}
         >
           <Plus size={20} />
-          New Site
+          Новый сайт
         </button>
       </div>
 
       {sites.length === 0 ? (
         <div className="sites-page__empty">
-          <p>No sites yet</p>
+          <p>Пока нет сайтов</p>
           <button
             className="sites-page__empty-btn"
             onClick={() => setShowCreateModal(true)}
           >
-            Create your first site
+            Создайте первый сайт
           </button>
         </div>
       ) : (
@@ -74,10 +75,12 @@ function SitesPage() {
               className="site-card"
               onClick={() => navigate(`/sites/${site.id}`)}
             >
-              <div className="site-card__icon">{site.icon}</div>
+              <div className="site-card__icon">
+                <IconRenderer iconName={site.icon} size={32} />
+              </div>
               <h3 className="site-card__name">{site.name}</h3>
               <p className="site-card__date">
-                {new Date(site.created_at).toLocaleDateString()}
+                {new Date(site.created_at).toLocaleDateString('ru-RU')}
               </p>
             </div>
           ))}

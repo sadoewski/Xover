@@ -1,7 +1,11 @@
 import pg from 'pg';
-import dotenv from 'dotenv';
 
-dotenv.config();
+// В Docker переменные окружения передаются через docker-compose
+// dotenv нужен только для локальной разработки
+if (process.env.NODE_ENV !== 'production') {
+  const dotenv = await import('dotenv');
+  dotenv.config();
+}
 
 const { Pool } = pg;
 

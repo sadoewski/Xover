@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { authService } from '../services/api';
 import { useTheme } from '../contexts/ThemeContext';
+import { getAvatarUrl } from '../utils/url';
 import UserProfileModal from './UserProfileModal';
 import './ProfessionalLayout.css';
 

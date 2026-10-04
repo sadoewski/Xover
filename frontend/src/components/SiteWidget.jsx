@@ -22,10 +22,10 @@ function SiteWidget({ item, editMode, onUpdate, onDelete, onOpenFolder }) {
 
   const getTypeLabel = () => {
     const labels = {
-      folder: 'Folder',
-      database: 'Database',
-      document: 'Document',
-      textboard: 'Textboard'
+      folder: 'Папка',
+      database: 'База данных',
+      document: 'Документ',
+      textboard: 'Текстовая доска'
     };
     return labels[item.type] || item.type;
   };
@@ -53,7 +53,7 @@ function SiteWidget({ item, editMode, onUpdate, onDelete, onOpenFolder }) {
           className="textboard-content"
           value={data.content || ''}
           onChange={handleTextboardChange}
-          placeholder="Start typing..."
+          placeholder="Начните печатать..."
           disabled={!isEditing && !editMode}
         />
       );
@@ -64,7 +64,7 @@ function SiteWidget({ item, editMode, onUpdate, onDelete, onOpenFolder }) {
       return (
         <div className="database-preview">
           <div className="database-stats">
-            {data.columns?.length || 0} columns · {data.rows?.length || 0} rows
+            {data.columns?.length || 0} колонок · {data.rows?.length || 0} строк
           </div>
         </div>
       );
@@ -73,7 +73,7 @@ function SiteWidget({ item, editMode, onUpdate, onDelete, onOpenFolder }) {
     if (item.type === 'folder') {
       return (
         <div className="folder-preview">
-          <p className="folder-hint">Click to open</p>
+          <p className="folder-hint">Нажмите, чтобы открыть</p>
         </div>
       );
     }
@@ -81,7 +81,7 @@ function SiteWidget({ item, editMode, onUpdate, onDelete, onOpenFolder }) {
     if (item.type === 'document') {
       return (
         <div className="document-preview">
-          <p className="document-hint">Text document</p>
+          <p className="document-hint">Текстовый документ</p>
         </div>
       );
     }

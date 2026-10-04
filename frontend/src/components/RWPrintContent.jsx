@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { rwprintService } from '../services/rwprint';
 import DocumentEditor from './DocumentEditor';
-import SitesList from './SitesList';
+import SitesPage from '../pages/SitesPage';
 import './RWPrintContent.css';
 
 export default function RWPrintContent() {
@@ -433,6 +433,11 @@ export default function RWPrintContent() {
         currentDocument = prev.find(tab => tab.id === documentId);
         return prev;
       });
+
+      if (!currentDocument) {
+        console.error('Документ не найден в открытых вкладках:', documentId);
+        return;
+      }
 
       const updatedDocument = { ...currentDocument, ...documentData, id: documentId };
 
@@ -928,7 +933,9 @@ export default function RWPrintContent() {
             )}
 
             {activeTab === 'sites' && (
-              <SitesList />
+              <div className="sites-sidebar-placeholder">
+                <p className="placeholder-text">Выберите или создайте сайт</p>
+              </div>
             )}
 
             {activeTab === 'bookmarks' && (
@@ -1073,7 +1080,9 @@ export default function RWPrintContent() {
           </div>
         )}
 
-        {selectedDocument ? (
+        {activeTab === 'sites' ? (
+          <SitesPage />
+        ) : selectedDocument ? (
           <div className={`editors-container ${splitViewEnabled ? 'split-view' : ''}`}>
             {/* Левый редактор */}
             <div

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, Search } from 'lucide-react';
 import { sitesService } from '../services/sites';
 import CreateSiteModal from './CreateSiteModal';
+import IconRenderer from './IconRenderer';
 import './SitesList.css';
 
 function SitesList() {
@@ -60,7 +61,7 @@ function SitesList() {
   );
 
   if (loading) {
-    return <div className="sites-list-loading">Loading...</div>;
+    return <div className="sites-list-loading">Загрузка...</div>;
   }
 
   return (
@@ -70,7 +71,7 @@ function SitesList() {
           <Search size={16} />
           <input
             type="text"
-            placeholder="Search sites..."
+            placeholder="Поиск сайтов..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
@@ -81,19 +82,19 @@ function SitesList() {
           onClick={() => setShowCreateModal(true)}
         >
           <Plus size={16} />
-          New Site
+          Новый сайт
         </button>
       </div>
 
       {filteredSites.length === 0 ? (
         <div className="sites-list-empty">
-          <p>No sites yet</p>
+          <p>Пока нет сайтов</p>
           <button
             className="create-first-site-btn"
             onClick={() => setShowCreateModal(true)}
           >
             <Plus size={20} />
-            Create your first site
+            Создайте первый сайт
           </button>
         </div>
       ) : (
@@ -104,13 +105,15 @@ function SitesList() {
               className="site-card"
               onClick={() => handleOpenSite(site.id)}
             >
-              <div className="site-card__icon">{site.icon}</div>
+              <div className="site-card__icon">
+                <IconRenderer iconName={site.icon} size={24} />
+              </div>
               <div className="site-card__content">
                 <h3 className="site-card__name">{site.name}</h3>
                 <p className="site-card__date">
-                  Created {new Date(site.created_at).toLocaleDateString('en-US', {
-                    month: 'short',
+                  Создан {new Date(site.created_at).toLocaleDateString('ru-RU', {
                     day: 'numeric',
+                    month: 'short',
                     year: 'numeric'
                   })}
                 </p>
@@ -118,7 +121,7 @@ function SitesList() {
               <button
                 className="site-card__delete"
                 onClick={(e) => handleDeleteSite(site.id, e)}
-                title="Delete site"
+                title="Удалить сайт"
               >
                 <Trash2 size={16} />
               </button>

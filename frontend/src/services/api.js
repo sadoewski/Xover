@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// В production (Docker) используем относительный путь через nginx proxy
+// В development - прямое подключение к backend
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001/api' : '/api');
 
 const api = axios.create({
   baseURL: API_URL,

@@ -3,18 +3,18 @@ import { X, Folder, Table, FileText, StickyNote } from 'lucide-react';
 import './CreateItemModal.css';
 
 const ITEM_TYPES = [
-  { id: 'folder', label: 'Folder', icon: Folder, description: 'Organize items' },
-  { id: 'database', label: 'Database', icon: Table, description: 'Table with rows & columns' },
-  { id: 'textboard', label: 'Textboard', icon: StickyNote, description: 'Quick notes' },
-  { id: 'document', label: 'Document', icon: FileText, description: 'Text document' }
+  { id: 'folder', label: 'Папка', icon: Folder, description: 'Организация элементов' },
+  { id: 'database', label: 'База данных', icon: Table, description: 'Таблица со строками и колонками' },
+  { id: 'textboard', label: 'Текстовая доска', icon: StickyNote, description: 'Быстрые заметки' },
+  { id: 'document', label: 'Документ', icon: FileText, description: 'Текстовый документ' }
 ];
 
 function CreateItemModal({ onClose, onCreate, currentFolder }) {
-  const [step, setStep] = useState(1); // 1 - select type, 2 - configure
+  const [step, setStep] = useState(1);
   const [selectedType, setSelectedType] = useState(null);
   const [name, setName] = useState('');
   const [dbConfig, setDbConfig] = useState({ columns: 3, rows: 1 });
-  const [columnNames, setColumnNames] = useState(['Column 1', 'Column 2', 'Column 3']);
+  const [columnNames, setColumnNames] = useState(['Колонка 1', 'Колонка 2', 'Колонка 3']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,13 +22,12 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
     setSelectedType(type);
     setStep(2);
 
-    // Reset configuration
     setName('');
     setError('');
 
     if (type === 'database') {
       setDbConfig({ columns: 3, rows: 1 });
-      setColumnNames(['Column 1', 'Column 2', 'Column 3']);
+      setColumnNames(['Колонка 1', 'Колонка 2', 'Колонка 3']);
     }
   };
 
@@ -38,7 +37,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
 
     const newNames = [];
     for (let i = 0; i < newCount; i++) {
-      newNames.push(columnNames[i] || `Column ${i + 1}`);
+      newNames.push(columnNames[i] || `Колонка ${i + 1}`);
     }
     setColumnNames(newNames);
   };
@@ -53,7 +52,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
     e.preventDefault();
 
     if (!name.trim()) {
-      setError('Name is required');
+      setError('Название обязательно');
       return;
     }
 
@@ -81,7 +80,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
 
       await onCreate(itemData);
     } catch (err) {
-      setError(err.message || 'Failed to create item');
+      setError(err.message || 'Не удалось создать элемент');
       setLoading(false);
     }
   };
@@ -99,12 +98,22 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
     }
   };
 
+  const getTypeLabel = (type) => {
+    const labels = {
+      folder: 'папки',
+      database: 'базы данных',
+      textboard: 'текстовой доски',
+      document: 'документа'
+    };
+    return labels[type] || type;
+  };
+
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
       <div className="create-item-modal">
         <div className="create-item-modal__header">
           <h2 className="create-item-modal__title">
-            {step === 1 ? 'New Item' : `New ${selectedType}`}
+            {step === 1 ? 'Новый элемент' : `Новая ${getTypeLabel(selectedType)}`}
           </h2>
           <button
             className="create-item-modal__close"
@@ -142,12 +151,12 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
 
             <div className="create-item-modal__field">
               <label className="create-item-modal__label">
-                Name
+                Название
               </label>
               <input
                 type="text"
                 className="create-item-modal__input"
-                placeholder={`Enter ${selectedType} name...`}
+                placeholder={`Введите название ${getTypeLabel(selectedType)}...`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={loading}
@@ -159,7 +168,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
               <>
                 <div className="create-item-modal__field">
                   <label className="create-item-modal__label">
-                    Number of Columns
+                    Количество колонок
                   </label>
                   <input
                     type="number"
@@ -174,7 +183,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
 
                 <div className="create-item-modal__field">
                   <label className="create-item-modal__label">
-                    Column Names
+                    Названия колонок
                   </label>
                   <div className="column-names-grid">
                     {columnNames.slice(0, dbConfig.columns).map((name, index) => (
@@ -182,7 +191,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
                         key={index}
                         type="text"
                         className="create-item-modal__input"
-                        placeholder={`Column ${index + 1}`}
+                        placeholder={`Колонка ${index + 1}`}
                         value={name}
                         onChange={(e) => handleColumnNameChange(index, e.target.value)}
                         disabled={loading}
@@ -200,14 +209,14 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
                 onClick={handleBack}
                 disabled={loading}
               >
-                Back
+                Назад
               </button>
               <button
                 type="submit"
                 className="create-item-modal__submit"
                 disabled={loading || !name.trim()}
               >
-                {loading ? 'Creating...' : 'Create'}
+                {loading ? 'Создание...' : 'Создать'}
               </button>
             </div>
           </form>

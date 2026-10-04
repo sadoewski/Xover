@@ -1,5 +1,5 @@
 # Backend Dockerfile
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -13,12 +13,16 @@ RUN apk add --no-cache python3 py3-pip && \
 # Контроллер запускает анализатор через PYTHON_BIN
 ENV PYTHON_BIN=/opt/venv/bin/python3
 
-# Копируем package.json и package-lock.json для reproducible builds
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+# Копируем package files (игнорируем lock если его нет)
+COPY package.json ./
+COPY package-lock.json* ./
+
+# Устанавливаем зависимости
+RUN npm install --omit=dev --legacy-peer-deps
 
 # Копируем миграции и скрипты миграций
 COPY migrations ./migrations
+COPY migrate.js ./
 COPY run-migrations.js ./
 
 # Копируем исходный код

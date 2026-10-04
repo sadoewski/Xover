@@ -34,7 +34,7 @@ app.use(helmet({
 // Rate limiting for auth endpoints (skip in test mode)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: 100, // Увеличено до 100 попыток
   message: { error: 'Слишком много попыток. Попробуйте позже.' },
   standardHeaders: true,
   legacyHeaders: false,

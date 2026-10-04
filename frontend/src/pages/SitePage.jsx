@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Search, Grid3x3, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Grid3x3 } from 'lucide-react';
 import { sitesService } from '../services/sites';
-import CreateItemModal from './CreateItemModal';
-import SiteWidget from './SiteWidget';
+import CreateItemModal from '../components/CreateItemModal';
+import SiteWidget from '../components/SiteWidget';
+import IconRenderer from '../components/IconRenderer';
 import './SitePage.css';
 
 function SitePage() {
-  const { siteId } = useParams();
+  const { id } = useParams();
+  const siteId = id;
   const navigate = useNavigate();
   const [site, setSite] = useState(null);
   const [items, setItems] = useState([]);
@@ -19,7 +21,9 @@ function SitePage() {
   const [currentFolder, setCurrentFolder] = useState(null);
 
   useEffect(() => {
-    loadSite();
+    if (siteId) {
+      loadSite();
+    }
   }, [siteId]);
 
   const loadSite = async () => {
@@ -111,11 +115,11 @@ function SitePage() {
   );
 
   if (loading) {
-    return <div className="site-page-loading">Loading...</div>;
+    return <div className="site-page-loading">Загрузка...</div>;
   }
 
   if (!site) {
-    return <div className="site-page-error">Site not found</div>;
+    return <div className="site-page-error">Сайт не найден</div>;
   }
 
   return (
@@ -128,7 +132,9 @@ function SitePage() {
           >
             <ArrowLeft size={20} />
           </button>
-          <div className="site-page__icon">{site.icon}</div>
+          <div className="site-page__icon">
+            <IconRenderer iconName={site.icon} size={24} />
+          </div>
           <h1 className="site-page__title">{site.name}</h1>
         </div>
 
@@ -137,7 +143,7 @@ function SitePage() {
             <Search size={16} />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Поиск..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input-compact"
@@ -147,7 +153,7 @@ function SitePage() {
           <button
             className={`edit-mode-btn ${editMode ? 'active' : ''}`}
             onClick={() => setEditMode(!editMode)}
-            title="Toggle edit mode"
+            title="Режим редактирования"
           >
             <Grid3x3 size={16} />
           </button>
@@ -157,7 +163,7 @@ function SitePage() {
             onClick={() => setShowCreateModal(true)}
           >
             <Plus size={16} />
-            New
+            Новый
           </button>
         </div>
       </div>
@@ -168,7 +174,7 @@ function SitePage() {
             className="breadcrumb"
             onClick={() => handleBreadcrumbClick(null)}
           >
-            {site.icon} {site.name}
+            <IconRenderer iconName={site.icon} size={16} /> {site.name}
           </button>
           {breadcrumbs.map((crumb) => (
             <span key={crumb.id}>
@@ -187,13 +193,13 @@ function SitePage() {
       <div className="site-page__content">
         {filteredItems.length === 0 ? (
           <div className="site-page__empty">
-            <p>No items yet</p>
+            <p>Пока нет элементов</p>
             <button
               className="create-first-item-btn"
               onClick={() => setShowCreateModal(true)}
             >
               <Plus size={20} />
-              Create first item
+              Создать первый элемент
             </button>
           </div>
         ) : (
