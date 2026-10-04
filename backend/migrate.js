@@ -2,32 +2,53 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pool from './src/config/database.js';
+import { getDatabaseType, getMigrationsDir } from './src/config/database-adapter.js';
+
+const dbType = getDatabaseType();
 
 // Debug: выводим переменные окружения
-console.log('🔍 DB Connection Config:', {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD ? '***' : undefined
-});
+if (dbType === 'postgresql') {
+  console.log('🔍 DB Connection Config:', {
+    type: 'PostgreSQL',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD ? '***' : undefined
+  });
+} else {
+  console.log('🔍 DB Connection Config:', {
+    type: 'SQLite',
+    path: process.env.SQLITE_DB_PATH || 'data/hostprint.db'
+  });
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const MIGRATIONS_DIR = path.join(__dirname, 'migrations');
+const MIGRATIONS_DIR = getMigrationsDir();
 
 /**
  * Создает таблицу schema_migrations если её нет
  */
 async function ensureMigrationsTable(client) {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS schema_migrations (
-      version VARCHAR(255) PRIMARY KEY,
-      applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      filename VARCHAR(500) NOT NULL
-    );
-  `);
+  if (dbType === 'sqlite') {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version VARCHAR(255) PRIMARY KEY,
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        filename VARCHAR(500) NOT NULL
+      );
+    `);
+  } else {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        version VARCHAR(255) PRIMARY KEY,
+        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        filename VARCHAR(500) NOT NULL
+      );
+    `);
+  }
 }
 
 /**
@@ -76,18 +97,30 @@ async function applyMigration(client, migration) {
   const sql = fs.readFileSync(migration.path, 'utf8');
 
   try {
-    // Пытаемся выполнить миграцию в транзакции
-    await client.query('BEGIN');
-    await client.query(sql);
-    await client.query(
-      'INSERT INTO schema_migrations (version, filename) VALUES ($1, $2)',
-      [migration.version, migration.filename]
-    );
-    await client.query('COMMIT');
+    if (dbType === 'sqlite') {
+      // SQLite: Выполняем миграцию без явной транзакции для DDL
+      // better-sqlite3 wrapper автоматически управляет транзакциями
+      await client.query(sql);
+      await client.query(
+        'INSERT INTO schema_migrations (version, filename) VALUES (?, ?)',
+        [migration.version, migration.filename]
+      );
+    } else {
+      // PostgreSQL: используем транзакции
+      await client.query('BEGIN');
+      await client.query(sql);
+      await client.query(
+        'INSERT INTO schema_migrations (version, filename) VALUES ($1, $2)',
+        [migration.version, migration.filename]
+      );
+      await client.query('COMMIT');
+    }
 
     console.log(`✓ Миграция ${migration.filename} успешно применена`);
   } catch (error) {
-    await client.query('ROLLBACK');
+    if (dbType === 'postgresql') {
+      await client.query('ROLLBACK');
+    }
     console.error(`✗ Ошибка при применении миграции ${migration.filename}:`);
     console.error(error.message);
     throw error;
@@ -98,10 +131,18 @@ async function applyMigration(client, migration) {
  * Основная функция миграции
  */
 async function migrate() {
-  const client = await pool.connect();
+  let client;
 
   try {
-    console.log('🔄 Начинаем миграцию базы данных...\n');
+    if (dbType === 'sqlite') {
+      // SQLite: используем pool напрямую (нет отдельных клиентов)
+      client = pool;
+    } else {
+      // PostgreSQL: получаем клиент из pool
+      client = await pool.connect();
+    }
+
+    console.log('🔄 Начинаю миграцию базы данных...\n');
 
     // Создаем таблицу миграций если её нет
     await ensureMigrationsTable(client);
@@ -143,7 +184,9 @@ async function migrate() {
     console.error(error);
     process.exit(1);
   } finally {
-    client.release();
+    if (dbType === 'postgresql' && client) {
+      client.release();
+    }
     await pool.end();
   }
 }

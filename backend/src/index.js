@@ -12,6 +12,7 @@ import rwprintRoutes from './routes/rwprint.js';
 import morphologyRoutes from './routes/morphology.js';
 import datatasksRoutes from './routes/datatasks.js';
 import sitesRoutes from './routes/sites.js';
+import syncRoutes from './routes/sync.js';
 import healthRoutes from './routes/health.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
@@ -68,6 +69,7 @@ app.use('/api/rwprint', rwprintRoutes);
 app.use('/api/morphology', morphologyRoutes);
 app.use('/api/datatasks', datatasksRoutes);
 app.use('/api/sites', sitesRoutes);
+app.use('/api/sync', syncRoutes);
 
 // Health check routes (no /api prefix for k8s compatibility)
 app.use('/', healthRoutes);

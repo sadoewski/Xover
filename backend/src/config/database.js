@@ -1,25 +1,9 @@
-import pg from 'pg';
+// Database configuration - switches between SQLite and PostgreSQL based on DB_TYPE
+import { getDatabase, getDatabaseType } from './database-adapter.js';
 
-// В Docker переменные окружения передаются через docker-compose
-// dotenv нужен только для локальной разработки
-if (process.env.NODE_ENV !== 'production') {
-  const dotenv = await import('dotenv');
-  dotenv.config();
-}
+// Export the database pool/connection
+const pool = await getDatabase();
 
-const { Pool } = pg;
-
-const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  database: process.env.DB_NAME || 'hostprint',
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-});
-
-pool.on('error', (err) => {
-  console.error('Неожиданная ошибка PostgreSQL:', err);
-  process.exit(-1);
-});
+console.log(`✓ Using ${getDatabaseType()} database`);
 
 export default pool;
