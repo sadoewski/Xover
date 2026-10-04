@@ -98,6 +98,7 @@
 			buildPhases = (
 				A10000001BA8000000000002 /* Sources */,
 				A10000001BA8000000000001 /* Frameworks */,
+				A95A74DD307300E200DBECAF /* Copy Backend Bundle */,
 				A10000001BA8000000000003 /* Resources */,
 			);
 			buildRules = (
@@ -153,6 +154,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A95A74DD307300E200DBECAF /* Copy Backend Bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Backend Bundle";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "${PROJECT_DIR}/copy-backend-script.sh";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A10000001BA8000000000002 /* Sources */ = {
@@ -300,7 +322,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "Xover/PreviewContent";
+				DEVELOPMENT_ASSET_PATHS = Xover/PreviewContent;
 				DEVELOPMENT_TEAM = 5AL5BW7VZP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -311,6 +333,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/backend-bundle/node_modules/better-sqlite3/build/Release",
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.xover.desktop;
@@ -329,7 +355,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "Xover/PreviewContent";
+				DEVELOPMENT_ASSET_PATHS = Xover/PreviewContent;
 				DEVELOPMENT_TEAM = 5AL5BW7VZP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -340,6 +366,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/backend-bundle/node_modules/better-sqlite3/build/Release",
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.xover.desktop;

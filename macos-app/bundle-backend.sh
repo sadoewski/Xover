@@ -54,9 +54,20 @@ NODE_DIR="$BUNDLE_DIR/nodejs"
 mkdir -p "$NODE_DIR/bin"
 
 if [ -f "$NODE_PATH" ]; then
+    # Copy node binary
     cp "$NODE_PATH" "$NODE_DIR/bin/node"
     chmod +x "$NODE_DIR/bin/node"
-    echo "   ✓ Node.js copied from $NODE_PATH"
+
+    # Find and copy libnode dylib
+    NODE_LIB_DIR=$(dirname "$NODE_PATH")/../lib
+    if [ -d "$NODE_LIB_DIR" ]; then
+        mkdir -p "$NODE_DIR/lib"
+        find "$NODE_LIB_DIR" -name "libnode*.dylib" -exec cp {} "$NODE_DIR/lib/" \;
+        echo "   ✓ Node.js runtime and libraries copied from $NODE_PATH"
+    else
+        echo "   ⚠️  Warning: Node.js lib directory not found"
+        echo "   Node might not work correctly"
+    fi
 else
     echo "   ⚠️  Node.js not found at $NODE_PATH"
     echo "   Please install Node.js v18+ and rerun this script"

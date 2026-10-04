@@ -73,6 +73,10 @@ class BackendManager: ObservableObject {
             let nodeModulesPath = "\(resourcePath)/backend-bundle/node_modules"
             environment["NODE_PATH"] = nodeModulesPath
 
+            // Set DYLD_LIBRARY_PATH for libnode.dylib
+            let nodeLibPath = "\(resourcePath)/backend-bundle/nodejs/lib"
+            environment["DYLD_LIBRARY_PATH"] = nodeLibPath
+
             // Set database path to Application Support
             let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             let appDataDir = appSupport.appendingPathComponent("com.hostprint.Xover", isDirectory: true)
