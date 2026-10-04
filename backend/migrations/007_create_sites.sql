@@ -26,10 +26,10 @@ CREATE TABLE IF NOT EXISTS site_items (
 );
 
 -- Индексы
-CREATE INDEX idx_sites_user_id ON sites(user_id);
-CREATE INDEX idx_site_items_site_id ON site_items(site_id);
-CREATE INDEX idx_site_items_parent_id ON site_items(parent_id);
-CREATE INDEX idx_site_items_type ON site_items(type);
+CREATE INDEX IF NOT EXISTS idx_sites_user_id ON sites(user_id);
+CREATE INDEX IF NOT EXISTS idx_site_items_site_id ON site_items(site_id);
+CREATE INDEX IF NOT EXISTS idx_site_items_parent_id ON site_items(parent_id);
+CREATE INDEX IF NOT EXISTS idx_site_items_type ON site_items(type);
 
 -- Функция обновления updated_at
 CREATE OR REPLACE FUNCTION update_sites_updated_at()
@@ -41,11 +41,13 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Триггеры
+DROP TRIGGER IF EXISTS sites_updated_at ON sites;
 CREATE TRIGGER sites_updated_at
     BEFORE UPDATE ON sites
     FOR EACH ROW
     EXECUTE FUNCTION update_sites_updated_at();
 
+DROP TRIGGER IF EXISTS site_items_updated_at ON site_items;
 CREATE TRIGGER site_items_updated_at
     BEFORE UPDATE ON site_items
     FOR EACH ROW
