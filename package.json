@@ -13,7 +13,18 @@
     "dev:backend": "npm run dev --workspace=backend",
     "install:all": "npm install && npm install --workspace=frontend && npm install --workspace=backend",
     "build": "npm run build --workspace=frontend",
-    "start": "npm run start --workspace=backend"
+    "start": "npm run start --workspace=backend",
+    "test": "npm run test --workspace=backend",
+    "test:all": "./scripts/test-all.sh",
+    "test:backend": "npm run test --workspace=backend",
+    "test:frontend": "npm run test --workspace=frontend",
+    "ci:check": "./scripts/pre-push-check.sh",
+    "db:migrate": "npm run db:migrate --workspace=backend",
+    "db:reset": "npm run db:migrate --workspace=backend && echo \"Database reset complete\"",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

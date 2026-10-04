@@ -1,5 +1,10 @@
 # xover - планировщик, органайер и редактор
 
+[![Backend CI](https://github.com/sadoewski/hostprint/workflows/Backend%20CI/badge.svg)](https://github.com/sadoewski/hostprint/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://github.com/sadoewski/hostprint/workflows/Frontend%20CI/badge.svg)](https://github.com/sadoewski/hostprint/actions/workflows/frontend-ci.yml)
+[![Security](https://github.com/sadoewski/hostprint/workflows/Security%20Scan/badge.svg)](https://github.com/sadoewski/hostprint/actions/workflows/security.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 спасибо клоду за победу
 
 ## Технологический стек

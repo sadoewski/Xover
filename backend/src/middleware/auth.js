@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
+import { AuthenticationError } from '../utils/errors.js';
 
 export const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Токен не предоставлен' });
+      throw new AuthenticationError('Token not provided');
     }
 
     const token = authHeader.substring(7);
@@ -17,14 +18,7 @@ export const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ error: 'Неверный токен' });
-    }
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Токен истёк' });
-    }
-
-    console.error('Ошибка аутентификации:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    // JWT errors будут обработаны в errorHandler middleware
+    next(error);
   }
 };

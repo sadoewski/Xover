@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/backend-ci.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/frontend-ci.yml'
+
+  backend:
+    name: Backend
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    uses: ./.github/workflows/backend-ci.yml
+
+  frontend:
+    name: Frontend
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    uses: ./.github/workflows/frontend-ci.yml
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: [changes, backend, frontend]
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          echo "Backend changed: ${{ needs.changes.outputs.backend }}"
+          echo "Frontend changed: ${{ needs.changes.outputs.frontend }}"
+          echo "Backend status: ${{ needs.backend.result }}"
+          echo "Frontend status: ${{ needs.frontend.result }}"
+
+          if [ "${{ needs.backend.result }}" == "failure" ] || [ "${{ needs.frontend.result }}" == "failure" ]; then
+            echo "❌ CI failed"
+            exit 1
+          else
+            echo "✅ CI passed"
+          fi

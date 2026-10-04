@@ -12,6 +12,8 @@ import rwprintRoutes from './routes/rwprint.js';
 import morphologyRoutes from './routes/morphology.js';
 import datatasksRoutes from './routes/datatasks.js';
 import sitesRoutes from './routes/sites.js';
+import healthRoutes from './routes/health.js';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
 
@@ -67,21 +69,19 @@ app.use('/api/morphology', morphologyRoutes);
 app.use('/api/datatasks', datatasksRoutes);
 app.use('/api/sites', sitesRoutes);
 
-// Health check
+// Health check routes (no /api prefix for k8s compatibility)
+app.use('/', healthRoutes);
+
+// Health check (legacy endpoint)
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'API работает' });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Маршрут не найден' });
-});
+// 404 handler - must be after all routes
+app.use(notFoundHandler);
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Ошибка сервера:', err);
-  res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-});
+// Error handler - must be last
+app.use(errorHandler);
 
 // Graceful shutdown
 const shutdown = async () => {
