@@ -17,8 +17,18 @@ ENV PYTHON_BIN=/opt/venv/bin/python3
 COPY package*.json ./
 RUN npm ci --only=production
 
+# Копируем миграции и скрипты миграций
+COPY migrations ./migrations
+COPY run-migrations.js ./
+
 # Копируем исходный код
-COPY . .
+COPY src ./src
+
+# Копируем scripts для морфологии
+COPY scripts ./scripts
+
+# Копируем uploads директорию (создаем если нет)
+RUN mkdir -p uploads
 
 EXPOSE 5000
 
