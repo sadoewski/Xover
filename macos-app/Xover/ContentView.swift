@@ -17,6 +17,10 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
+            // Blurred background effect (visible through window)
+            VisualEffectView(material: .hudWindow, blendingMode: .behindWindow)
+                .ignoresSafeArea()
+
             // Web View
             WebViewContainer(
                 url: appState.serverURL,
@@ -36,21 +40,74 @@ struct ContentView: View {
                 errorView(error)
             }
         }
+        .onAppear {
+            configureWindow()
+        }
+    }
+
+    // MARK: - Window Configuration
+
+    private func configureWindow() {
+        DispatchQueue.main.async {
+            guard let window = NSApp.windows.first else { return }
+
+            // Transparent titlebar that blends with content
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
+
+            // Make window slightly transparent for blur effect
+            window.isOpaque = false
+            window.backgroundColor = NSColor.clear
+
+            // Toolbar configuration - buttons always visible even in fullscreen
+            window.toolbar = NSToolbar()
+            window.toolbar?.showsBaselineSeparator = false
+
+            // Full size content view
+            window.styleMask.insert(.fullSizeContentView)
+        }
     }
     
     // MARK: - Loading Overlay
 
     private var loadingOverlay: some View {
         ZStack {
-            Color(NSColor.windowBackgroundColor)
+            // Vibrant blurred background
+            VisualEffectView(material: .hudWindow, blendingMode: .withinWindow)
+                .ignoresSafeArea()
 
-            VStack(spacing: 16) {
+            VStack(spacing: 24) {
+                // App Icon or Logo
+                ZStack {
+                    Circle()
+                        .fill(
+                            LinearGradient(
+                                colors: [Color(hex: "38BDF8"), Color(hex: "22D3EE")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 80, height: 80)
+                        .shadow(color: Color(hex: "38BDF8").opacity(0.3), radius: 20, x: 0, y: 10)
+
+                    Image(systemName: "globe.americas.fill")
+                        .font(.system(size: 40, weight: .medium))
+                        .foregroundColor(.white)
+                }
+
+                VStack(spacing: 8) {
+                    Text("Hostprint")
+                        .font(.system(size: 24, weight: .semibold, design: .rounded))
+
+                    Text("Loading your workspace...")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+
                 ProgressView()
-                    .scaleEffect(1.2)
-
-                Text("Loading Hostprint...")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.secondary)
+                    .scaleEffect(0.8)
+                    .progressViewStyle(.circular)
+                    .padding(.top, 8)
             }
         }
     }
@@ -282,5 +339,53 @@ struct WebViewContainer: NSViewRepresentable {
 
             parent.loadError = errorMessage
         }
+    }
+}
+
+// MARK: - Visual Effect View
+
+struct VisualEffectView: NSViewRepresentable {
+    let material: NSVisualEffectView.Material
+    let blendingMode: NSVisualEffectView.BlendingMode
+    
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = material
+        view.blendingMode = blendingMode
+        view.state = .active
+        return view
+    }
+    
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.blendingMode = blendingMode
+    }
+}
+
+// MARK: - Color Extension
+
+extension Color {
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: Double(a) / 255
+        )
     }
 }

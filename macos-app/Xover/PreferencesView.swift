@@ -47,7 +47,7 @@ struct PreferencesView: View {
     }
     
     // MARK: - General Tab
-    
+
     private var generalTab: some View {
         Form {
             Section {
@@ -56,36 +56,59 @@ struct PreferencesView: View {
                         Image(systemName: "app.fill")
                             .font(.system(size: 48))
                             .foregroundColor(.accentColor)
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Hostprint")
                                 .font(.system(size: 20, weight: .semibold))
-                            
+
                             Text("Task Management & Data Processing")
                                 .font(.system(size: 13))
                                 .foregroundColor(.secondary)
-                            
+
                             Text("Version 1.0.0")
                                 .font(.system(size: 11, design: .monospaced))
                                 .foregroundColor(Color(NSColor.tertiaryLabelColor))
                         }
                     }
                     .padding(.vertical, 8)
-                    
+
                     Divider()
-                    
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Appearance")
+                            .font(.system(size: 13, weight: .semibold))
+
+                        Picker("Theme:", selection: $appState.appearance) {
+                            ForEach(AppState.AppAppearance.allCases) { appearance in
+                                Text(appearance.rawValue).tag(appearance)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .frame(maxWidth: 300)
+                        .onChange(of: appState.appearance) { _ in
+                            appState.applyAppearance()
+                            appState.saveSettings()
+                        }
+
+                        Text("Choose how Hostprint appears. Auto follows your system settings.")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                    }
+
+                    Divider()
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Application")
                             .font(.system(size: 13, weight: .semibold))
-                        
+
                         Toggle("Launch at login", isOn: .constant(false))
                             .disabled(true)
                             .help("Coming soon")
-                        
+
                         Toggle("Show in menu bar", isOn: .constant(false))
                             .disabled(true)
                             .help("Coming soon")
-                        
+
                         Toggle("Automatically check for updates", isOn: .constant(true))
                             .disabled(true)
                             .help("Coming soon")

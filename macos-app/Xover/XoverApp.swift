@@ -46,7 +46,16 @@ class AppState: ObservableObject {
     @Published var serverStatus: ServerStatus = .unknown
     @Published var backendPort: Int
     @Published var autoStartBackend: Bool
-    
+    @Published var appearance: AppAppearance = .auto
+
+    enum AppAppearance: String, CaseIterable, Identifiable {
+        case light = "Light"
+        case dark = "Dark"
+        case auto = "Auto"
+
+        var id: String { rawValue }
+    }
+
     init() {
         // Load backend port first
         let port = UserDefaults.standard.integer(forKey: "backendPort")
@@ -57,6 +66,12 @@ class AppState: ObservableObject {
         let autoStartObject = UserDefaults.standard.object(forKey: "autoStartBackend")
         self.autoStartBackend = (autoStartObject == nil) ? false : UserDefaults.standard.bool(forKey: "autoStartBackend")
 
+        // Load appearance setting
+        if let savedAppearance = UserDefaults.standard.string(forKey: "appearance"),
+           let appearance = AppAppearance(rawValue: savedAppearance) {
+            self.appearance = appearance
+        }
+
         // Load server URL last (use local variable to avoid self reference)
         if let savedURL = UserDefaults.standard.string(forKey: "serverURL") {
             self.serverURL = savedURL
@@ -64,17 +79,34 @@ class AppState: ObservableObject {
             // Use remote production server
             self.serverURL = "http://179.255.187.191:3000"
         }
+
+        // Apply appearance
+        applyAppearance()
     }
-    
+
     func saveSettings() {
         UserDefaults.standard.set(serverURL, forKey: "serverURL")
         UserDefaults.standard.set(backendPort, forKey: "backendPort")
         UserDefaults.standard.set(autoStartBackend, forKey: "autoStartBackend")
+        UserDefaults.standard.set(appearance.rawValue, forKey: "appearance")
     }
-    
+
     func updateServerURL() {
         serverURL = "http://localhost:\(backendPort)"
         saveSettings()
+    }
+
+    func applyAppearance() {
+        DispatchQueue.main.async {
+            switch self.appearance {
+            case .light:
+                NSApp.appearance = NSAppearance(named: .aqua)
+            case .dark:
+                NSApp.appearance = NSAppearance(named: .darkAqua)
+            case .auto:
+                NSApp.appearance = nil
+            }
+        }
     }
 }
 
