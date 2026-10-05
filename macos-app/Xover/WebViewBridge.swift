@@ -23,9 +23,7 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
     
     private func setupBridge() {
         guard let webView = webView else { return }
-        
-        let contentController = webView.configuration.userContentController
-        
+
         // Register message handlers
         registerHandler(name: "nativeLog")
         registerHandler(name: "showNotification")
@@ -34,6 +32,9 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
         registerHandler(name: "copyToClipboard")
         registerHandler(name: "selectFile")
         registerHandler(name: "saveFile")
+        registerHandler(name: "navigate")
+        registerHandler(name: "createTask")
+        registerHandler(name: "createDataTask")
         
         // Inject bridge script
         injectBridgeScript()
@@ -53,52 +54,67 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
             log: function(message) {
                 webkit.messageHandlers.nativeLog.postMessage({ message: String(message) });
             },
-            
+
             // Show native notification
             showNotification: function(title, body) {
                 webkit.messageHandlers.showNotification.postMessage({ title, body });
             },
-            
+
             // Open URL in external browser
             openExternal: function(url) {
                 webkit.messageHandlers.openExternal.postMessage({ url });
             },
-            
+
             // Get system information
             getSystemInfo: function(callback) {
                 window._systemInfoCallback = callback;
                 webkit.messageHandlers.getSystemInfo.postMessage({});
             },
-            
+
             // Copy text to clipboard
             copyToClipboard: function(text) {
                 webkit.messageHandlers.copyToClipboard.postMessage({ text });
             },
-            
+
             // Select file (returns file path)
             selectFile: function(extensions, callback) {
                 window._fileSelectCallback = callback;
                 webkit.messageHandlers.selectFile.postMessage({ extensions });
             },
-            
+
             // Save file dialog
             saveFile: function(filename, data, callback) {
                 window._fileSaveCallback = callback;
                 webkit.messageHandlers.saveFile.postMessage({ filename, data });
+            },
+
+            // Navigate to path
+            navigate: function(path) {
+                webkit.messageHandlers.navigate.postMessage({ path });
+            },
+
+            // Create new task
+            createTask: function() {
+                webkit.messageHandlers.createTask.postMessage({});
+            },
+
+            // Create new data task
+            createDataTask: function() {
+                webkit.messageHandlers.createDataTask.postMessage({});
             }
         };
-        
+
         // Mark bridge as ready
         window.swiftBridgeReady = true;
         console.log('✓ Swift bridge initialized');
         """
-        
+
         let script = WKUserScript(
             source: bridgeScript,
             injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
-        
+
         webView?.configuration.userContentController.addUserScript(script)
     }
     
@@ -125,6 +141,12 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
             handleSelectFile(body)
         case "saveFile":
             handleSaveFile(body)
+        case "navigate":
+            handleNavigate(body)
+        case "createTask":
+            handleCreateTask()
+        case "createDataTask":
+            handleCreateDataTask()
         default:
             print("Unknown message handler: \(message.name)")
         }
@@ -207,10 +229,10 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
             sendToJS(callback: "_fileSaveCallback", data: ["success": false])
             return
         }
-        
+
         let panel = NSSavePanel()
         panel.nameFieldStringValue = filename
-        
+
         panel.begin { [weak self] response in
             if response == .OK, let url = panel.url {
                 do {
@@ -229,6 +251,23 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
                 self?.sendToJS(callback: "_fileSaveCallback", data: ["success": false])
             }
         }
+    }
+
+    private func handleNavigate(_ body: [String: Any]) {
+        guard let path = body["path"] as? String else { return }
+        NotificationCenter.default.post(
+            name: .navigateTo,
+            object: nil,
+            userInfo: ["path": path]
+        )
+    }
+
+    private func handleCreateTask() {
+        NotificationCenter.default.post(name: .createNewTask, object: nil)
+    }
+
+    private func handleCreateDataTask() {
+        NotificationCenter.default.post(name: .createNewDataTask, object: nil)
     }
     
     // MARK: - Send to JavaScript

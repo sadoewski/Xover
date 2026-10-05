@@ -41,68 +41,36 @@ struct MenuCommands: Commands {
         }
         
         // MARK: - View Menu
-        
+
         CommandMenu("View") {
             Button("Reload") {
                 NotificationCenter.default.post(name: .reloadWebView, object: nil)
             }
             .keyboardShortcut("r", modifiers: .command)
-            
+
+            Divider()
+
             Button("Actual Size") {
                 NotificationCenter.default.post(name: .resetZoom, object: nil)
             }
             .keyboardShortcut("0", modifiers: .command)
-            
+
             Button("Zoom In") {
                 NotificationCenter.default.post(name: .zoomIn, object: nil)
             }
             .keyboardShortcut("+", modifiers: .command)
-            
+
             Button("Zoom Out") {
                 NotificationCenter.default.post(name: .zoomOut, object: nil)
             }
             .keyboardShortcut("-", modifiers: .command)
-            
+
             Divider()
-            
+
             Button("Toggle Developer Tools") {
                 NotificationCenter.default.post(name: .toggleDevTools, object: nil)
             }
             .keyboardShortcut("i", modifiers: [.command, .option])
-        }
-        
-        // MARK: - Backend Menu
-        
-        CommandMenu("Backend") {
-            Button("Start Backend") {
-                if let appDelegate = NSApp.delegate as? AppDelegate {
-                    appDelegate.startBackend()
-                }
-            }
-            .keyboardShortcut("b", modifiers: [.command, .shift])
-            
-            Button("Stop Backend") {
-                if let appDelegate = NSApp.delegate as? AppDelegate {
-                    appDelegate.stopBackend()
-                }
-            }
-            
-            Button("Restart Backend") {
-                if let appDelegate = NSApp.delegate as? AppDelegate {
-                    appDelegate.restartBackend()
-                }
-            }
-            .keyboardShortcut("r", modifiers: [.command, .shift])
-            
-            Divider()
-            
-            Button("Check Backend Status") {
-                NotificationCenter.default.post(name: .checkBackendStatus, object: nil)
-            }
-            
-            Button("Open Backend Logs") {
-                NotificationCenter.default.post(name: .openBackendLogs, object: nil)
-            }
         }
         
         // MARK: - Navigation Menu
@@ -190,4 +158,8 @@ extension Notification.Name {
     static let openBackendLogs = Notification.Name("openBackendLogs")
     static let navigateTo = Notification.Name("navigateTo")
     static let checkForUpdates = Notification.Name("checkForUpdates")
+    static let reloadWebView = Notification.Name("reloadWebView")
+    static let webViewGoBack = Notification.Name("webViewGoBack")
+    static let webViewGoForward = Notification.Name("webViewGoForward")
+    static let restartBackend = Notification.Name("restartBackend")
 }

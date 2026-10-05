@@ -10,17 +10,13 @@ import WebKit
 
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
-    @ObservedObject var syncManager = SyncManager.shared
     @State private var isLoading = true
     @State private var loadError: String?
     @State private var canGoBack = false
     @State private var canGoForward = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Status Bar
-            statusBar
-            
+        ZStack {
             // Web View
             WebViewContainer(
                 url: appState.serverURL,
@@ -29,149 +25,33 @@ struct ContentView: View {
                 canGoBack: $canGoBack,
                 canGoForward: $canGoForward
             )
-            
+
             // Loading Overlay
             if isLoading && loadError == nil {
                 loadingOverlay
             }
-            
+
             // Error View
             if let error = loadError {
                 errorView(error)
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .backendStarting)) { _ in
-            appState.serverStatus = .starting
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .backendRunning)) { _ in
-            appState.serverStatus = .running
-            // Reload web view when backend becomes available
-            if loadError != nil {
-                loadError = nil
-                NotificationCenter.default.post(name: .reloadWebView, object: nil)
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .backendStopped)) { _ in
-            appState.serverStatus = .stopped
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .backendError)) { notification in
-            if let error = notification.userInfo?["error"] as? String {
-                appState.serverStatus = .error(error)
-            }
-        }
-    }
-    
-    // MARK: - Status Bar
-    
-    private var statusBar: some View {
-        HStack(spacing: 12) {
-            // Server Status Indicator
-            HStack(spacing: 6) {
-                Image(systemName: appState.serverStatus.icon)
-                    .foregroundColor(appState.serverStatus.color)
-                    .imageScale(.small)
-                
-                Text(appState.serverStatus.description)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.secondary)
-            }
-            
-            Divider()
-                .frame(height: 12)
-            
-            // Server URL
-            Text(appState.serverURL)
-                .font(.system(size: 11, design: .monospaced))
-                .foregroundColor(.secondary)
-            
-            Spacer()
-
-            // Mode Indicator
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(modeIndicatorColor)
-                    .frame(width: 8, height: 8)
-
-                Text(modeIndicatorText)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.secondary)
-            }
-
-            Divider()
-                .frame(height: 12)
-
-            // Navigation Controls
-            HStack(spacing: 8) {
-                Button(action: { NotificationCenter.default.post(name: .webViewGoBack, object: nil) }) {
-                    Image(systemName: "chevron.left")
-                        .imageScale(.small)
-                }
-                .disabled(!canGoBack)
-                .keyboardShortcut("[", modifiers: .command)
-                
-                Button(action: { NotificationCenter.default.post(name: .webViewGoForward, object: nil) }) {
-                    Image(systemName: "chevron.right")
-                        .imageScale(.small)
-                }
-                .disabled(!canGoForward)
-                .keyboardShortcut("]", modifiers: .command)
-                
-                Divider()
-                    .frame(height: 12)
-                
-                Button(action: { NotificationCenter.default.post(name: .reloadWebView, object: nil) }) {
-                    Image(systemName: "arrow.clockwise")
-                        .imageScale(.small)
-                }
-                .keyboardShortcut("r", modifiers: .command)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color(NSColor.controlBackgroundColor))
     }
     
     // MARK: - Loading Overlay
-    
+
     private var loadingOverlay: some View {
         ZStack {
             Color(NSColor.windowBackgroundColor)
-            
+
             VStack(spacing: 16) {
                 ProgressView()
                     .scaleEffect(1.2)
-                
+
                 Text("Loading Hostprint...")
                     .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.secondary)
-                
-                Text(appState.serverURL)
-                    .font(.system(size: 11, design: .monospaced))
-                    .foregroundColor(.secondary)
             }
-        }
-    }
-    
-    // MARK: - Mode Indicator
-
-    private var modeIndicatorColor: Color {
-        if syncManager.standaloneMode {
-            return Color.orange
-        } else if syncManager.isOnline {
-            return Color.green
-        } else {
-            return Color.red
-        }
-    }
-
-    private var modeIndicatorText: String {
-        if syncManager.standaloneMode {
-            return "Local Mode"
-        } else if syncManager.isOnline {
-            return "Hybrid Mode"
-        } else {
-            return "Offline"
         }
     }
 
@@ -228,11 +108,11 @@ struct WebViewContainer: NSViewRepresentable {
     @Binding var loadError: String?
     @Binding var canGoBack: Bool
     @Binding var canGoForward: Bool
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     func makeNSView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
@@ -246,6 +126,10 @@ struct WebViewContainer: NSViewRepresentable {
         if #available(macOS 13.3, *) {
             webView.isInspectable = true
         }
+
+        // Setup WebView bridge for native integration
+        let bridge = WebViewBridge(webView: webView)
+        context.coordinator.bridge = bridge
 
         // Load initial URL
         if let url = URL(string: url) {
@@ -274,8 +158,9 @@ struct WebViewContainer: NSViewRepresentable {
     
     class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebViewContainer
+        var bridge: WebViewBridge?
         private var observers: [NSObjectProtocol] = []
-        
+
         init(_ parent: WebViewContainer) {
             self.parent = parent
         }
@@ -318,8 +203,24 @@ struct WebViewContainer: NSViewRepresentable {
                     appDelegate.restartBackend()
                 }
             }
-            
-            observers = [reloadObserver, backObserver, forwardObserver, restartObserver]
+
+            let navigateObserver = NotificationCenter.default.addObserver(
+                forName: .navigateTo,
+                object: nil,
+                queue: .main
+            ) { notification in
+                if let path = notification.userInfo?["path"] as? String,
+                   let baseURL = webView.url?.scheme.flatMap({ scheme in
+                       webView.url?.host.map { host in
+                           "\(scheme)://\(host)" + (webView.url?.port.map { ":\($0)" } ?? "")
+                       }
+                   }),
+                   let url = URL(string: baseURL + path) {
+                    webView.load(URLRequest(url: url))
+                }
+            }
+
+            observers = [reloadObserver, backObserver, forwardObserver, restartObserver, navigateObserver]
         }
         
         // MARK: - WKNavigationDelegate
@@ -382,14 +283,4 @@ struct WebViewContainer: NSViewRepresentable {
             parent.loadError = errorMessage
         }
     }
-}
-
-// MARK: - Notification Names
-
-extension Notification.Name {
-    static let reloadWebView = Notification.Name("reloadWebView")
-    static let webViewGoBack = Notification.Name("webViewGoBack")
-    static let webViewGoForward = Notification.Name("webViewGoForward")
-    static let restartBackend = Notification.Name("restartBackend")
-    // Backend status notifications are declared in BackendManager.swift
 }
