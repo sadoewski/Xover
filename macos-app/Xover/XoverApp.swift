@@ -12,12 +12,20 @@ import SwiftUI
 struct XoverApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appState = AppState()
-    
+
+    init() {
+        NSLog("✓ XoverApp.init() called")
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(appState)
                 .frame(minWidth: 1024, minHeight: 768)
+                .task {
+                    NSLog("✓ ContentView .task modifier executing")
+                    appDelegate.startBackendIfNeeded()
+                }
         }
         .commands {
             MenuCommands()
@@ -42,18 +50,19 @@ class AppState: ObservableObject {
     init() {
         // Load backend port first
         let port = UserDefaults.standard.integer(forKey: "backendPort")
-        let finalPort = (port == 0) ? 5000 : port
+        let finalPort = (port == 0) ? 5001 : port
         self.backendPort = finalPort
 
-        // Load auto-start setting
+        // Load auto-start setting (default to false for remote server)
         let autoStartObject = UserDefaults.standard.object(forKey: "autoStartBackend")
-        self.autoStartBackend = (autoStartObject == nil) ? true : UserDefaults.standard.bool(forKey: "autoStartBackend")
+        self.autoStartBackend = (autoStartObject == nil) ? false : UserDefaults.standard.bool(forKey: "autoStartBackend")
 
         // Load server URL last (use local variable to avoid self reference)
         if let savedURL = UserDefaults.standard.string(forKey: "serverURL") {
             self.serverURL = savedURL
         } else {
-            self.serverURL = "http://localhost:\(finalPort)"
+            // Use remote production server
+            self.serverURL = "http://179.255.187.191:3000"
         }
     }
     

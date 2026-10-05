@@ -48,3 +48,12 @@ macos-app/Xover.xcodeproj/project.xcworkspace/xcuserdata/
 macos-app/Xover.xcodeproj/project.xcworkspace/xcshareddata/
 *.xcworkspace
 DerivedData/
+
+# macOS app specific
+macos-app/.build/
+macos-app/Xover.xcodeproj/*.backup
+macos-app/DerivedData/
+
+# Database temp files
+*.db-shm
+*.db-wal

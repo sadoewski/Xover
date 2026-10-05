@@ -237,19 +237,30 @@ struct WebViewContainer: NSViewRepresentable {
         let config = WKWebViewConfiguration()
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         config.preferences.setValue(true, forKey: "developerExtrasEnabled")
-        
+
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = true
-        
+
+        // Enable Web Inspector for debugging
+        if #available(macOS 13.3, *) {
+            webView.isInspectable = true
+        }
+
         // Load initial URL
         if let url = URL(string: url) {
-            webView.load(URLRequest(url: url))
+            NSLog("🌐 Loading URL: \(url.absoluteString)")
+            var request = URLRequest(url: url)
+            request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+            request.timeoutInterval = 30
+            webView.load(request)
+        } else {
+            NSLog("❌ Invalid URL: \(url)")
         }
-        
+
         // Setup notification observers
         context.coordinator.setupNotifications(webView: webView)
-        
+
         return webView
     }
     
@@ -312,33 +323,63 @@ struct WebViewContainer: NSViewRepresentable {
         }
         
         // MARK: - WKNavigationDelegate
-        
+
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+            NSLog("🔄 Started loading: \(webView.url?.absoluteString ?? "unknown")")
             parent.isLoading = true
             parent.loadError = nil
         }
-        
+
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            NSLog("✅ Finished loading: \(webView.url?.absoluteString ?? "unknown")")
             parent.isLoading = false
             parent.canGoBack = webView.canGoBack
             parent.canGoForward = webView.canGoForward
         }
-        
+
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            NSLog("❌ Navigation failed: \(error.localizedDescription)")
             parent.isLoading = false
             parent.loadError = error.localizedDescription
         }
-        
+
         func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
             parent.isLoading = false
-            
+
             let nsError = error as NSError
+            NSLog("❌ Provisional navigation failed: \(nsError.domain) code=\(nsError.code) - \(error.localizedDescription)")
+
             // Ignore cancelled errors (user navigation)
             if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+                NSLog("⏸️  Navigation cancelled by user")
                 return
             }
-            
-            parent.loadError = "Cannot connect to \(parent.url)\n\nMake sure the backend server is running."
+
+            // More detailed error messages
+            var errorMessage = "Cannot connect to \(parent.url)"
+
+            if nsError.domain == NSURLErrorDomain {
+                switch nsError.code {
+                case NSURLErrorNotConnectedToInternet:
+                    errorMessage += "\n\n❌ No internet connection"
+                case NSURLErrorTimedOut:
+                    errorMessage += "\n\n⏱️ Connection timed out"
+                case NSURLErrorCannotFindHost:
+                    errorMessage += "\n\n🔍 Cannot find host"
+                case NSURLErrorCannotConnectToHost:
+                    errorMessage += "\n\n🚫 Cannot connect to host"
+                case NSURLErrorAppTransportSecurityRequiresSecureConnection:
+                    errorMessage += "\n\n🔒 App Transport Security blocked the connection\nHTTP connections need to be explicitly allowed"
+                default:
+                    errorMessage += "\n\n\(error.localizedDescription)"
+                }
+            } else {
+                errorMessage += "\n\n\(error.localizedDescription)"
+            }
+
+            errorMessage += "\n\nMake sure the server is running and accessible."
+
+            parent.loadError = errorMessage
         }
     }
 }

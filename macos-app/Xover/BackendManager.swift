@@ -12,7 +12,7 @@ import Combine
 class BackendManager: ObservableObject {
     @Published var isRunning = false
     @Published var lastError: String?
-    @Published var backendURL: String = "http://localhost:3001"
+    @Published var backendURL: String = "http://localhost:5001"
     
     private var process: Process?
     private var healthCheckTimer: Timer?
@@ -64,7 +64,7 @@ class BackendManager: ObservableObject {
         // Set up environment
         var environment = ProcessInfo.processInfo.environment
         environment["NODE_ENV"] = "production"
-        environment["PORT"] = "3001"
+        environment["PORT"] = "5001"
         environment["HOST"] = "127.0.0.1"
         environment["DB_TYPE"] = "sqlite"
 

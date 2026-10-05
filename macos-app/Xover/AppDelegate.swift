@@ -16,33 +16,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Application Lifecycle
     
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("✓ Hostprint macOS app started")
-        
+        NSLog("✓ applicationDidFinishLaunching called")
+
         // Load backend port from preferences
         backendPort = UserDefaults.standard.integer(forKey: "backendPort")
         if backendPort == 0 {
-            backendPort = 5000
+            backendPort = 5001
         }
-        
-        // Auto-start backend if enabled
-        let autoStart = UserDefaults.standard.bool(forKey: "autoStartBackend")
-        if autoStart || UserDefaults.standard.object(forKey: "autoStartBackend") == nil {
-            startBackend()
-        }
-        
-        // Monitor backend health every 5 seconds
-        backendMonitorTimer = Timer.scheduledTimer(
-            withTimeInterval: 5.0,
-            repeats: true
-        ) { [weak self] _ in
-            self?.checkBackendHealth()
-        }
+        NSLog("📡 Backend port set to: \(backendPort)")
     }
     
     func applicationWillTerminate(_ notification: Notification) {
         print("✓ Stopping backend...")
         stopBackend()
         backendMonitorTimer?.invalidate()
+    }
+
+    func startBackendIfNeeded() {
+        // Check if we should auto-start backend
+        let autoStart = UserDefaults.standard.bool(forKey: "autoStartBackend")
+        let hasKey = UserDefaults.standard.object(forKey: "autoStartBackend") != nil
+        NSLog("⚙️  Auto-start: \(autoStart), has key: \(hasKey)")
+
+        // Only start backend if explicitly enabled (for local development)
+        if autoStart && hasKey {
+            NSLog("🚀 Attempting to start backend...")
+            startBackend()
+        } else {
+            NSLog("⏸️  Backend auto-start is disabled (remote mode)")
+        }
+
+        // Monitor backend health every 5 seconds (only if backend should be running locally)
+        if autoStart && hasKey {
+            backendMonitorTimer = Timer.scheduledTimer(
+                withTimeInterval: 5.0,
+                repeats: true
+            ) { [weak self] _ in
+                self?.checkBackendHealth()
+            }
+        }
     }
     
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -56,27 +68,41 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("⚠️ Backend already running")
             return
         }
-        
+
         let backendPath = getBackendPath()
         guard FileManager.default.fileExists(atPath: backendPath) else {
             print("❌ Backend not found at: \(backendPath)")
             postNotification(.backendError, userInfo: ["error": "Backend bundle not found"])
             return
         }
-        
+
+        // Use embedded Node.js
+        let nodePath = "\(backendPath)/nodejs/bin/node"
+        guard FileManager.default.fileExists(atPath: nodePath) else {
+            print("❌ Node.js not found at: \(nodePath)")
+            postNotification(.backendError, userInfo: ["error": "Node.js runtime not found"])
+            return
+        }
+
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = ["node", "\(backendPath)/src/index.js"]
-        
+        process.executableURL = URL(fileURLWithPath: nodePath)
+        process.arguments = ["\(backendPath)/src/index.js"]
+        process.currentDirectoryURL = URL(fileURLWithPath: backendPath)
+
         // Set environment variables
         var environment = ProcessInfo.processInfo.environment
         environment["PORT"] = String(backendPort)
         environment["NODE_ENV"] = "production"
-        environment["DB_HOST"] = "localhost"
-        environment["DB_PORT"] = "5432"
-        environment["DB_USER"] = getEnvValue("DB_USER") ?? "hostprint"
-        environment["DB_PASSWORD"] = getEnvValue("DB_PASSWORD") ?? ""
-        environment["DB_NAME"] = getEnvValue("DB_NAME") ?? "hostprint"
+        environment["DB_TYPE"] = "sqlite"
+        environment["DYLD_LIBRARY_PATH"] = "\(backendPath)/nodejs/lib"
+
+        // Set database path to Application Support
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let appDataDir = appSupport.appendingPathComponent("com.hostprint.Xover", isDirectory: true)
+        try? FileManager.default.createDirectory(at: appDataDir, withIntermediateDirectories: true)
+        let dbPath = appDataDir.appendingPathComponent("hostprint.db").path
+        environment["DB_PATH"] = dbPath
+
         environment["JWT_SECRET"] = getEnvValue("JWT_SECRET") ?? generateSecureToken()
         environment["ALLOWED_ORIGINS"] = "http://localhost:\(backendPort)"
         
