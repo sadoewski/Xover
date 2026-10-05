@@ -26,11 +26,11 @@ struct XoverApp: App {
                 window.backgroundColor = .clear
                 window.styleMask.insert(.fullSizeContentView)
 
-                // Configure toolbar for fullscreen
-                let toolbar = NSToolbar()
-                toolbar.showsBaselineSeparator = false
-                window.toolbar = toolbar
-                window.toolbarStyle = .unified
+                // Remove toolbar completely
+                window.toolbar = nil
+
+                // Configure for fullscreen with visible traffic lights
+                window.collectionBehavior = [.fullScreenPrimary, .fullScreenAllowsTiling]
             }
         }
     }
@@ -52,8 +52,6 @@ struct XoverApp: App {
             MenuCommands()
         }
         .defaultSize(width: 1280, height: 900)
-        .windowStyle(.hiddenTitleBar)
-        .windowToolbarStyle(.unified(showsTitle: false))
         
         Settings {
             PreferencesView()
