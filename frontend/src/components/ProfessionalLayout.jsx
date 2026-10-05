@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Calendar,
@@ -17,6 +17,8 @@ import {
   Sun,
   Moon,
   Database,
+  Menu,
+  X,
 } from 'lucide-react';
 import { authService } from '../services/api';
 import { useTheme } from '../contexts/ThemeContext';
@@ -49,6 +51,40 @@ const ProfessionalLayout = ({ children }) => {
     return saved === 'true';
   });
 
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen, isMobile]);
+
   // Save sidebar state to localStorage when it changes
   const toggleSidebar = () => {
     setSidebarCollapsed(prev => {
@@ -56,6 +92,10 @@ const ProfessionalLayout = ({ children }) => {
       localStorage.setItem('sidebarCollapsed', String(newValue));
       return newValue;
     });
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(prev => !prev);
   };
 
   const handleLogout = () => {
@@ -104,9 +144,28 @@ const ProfessionalLayout = ({ children }) => {
 
   return (
     <div className="professional-layout">
+      {/* Mobile Overlay */}
+      {isMobile && mobileMenuOpen && (
+        <div
+          className="mobile-overlay active"
+          onClick={toggleMobileMenu}
+        />
+      )}
+
       {/* Top Toolbar */}
       <div className="toolbar">
         <div className="toolbar-left">
+          {/* Mobile Menu Button */}
+          {isMobile && activeTab === 'hostlog' && (
+            <button
+              className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
+              onClick={toggleMobileMenu}
+              aria-label="Меню"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
+
           <div className="app-logo">
             <BarChart3 size={20} />
             <span className="app-name">Xover v0.20 PreRelease</span>
@@ -193,7 +252,7 @@ const ProfessionalLayout = ({ children }) => {
       <div className="layout-body">
         {/* Sidebar Navigation Tree - только для Hostlog */}
         {activeTab === 'hostlog' && (
-          <div className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''}`}>
+          <div className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
             <div className="nav-tree">
               {/* Admin Panel - Outside tree */}
               <button

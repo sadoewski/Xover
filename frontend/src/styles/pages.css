@@ -314,3 +314,155 @@
     padding: var(--spacing-lg);
   }
 }
+
+/* === ENHANCED MOBILE STYLES === */
+
+@media (max-width: 767px) {
+  /* Page Content - Reduce padding on mobile */
+  .page-content {
+    padding: var(--spacing-md);
+    overflow-x: hidden;
+  }
+
+  /* Page Header - Stack on mobile */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-section {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .page-section-title {
+    font-size: 16px;
+    margin-bottom: var(--spacing-md);
+  }
+
+  /* Form groups */
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .form-label {
+    font-size: 13px;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .form-help {
+    font-size: 11px;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: var(--spacing-xl);
+  }
+
+  .empty-state-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .empty-state-text {
+    font-size: 14px;
+  }
+
+  /* Loading container */
+  .loading-container {
+    padding: var(--spacing-xl);
+  }
+
+  /* Cards - reduce spacing */
+  .card {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+
+  /* Modal adjustments */
+  .modal {
+    max-width: calc(100% - var(--spacing-md) * 2);
+    max-height: calc(100vh - var(--spacing-md) * 2);
+    margin: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+
+  .modal-header {
+    padding: var(--spacing-md);
+    margin: calc(var(--spacing-md) * -1);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .modal-title {
+    font-size: 16px;
+  }
+
+  .modal-footer {
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) calc(var(--spacing-md) * -1) calc(var(--spacing-md) * -1);
+    flex-direction: column-reverse;
+    gap: var(--spacing-sm);
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+}
+
+/* Small mobile specific */
+@media (max-width: 480px) {
+  .page-content {
+    padding: var(--spacing-sm);
+  }
+
+  .page-header {
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .page-section {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .page-section-title {
+    font-size: 15px;
+  }
+
+  .card {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+  }
+
+  .empty-state {
+    padding: var(--spacing-lg);
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+  .page-header {
+    margin-bottom: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .page-section {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .modal {
+    max-height: calc(100vh - var(--spacing-sm) * 2);
+  }
+}
+

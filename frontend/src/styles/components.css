@@ -15,6 +15,7 @@
   white-space: nowrap;
   user-select: none;
   height: 26px;
+  min-height: 26px;
 }
 
 .btn:disabled {
@@ -98,6 +99,8 @@
 .btn-icon {
   width: 32px;
   height: 32px;
+  min-width: 32px;
+  min-height: 32px;
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -457,4 +460,147 @@
 .status-moved {
   background: rgba(171, 71, 188, 0.1);
   color: var(--status-moved);
+}
+
+/* === MOBILE RESPONSIVE COMPONENTS === */
+
+/* Mobile Button Adjustments */
+@media (max-width: 767px) {
+  .btn {
+    height: 36px;
+    min-height: 36px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 13px;
+  }
+
+  .btn-sm {
+    height: 32px;
+    min-height: 32px;
+    font-size: 12px;
+  }
+
+  .btn-lg {
+    height: 44px;
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .btn-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* Input fields - larger for mobile */
+  .input,
+  .select,
+  .textarea {
+    padding: var(--spacing-md);
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+
+  .textarea {
+    min-height: 100px;
+  }
+
+  /* Checkbox & Radio - larger touch targets */
+  .checkbox,
+  .radio {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Card padding adjustment */
+  .card {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+
+  .card-header {
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .card-title {
+    font-size: 15px;
+  }
+
+  /* Badge sizing */
+  .badge {
+    padding: 3px 10px;
+    font-size: 12px;
+  }
+
+  /* Button groups - stack on mobile if needed */
+  .btn-group {
+    flex-wrap: wrap;
+  }
+
+  /* Status indicators */
+  .status-indicator {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  /* List items */
+  .list-item-title {
+    font-size: 14px;
+  }
+
+  .list-item-subtitle {
+    font-size: 12px;
+  }
+
+  .item-title {
+    font-size: 15px;
+  }
+
+  .item-description {
+    font-size: 12px;
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  .btn {
+    font-size: 12px;
+    padding: var(--spacing-sm) var(--spacing-sm);
+  }
+
+  .card {
+    padding: var(--spacing-sm);
+  }
+
+  /* Hide tooltips on small mobile */
+  .tooltip::before {
+    display: none;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .btn,
+  .input,
+  .select,
+  .checkbox,
+  .radio {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Remove hover states on touch devices */
+  .btn:hover:not(:disabled),
+  .btn-icon:hover:not(:disabled) {
+    /* Keep same as base state, activate on tap instead */
+  }
+
+  /* Active states are more important on touch */
+  .btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .btn-icon:active:not(:disabled) {
+    transform: scale(0.95);
+  }
 }

@@ -200,3 +200,190 @@
 .remove-avatar:hover {
   transform: scale(1.1);
 }
+
+/* === MOBILE RESPONSIVE STYLES === */
+
+@media (max-width: 767px) {
+  .auth-page {
+    padding: var(--spacing-md);
+    align-items: flex-start;
+    padding-top: 10vh;
+  }
+
+  .auth-container {
+    max-width: 100%;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-md);
+  }
+
+  .auth-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .auth-header h2 {
+    font-size: 22px;
+  }
+
+  .auth-header p {
+    font-size: 13px;
+  }
+
+  .auth-form {
+    gap: var(--spacing-lg);
+  }
+
+  .form-group label {
+    font-size: 14px;
+  }
+
+  .form-input {
+    padding: 12px 14px;
+    font-size: 16px; /* Prevent iOS zoom */
+    min-height: 44px;
+  }
+
+  .form-hint {
+    font-size: 12px;
+  }
+
+  .error-message {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 14px;
+  }
+
+  .btn-submit {
+    padding: 14px 20px;
+    font-size: 16px;
+    min-height: 48px;
+    margin-top: var(--spacing-sm);
+  }
+
+  .auth-link {
+    margin-top: var(--spacing-md);
+  }
+
+  .auth-link a {
+    font-size: 14px;
+  }
+
+  /* Avatar upload */
+  .avatar-upload-btn,
+  .avatar-preview {
+    width: 100px;
+    height: 100px;
+  }
+
+  .avatar-upload-btn span {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-page {
+    padding: var(--spacing-sm);
+    padding-top: 5vh;
+  }
+
+  .auth-container {
+    padding: var(--spacing-lg);
+  }
+
+  .auth-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .auth-header h2 {
+    font-size: 20px;
+  }
+
+  .auth-header p {
+    font-size: 12px;
+  }
+
+  .auth-form {
+    gap: var(--spacing-md);
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .btn-submit {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  /* Smaller avatar on very small screens */
+  .avatar-upload-btn,
+  .avatar-preview {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-upload-btn svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .avatar-upload-btn span {
+    font-size: 10px;
+  }
+
+  .remove-avatar {
+    width: 24px;
+    height: 24px;
+    top: -6px;
+    right: -6px;
+  }
+
+  .remove-avatar svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .auth-page {
+    padding-top: var(--spacing-md);
+  }
+
+  .auth-container {
+    padding: var(--spacing-lg);
+  }
+
+  .auth-header {
+    margin-bottom: var(--spacing-md);
+  }
+
+  .auth-form {
+    gap: var(--spacing-sm);
+  }
+
+  .avatar-upload {
+    margin-bottom: 4px;
+  }
+
+  .avatar-upload-btn,
+  .avatar-preview {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+/* Touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .form-input,
+  .btn-submit {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-submit:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  .auth-link a:active {
+    opacity: 0.7;
+  }
+}
+

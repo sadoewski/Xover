@@ -341,3 +341,175 @@
   font-size: 11px;
   color: var(--text-tertiary);
 }
+
+/* === MOBILE RESPONSIVE STYLES === */
+
+@media (max-width: 767px) {
+  .dashboard-grid {
+    gap: var(--spacing-md);
+  }
+
+  /* Stats cards - Full width on mobile */
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  .stat-card {
+    padding: var(--spacing-sm);
+    min-height: 80px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .stat-change {
+    font-size: 9px;
+  }
+
+  /* Section cards */
+  .section-card {
+    padding: var(--spacing-md);
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .section-title {
+    font-size: 13px;
+  }
+
+  /* Task items */
+  .task-item {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .task-priority-indicator {
+    min-height: 50px;
+  }
+
+  .task-item .task-title {
+    font-size: 13px;
+  }
+
+  .task-meta {
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .task-group,
+  .task-status {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .task-time {
+    font-size: 11px;
+  }
+
+  .task-description {
+    font-size: 11px;
+  }
+
+  /* Events list - Single column on mobile */
+  .events-list {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .event-item {
+    padding: var(--spacing-sm);
+  }
+
+  .event-name {
+    font-size: 13px;
+  }
+
+  .event-type {
+    font-size: 8px;
+    padding: 2px 4px;
+  }
+
+  .event-date {
+    font-size: 11px;
+  }
+
+  .event-description {
+    font-size: 11px;
+  }
+
+  .event-days {
+    font-size: 11px;
+    padding: 3px 6px;
+  }
+
+  .empty-text {
+    font-size: 12px;
+  }
+}
+
+/* Small mobile - Single column */
+@media (max-width: 480px) {
+  .stats-cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+
+  .stat-card {
+    padding: var(--spacing-xs);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .section-card {
+    padding: var(--spacing-sm);
+  }
+
+  .section-title {
+    font-size: 14px;
+  }
+
+  .task-item {
+    padding: var(--spacing-xs);
+  }
+
+  .event-item {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .event-countdown {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .dashboard-grid {
+    gap: var(--spacing-sm);
+  }
+
+  .stats-cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stat-card {
+    min-height: 60px;
+  }
+}
+

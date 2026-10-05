@@ -297,3 +297,152 @@
   font-size: 12px;
   margin: 0;
 }
+
+/* === MOBILE RESPONSIVE STYLES === */
+
+@media (max-width: 767px) {
+  .calendar-toolbar {
+    flex-wrap: wrap;
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    gap: 4px;
+  }
+
+  .toolbar-center {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .date-label {
+    font-size: 14px;
+  }
+
+  .view-switcher .btn-ghost {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .btn-primary.btn-sm,
+  .btn-secondary {
+    padding: 6px 10px;
+    font-size: 12px;
+    height: 36px;
+  }
+
+  /* Table - Horizontal scroll on mobile */
+  .tasks-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tasks-table {
+    min-width: 800px; /* Force horizontal scroll */
+  }
+
+  .tasks-table th,
+  .tasks-table td {
+    padding: var(--spacing-sm);
+    font-size: 12px;
+  }
+
+  .tasks-table th {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .task-title-cell {
+    font-size: 13px;
+  }
+
+  .task-description-cell {
+    font-size: 12px;
+  }
+
+  /* Status select - larger touch target */
+  .status-select {
+    padding: var(--spacing-sm);
+    font-size: 12px;
+    min-height: 36px;
+  }
+
+  .btn-delete {
+    padding: var(--spacing-sm);
+    min-width: 36px;
+    min-height: 36px;
+  }
+
+  /* Empty and loading states */
+  .empty-state h3 {
+    font-size: 16px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+}
+
+/* Small mobile - Compact view */
+@media (max-width: 480px) {
+  .calendar-toolbar {
+    padding: var(--spacing-xs);
+  }
+
+  .toolbar-left .btn-secondary span,
+  .toolbar-right .btn-secondary span {
+    display: none; /* Show only icons */
+  }
+
+  .date-label {
+    font-size: 13px;
+  }
+
+  .view-switcher .btn-ghost {
+    padding: 6px 6px;
+    font-size: 9px;
+  }
+
+  .btn-primary.btn-sm span {
+    display: none; /* Show only icon on small screens */
+  }
+
+  /* Table even more compact */
+  .tasks-table {
+    min-width: 700px;
+  }
+
+  .tasks-table th,
+  .tasks-table td {
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .group-badge,
+  .priority-badge {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .calendar-toolbar {
+    padding: 4px var(--spacing-sm);
+  }
+
+  .toolbar-center {
+    margin-bottom: 0;
+  }
+
+  .btn-primary.btn-sm,
+  .btn-secondary {
+    height: 32px;
+    padding: 4px 8px;
+  }
+}
+

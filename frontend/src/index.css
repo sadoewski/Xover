@@ -2,6 +2,7 @@
 @import './styles/theme.css';
 @import './styles/components.css';
 @import './styles/pages.css';
+@import './styles/mobile.css';
 
 /* Legacy Tailwind (will be removed) */
 @tailwind base;

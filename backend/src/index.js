@@ -46,15 +46,32 @@ const authLimiter = rateLimit({
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'];
 app.use(cors({
   origin: allowedOrigins,
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600 // 10 minutes
 }));
 
 app.use(express.json());
 
+// Request logging middleware (only in development or when DEBUG is set)
+if (process.env.NODE_ENV === 'development' || process.env.DEBUG) {
+  app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
+    if (req.method === 'DELETE' || req.method === 'PUT' || req.method === 'PATCH') {
+      console.log(`  Headers:`, JSON.stringify(req.headers, null, 2));
+    }
+    next();
+  });
+}
+
 // Static files for uploads with proper CORS headers
 app.use('/uploads', cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }), express.static('uploads'));
 
 // Routes
