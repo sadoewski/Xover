@@ -17,11 +17,32 @@ struct XoverApp: App {
         NSLog("✓ XoverApp.init() called")
     }
 
+    private func configureWindow() {
+        DispatchQueue.main.async {
+            if let window = NSApp.windows.first {
+                window.titlebarAppearsTransparent = true
+                window.titleVisibility = .hidden
+                window.isOpaque = false
+                window.backgroundColor = .clear
+                window.styleMask.insert(.fullSizeContentView)
+
+                // Configure toolbar for fullscreen
+                let toolbar = NSToolbar()
+                toolbar.showsBaselineSeparator = false
+                window.toolbar = toolbar
+                window.toolbarStyle = .unified
+            }
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(appState)
                 .frame(minWidth: 1024, minHeight: 768)
+                .onAppear {
+                    configureWindow()
+                }
                 .task {
                     NSLog("✓ ContentView .task modifier executing")
                     appDelegate.startBackendIfNeeded()
@@ -31,6 +52,8 @@ struct XoverApp: App {
             MenuCommands()
         }
         .defaultSize(width: 1280, height: 900)
+        .windowStyle(.hiddenTitleBar)
+        .windowToolbarStyle(.unified(showsTitle: false))
         
         Settings {
             PreferencesView()

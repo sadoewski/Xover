@@ -42,7 +42,7 @@ struct MenuCommands: Commands {
         
         // MARK: - View Menu
 
-        CommandMenu("View") {
+        CommandGroup(replacing: .toolbar) {
             Button("Reload") {
                 NotificationCenter.default.post(name: .reloadWebView, object: nil)
             }
