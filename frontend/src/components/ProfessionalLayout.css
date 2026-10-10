@@ -283,8 +283,15 @@
   background: var(--accent-primary);
 }
 
+.sidebar-resize-handle.resizing,
 .sidebar-resize-handle:active {
   background: var(--accent-primary);
+  cursor: col-resize;
+}
+
+body.resizing {
+  cursor: col-resize !important;
+  user-select: none;
 }
 
 .nav-tree {
@@ -470,9 +477,6 @@
   transition: all var(--transition-fast);
   color: var(--text-tertiary);
   flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
-  margin-top: auto;
   z-index: 10;
 }
 

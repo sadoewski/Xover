@@ -64,6 +64,8 @@ const ProfessionalLayout = ({ children }) => {
     return saved ? parseInt(saved, 10) : 240;
   });
   const [isResizing, setIsResizing] = useState(false);
+  const [resizeStartX, setResizeStartX] = useState(0);
+  const [resizeStartWidth, setResizeStartWidth] = useState(0);
 
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -118,23 +120,30 @@ const ProfessionalLayout = ({ children }) => {
   };
 
   // Sidebar resize handlers
-  const startResizing = () => {
+  const startResizing = (e) => {
     setIsResizing(true);
+    setResizeStartX(e.clientX);
+    setResizeStartWidth(sidebarWidth);
   };
 
   useEffect(() => {
     if (!isResizing) return;
 
+    // Add body class for cursor feedback
+    document.body.classList.add('resizing');
+
     const handleMouseMove = (e) => {
-      const newWidth = e.clientX;
+      const delta = e.clientX - resizeStartX;
+      const newWidth = resizeStartWidth + delta;
       if (newWidth >= 200 && newWidth <= 600) {
         setSidebarWidth(newWidth);
-        localStorage.setItem('sidebarWidth', String(newWidth));
       }
     };
 
     const handleMouseUp = () => {
       setIsResizing(false);
+      document.body.classList.remove('resizing');
+      localStorage.setItem('sidebarWidth', String(sidebarWidth));
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -143,8 +152,9 @@ const ProfessionalLayout = ({ children }) => {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      document.body.classList.remove('resizing');
     };
-  }, [isResizing]);
+  }, [isResizing, resizeStartX, resizeStartWidth, sidebarWidth]);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(prev => !prev);
@@ -400,7 +410,7 @@ const ProfessionalLayout = ({ children }) => {
           {/* Resize Handle */}
           {!sidebarCollapsed && (
             <div
-              className="sidebar-resize-handle"
+              className={`sidebar-resize-handle ${isResizing ? 'resizing' : ''}`}
               onMouseDown={startResizing}
             />
           )}
