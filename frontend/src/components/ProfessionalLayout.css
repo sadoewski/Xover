@@ -469,12 +469,11 @@ body.resizing {
 
 /* Sidebar Toggle Button */
 .sidebar-toggle {
-  position: sticky;
-  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 40px;
+  margin-top: auto;
   padding: var(--spacing-xs);
   background: var(--surface-1);
   border: none;
