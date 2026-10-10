@@ -286,9 +286,6 @@
 .sidebar-resize-handle:active {
   background: var(--accent-primary);
 }
-  flex-shrink: 0;
-  transition: width var(--transition-normal);
-}
 
 .nav-tree {
   display: flex;

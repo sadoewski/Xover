@@ -20,7 +20,6 @@ import {
   Database,
   Menu,
   X,
-  ChevronUp,
 } from 'lucide-react';
 import { authService } from '../services/api';
 import { useTheme } from '../contexts/ThemeContext';
