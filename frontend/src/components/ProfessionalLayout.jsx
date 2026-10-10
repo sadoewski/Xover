@@ -10,6 +10,7 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
+  ChevronUp,
   Home,
   Users,
   BarChart3,
@@ -19,6 +20,7 @@ import {
   Database,
   Menu,
   X,
+  ChevronUp,
 } from 'lucide-react';
 import { authService } from '../services/api';
 import { useTheme } from '../contexts/ThemeContext';
@@ -32,14 +34,14 @@ const ProfessionalLayout = ({ children }) => {
   const user = authService.getCurrentUser();
   const { theme, toggleTheme } = useTheme();
   const [expandedSections, setExpandedSections] = useState({
-    hostlog: true,
+    xover: true,
   });
 
   // Определяем активную вкладку на основе текущего пути
   const getActiveTab = () => {
     if (location.pathname.startsWith('/rwprint')) return 'rwprint';
     if (location.pathname === '/settings') return 'settings';
-    return 'hostlog';
+    return 'xover';
   };
 
   const activeTab = getActiveTab();
@@ -50,6 +52,19 @@ const ProfessionalLayout = ({ children }) => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
+
+  // Load toolbar collapsed state from localStorage
+  const [toolbarCollapsed, setToolbarCollapsed] = useState(() => {
+    const saved = localStorage.getItem('toolbarCollapsed');
+    return saved === 'true';
+  });
+
+  // Sidebar resize state
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('sidebarWidth');
+    return saved ? parseInt(saved, 10) : 240;
+  });
+  const [isResizing, setIsResizing] = useState(false);
 
   // Mobile menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -94,6 +109,44 @@ const ProfessionalLayout = ({ children }) => {
     });
   };
 
+  // Save toolbar state to localStorage when it changes
+  const toggleToolbar = () => {
+    setToolbarCollapsed(prev => {
+      const newValue = !prev;
+      localStorage.setItem('toolbarCollapsed', String(newValue));
+      return newValue;
+    });
+  };
+
+  // Sidebar resize handlers
+  const startResizing = () => {
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e) => {
+      const newWidth = e.clientX;
+      if (newWidth >= 200 && newWidth <= 600) {
+        setSidebarWidth(newWidth);
+        localStorage.setItem('sidebarWidth', String(newWidth));
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(prev => !prev);
   };
@@ -116,8 +169,8 @@ const ProfessionalLayout = ({ children }) => {
 
   const navigationTree = [
     {
-      id: 'hostlog',
-      title: 'HOSTLOG',
+      id: 'xover',
+      title: 'XOVER',
       icon: Home,
       items: [
         { path: '/calendar', label: 'Календарь', icon: Calendar },
@@ -129,7 +182,7 @@ const ProfessionalLayout = ({ children }) => {
     },
   ];
 
-  const breadcrumbs = activeTab === 'hostlog' ? [
+  const breadcrumbs = activeTab === 'xover' ? [
     { label: 'Админ-панель', path: '/' },
     ...(location.pathname === '/calendar' ? [{ label: 'Календарь', path: '/calendar' }] : []),
     ...(location.pathname === '/events' ? [{ label: 'События', path: '/events' }] : []),
@@ -153,10 +206,10 @@ const ProfessionalLayout = ({ children }) => {
       )}
 
       {/* Top Toolbar */}
-      <div className="toolbar">
+      <div className={`toolbar ${toolbarCollapsed ? 'collapsed' : ''}`}>
         <div className="toolbar-left">
           {/* Mobile Menu Button */}
-          {isMobile && activeTab === 'hostlog' && (
+          {isMobile && activeTab === 'xover' && (
             <button
               className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
               onClick={toggleMobileMenu}
@@ -167,93 +220,111 @@ const ProfessionalLayout = ({ children }) => {
           )}
 
           <div className="app-logo">
-            <BarChart3 size={20} />
-            <span className="app-name">Xover v0.20 PreRelease</span>
+            <span className="app-name">Xover</span>
           </div>
-        </div>
 
-        <div className="toolbar-center">
-          {/* Tab Switcher */}
-          <div className="tab-switcher">
-            <button
-              className={`tab-btn ${activeTab === 'hostlog' ? 'active' : ''}`}
-              onClick={() => navigate('/calendar')}
-            >
-              Hostlog
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'rwprint' ? 'active' : ''}`}
-              onClick={() => navigate('/rwprint')}
-            >
-              rw:Print
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => navigate('/settings')}
-            >
-              <Settings size={16} />
-              Настройки
-            </button>
-          </div>
-        </div>
-
-        <div className="toolbar-right">
-          {/* Theme Toggle */}
+          {/* Toolbar Collapse Toggle */}
           <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+            className="toolbar-collapse-btn"
+            onClick={toggleToolbar}
+            title={toolbarCollapsed ? 'Развернуть панель' : 'Свернуть панель'}
           >
-            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
-
-          <div className="user-info" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer' }}>
-            {user?.avatar_url ? (
-              <img
-                src={getAvatarUrl(user.avatar_url)}
-                alt={user.name}
-                style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '1px solid var(--border-primary)'
-                }}
-              />
-            ) : (
-              <Users size={16} />
-            )}
-            <span className="user-name">{user?.name}</span>
-          </div>
-          <button className="btn-icon" onClick={handleLogout} title="Выйти">
-            <LogOut size={16} />
+            {toolbarCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
           </button>
         </div>
+
+        {!toolbarCollapsed && (
+          <>
+            <div className="toolbar-center">
+              {/* Tab Switcher */}
+              <div className="tab-switcher">
+                <button
+                  className={`tab-btn ${activeTab === 'xover' ? 'active' : ''}`}
+                  onClick={() => navigate('/calendar')}
+                >
+                  Xover
+                </button>
+                <button
+                  className={`tab-btn ${activeTab === 'rwprint' ? 'active' : ''}`}
+                  onClick={() => navigate('/rwprint')}
+                >
+                  rw:Print
+                </button>
+                <button
+                  className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+                  onClick={() => navigate('/settings')}
+                >
+                  <Settings size={16} />
+                  Настройки
+                </button>
+              </div>
+            </div>
+
+            <div className="toolbar-right">
+              {/* Breadcrumbs - moved into toolbar */}
+              {breadcrumbs.length > 0 && (
+                <div className="toolbar-breadcrumbs">
+                  {breadcrumbs.map((crumb, index) => (
+                    <React.Fragment key={crumb.path}>
+                      {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
+                      <button
+                        className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
+                        onClick={() => navigate(crumb.path)}
+                        disabled={index === breadcrumbs.length - 1}
+                      >
+                        {crumb.label}
+                      </button>
+                    </React.Fragment>
+                  ))}
+                </div>
+              )}
+
+              {/* Theme Toggle */}
+              <button
+                className="theme-toggle"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+              >
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+
+              <div className="user-info" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer' }}>
+                {user?.avatar_url ? (
+                  <img
+                    src={getAvatarUrl(user.avatar_url)}
+                    alt={user.name}
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      border: '1px solid var(--border-primary)'
+                    }}
+                  />
+                ) : (
+                  <Users size={16} />
+                )}
+                <span className="user-name">{user?.name}</span>
+              </div>
+              <button className="btn-icon" onClick={handleLogout} title="Выйти">
+                <LogOut size={16} />
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Breadcrumbs Bar */}
-      {breadcrumbs.length > 0 && (
-        <div className="breadcrumbs-bar">
-          {breadcrumbs.map((crumb, index) => (
-            <React.Fragment key={crumb.path}>
-              {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
-              <button
-                className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
-                onClick={() => navigate(crumb.path)}
-                disabled={index === breadcrumbs.length - 1}
-              >
-                {crumb.label}
-              </button>
-            </React.Fragment>
-          ))}
-        </div>
-      )}
+      {/* Breadcrumbs Bar - Remove this section as breadcrumbs are now in toolbar */}
 
       <div className="layout-body">
-        {/* Sidebar Navigation Tree - только для Hostlog */}
-        {activeTab === 'hostlog' && (
-          <div className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            <div className="nav-tree">
+        {/* Sidebar Navigation Tree - только для Xover */}
+        {activeTab === 'xover' && (
+          <>
+            <div
+              className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
+              style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
+            >
+              <div className="nav-tree">
               {/* Admin Panel - Outside tree */}
               <button
                 className={`nav-item-standalone ${isActive('/') ? 'active' : ''}`}
@@ -326,6 +397,15 @@ const ProfessionalLayout = ({ children }) => {
               {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
           </div>
+
+          {/* Resize Handle */}
+          {!sidebarCollapsed && (
+            <div
+              className="sidebar-resize-handle"
+              onMouseDown={startResizing}
+            />
+          )}
+        </>
         )}
 
         {/* Main Content Area */}

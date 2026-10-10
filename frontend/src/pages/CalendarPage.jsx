@@ -7,7 +7,7 @@ import { tasksService, groupsService, prioritiesService, eventsService } from '.
 import TaskList from '../components/TaskList';
 import CreateTaskModal from '../components/CreateTaskModal';
 import Layout from '../components/Layout';
-import HostlogSidebar from '../components/HostlogSidebar';
+import XoverSidebar from '../components/XoverSidebar';
 import StatusIcon from '../components/StatusIcon';
 
 export default function CalendarPage() {
@@ -764,7 +764,7 @@ export default function CalendarPage() {
 
   return (
     <Layout>
-      <HostlogSidebar />
+      <XoverSidebar />
       <div className="flex-1 overflow-auto">
         <div className="max-w-7xl mx-auto p-6">
           {loading && view !== 'day' ? (

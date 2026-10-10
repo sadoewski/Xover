@@ -16,13 +16,13 @@ export default function Layout({ children }) {
   const getActiveSection = () => {
     if (location.pathname === '/settings') return 'settings';
     // В будущем можно добавить проверку для wr:print
-    return 'hostlog';
+    return 'xover';
   };
 
   const activeSection = getActiveSection();
 
   const handleSectionChange = (section) => {
-    if (section === 'hostlog') {
+    if (section === 'xover') {
       navigate('/');
     } else if (section === 'wrprint') {
       // Пока заглушка
@@ -41,10 +41,10 @@ export default function Layout({ children }) {
           <div className="layout-header-left">
             <div className="section-switcher">
               <button
-                onClick={() => handleSectionChange('hostlog')}
-                className={`section-btn ${activeSection === 'hostlog' ? 'active' : ''}`}
+                onClick={() => handleSectionChange('xover')}
+                className={`section-btn ${activeSection === 'xover' ? 'active' : ''}`}
               >
-                hostlog
+                xover
               </button>
               <button
                 onClick={() => handleSectionChange('wrprint')}

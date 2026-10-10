@@ -38,7 +38,7 @@ describe('LoginPage', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/вход в hostprint/i)).toBeInTheDocument();
+    expect(screen.getByText(/вход в xover/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /войти/i })).toBeInTheDocument();
   });
 

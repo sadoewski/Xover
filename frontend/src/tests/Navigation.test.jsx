@@ -40,7 +40,7 @@ describe('Layout и навигация', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Hostlog')).toBeInTheDocument();
+    expect(screen.getByText('Xover')).toBeInTheDocument();
     expect(screen.getByText('rw:Print')).toBeInTheDocument();
     expect(screen.getByText('Настройки')).toBeInTheDocument();
   });
@@ -57,10 +57,10 @@ describe('Layout и навигация', () => {
     );
 
     expect(screen.getByText('Test User')).toBeInTheDocument();
-    expect(screen.getByText(/Xover.*PreRelease/)).toBeInTheDocument();
+    expect(screen.getByText('Xover')).toBeInTheDocument();
   });
 
-  it('подсвечивает активный раздел hostlog', () => {
+  it('подсвечивает активный раздел xover', () => {
     render(
       <BrowserRouter>
         <AuthProvider>
@@ -71,8 +71,8 @@ describe('Layout и навигация', () => {
       </BrowserRouter>
     );
 
-    const hostlogButton = screen.getByRole('button', { name: 'Hostlog' });
-    expect(hostlogButton).toHaveClass('active');
+    const xoverButton = screen.getByRole('button', { name: 'Xover' });
+    expect(xoverButton).toHaveClass('active');
   });
 
   it('переключает разделы при клике', () => {

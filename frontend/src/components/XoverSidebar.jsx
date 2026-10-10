@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChart3, Calendar, Repeat, Folder, Star, FileText, Target } from 'lucide-react';
-import './HostlogSidebar.css';
+import './XoverSidebar.css';
 
-export default function HostlogSidebar() {
+export default function XoverSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -24,25 +24,25 @@ export default function HostlogSidebar() {
   };
 
   return (
-    <div className={`hostlog-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-      <div className="hostlog-sidebar-content">
-        <nav className="hostlog-nav">
+    <div className={`xover-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+      <div className="xover-sidebar-content">
+        <nav className="xover-nav">
           {menuItems.map((item) => (
             <button
               key={item.id}
               onClick={() => navigate(item.path)}
-              className={`hostlog-nav-item ${isActive(item.path) ? 'active' : ''}`}
+              className={`xover-nav-item ${isActive(item.path) ? 'active' : ''}`}
               title={isCollapsed ? item.label : ''}
             >
-              <item.Icon size={20} className="hostlog-nav-icon" />
-              {!isCollapsed && <span className="hostlog-nav-label">{item.label}</span>}
+              <item.Icon size={20} className="xover-nav-icon" />
+              {!isCollapsed && <span className="xover-nav-label">{item.label}</span>}
             </button>
           ))}
         </nav>
       </div>
 
       <button
-        className="hostlog-sidebar-toggle"
+        className="xover-sidebar-toggle"
         onClick={() => setIsCollapsed(!isCollapsed)}
         title={isCollapsed ? 'Развернуть' : 'Свернуть'}
       >

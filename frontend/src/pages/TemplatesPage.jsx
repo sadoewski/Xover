@@ -1,10 +1,10 @@
 import Layout from '../components/Layout';
-import HostlogSidebar from '../components/HostlogSidebar';
+import XoverSidebar from '../components/XoverSidebar';
 
 export default function TemplatesPage() {
   return (
     <Layout>
-      <HostlogSidebar />
+      <XoverSidebar />
       <div className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto p-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">Шаблоны задач</h1>
