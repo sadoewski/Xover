@@ -7,6 +7,7 @@
   width: 100vw;
   overflow: hidden;
   background: var(--bg-primary);
+  gap: 0;
 }
 
 /* Top Toolbar */
@@ -245,6 +246,8 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+  min-height: 0;
+  gap: 0;
 }
 
 /* Sidebar Navigation */
@@ -258,9 +261,9 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  min-height: 0;
   transition: width 0.3s ease;
-  overflow: visible;
-  height: 100%;
+  overflow: hidden;
 }
 
 .sidebar-nav.collapsed {
@@ -398,10 +401,6 @@ body.resizing {
 }
 
 /* Sidebar Collapsed State */
-.sidebar-nav.collapsed {
-  width: 60px;
-}
-
 .sidebar-nav.collapsed .nav-section-title,
 .sidebar-nav.collapsed .nav-item-label,
 .sidebar-nav.collapsed .nav-chevron {
