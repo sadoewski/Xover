@@ -81,15 +81,15 @@ export default function XoverSidebar() {
             </button>
           ))}
         </nav>
-
-        <button
-          className="xover-sidebar-toggle"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          title={isCollapsed ? 'Развернуть' : 'Свернуть'}
-        >
-          {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
       </div>
+
+      <button
+        className="xover-sidebar-toggle"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        title={isCollapsed ? 'Развернуть' : 'Свернуть'}
+      >
+        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </button>
 
       {!isCollapsed && (
         <div

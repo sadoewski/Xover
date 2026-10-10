@@ -405,15 +405,15 @@ const ProfessionalLayout = ({ children }) => {
             >
               {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
-          </div>
 
-          {/* Resize Handle */}
-          {!sidebarCollapsed && (
-            <div
-              className={`sidebar-resize-handle ${isResizing ? 'resizing' : ''}`}
-              onMouseDown={startResizing}
-            />
-          )}
+            {/* Resize Handle */}
+            {!sidebarCollapsed && (
+              <div
+                className={`sidebar-resize-handle ${isResizing ? 'resizing' : ''}`}
+                onMouseDown={startResizing}
+              />
+            )}
+          </div>
         </>
         )}
 

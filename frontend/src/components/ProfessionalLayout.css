@@ -259,7 +259,8 @@
   flex-direction: column;
   flex-shrink: 0;
   transition: width 0.3s ease;
-  overflow: hidden;
+  overflow: visible;
+  height: 100%;
 }
 
 .sidebar-nav.collapsed {
@@ -302,6 +303,8 @@ body.resizing {
   gap: var(--spacing-sm);
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 /* Navigation Section */
@@ -481,7 +484,6 @@ body.resizing {
   color: var(--text-tertiary);
   flex-shrink: 0;
   z-index: 10;
-  margin-top: auto;
 }
 
 .sidebar-toggle:hover {

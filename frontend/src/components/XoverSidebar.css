@@ -9,7 +9,7 @@
   border-right: 1px solid var(--border-primary);
   flex-shrink: 0;
   transition: width 0.3s ease;
-  overflow: hidden;
+  height: 100%;
 }
 
 .xover-sidebar.collapsed {
@@ -19,11 +19,12 @@
 
 .xover-sidebar-content {
   flex: 1;
-  padding: var(--spacing-lg) 0;
+  padding: var(--spacing-lg) 0 0 0;
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .xover-nav {
@@ -31,6 +32,8 @@
   flex-direction: column;
   gap: 2px;
   padding: 0 var(--spacing-sm);
+  flex: 1;
+  min-height: 0;
 }
 
 .xover-nav-item {
@@ -94,7 +97,6 @@
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
-  margin-top: auto;
   flex-shrink: 0;
   z-index: 10;
 }
