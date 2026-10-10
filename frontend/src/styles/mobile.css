@@ -172,23 +172,6 @@
     left: 0;
   }
 
-  .sidebar-nav.collapsed {
-    width: 280px;
-  }
-
-  .sidebar-nav.collapsed .nav-section-title,
-  .sidebar-nav.collapsed .nav-item-label,
-  .sidebar-nav.collapsed .nav-chevron {
-    display: inline;
-  }
-
-  .sidebar-nav.collapsed .nav-section-header,
-  .sidebar-nav.collapsed .nav-item,
-  .sidebar-nav.collapsed .nav-item-standalone {
-    justify-content: flex-start;
-    padding: var(--spacing-sm);
-  }
-
   /* Hide sidebar toggle on mobile */
   .sidebar-toggle {
     display: none;
@@ -394,5 +377,33 @@
 
   .mobile-overlay {
     top: calc(var(--toolbar-height) + env(safe-area-inset-top));
+  }
+}
+
+/* Desktop overrides - MUST be at the end to override mobile rules above */
+@media (min-width: 768px) {
+  .sidebar-nav {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: auto !important;
+    /* Do NOT set width here - let .collapsed class control it */
+  }
+
+  /* Only set width when NOT collapsed */
+  .sidebar-nav:not(.collapsed) {
+    width: var(--sidebar-width) !important;
+  }
+
+  .sidebar-toggle {
+    display: flex !important;
+  }
+
+  .mobile-menu-btn {
+    display: none !important;
+  }
+
+  .mobile-overlay {
+    display: none !important;
   }
 }
