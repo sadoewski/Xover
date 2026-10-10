@@ -259,6 +259,7 @@
   flex-direction: column;
   flex-shrink: 0;
   transition: width 0.3s ease;
+  overflow: hidden;
 }
 
 .sidebar-nav.collapsed {
@@ -465,6 +466,8 @@ body.resizing {
 
 /* Sidebar Toggle Button */
 .sidebar-toggle {
+  position: sticky;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -478,6 +481,7 @@ body.resizing {
   color: var(--text-tertiary);
   flex-shrink: 0;
   z-index: 10;
+  margin-top: auto;
 }
 
 .sidebar-toggle:hover {
