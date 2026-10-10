@@ -413,8 +413,8 @@ const ProfessionalLayout = ({ children }) => {
                 onMouseDown={startResizing}
               />
             )}
-          </div>
-        </>
+            </div>
+          </>
         )}
 
         {/* Main Content Area */}
