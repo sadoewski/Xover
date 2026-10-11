@@ -19,6 +19,7 @@ import DataTasksPage from './pages/DataTasksPage';
 import CreateDataTaskPage from './pages/CreateDataTaskPage';
 import DataTaskDetailPage from './pages/DataTaskDetailPage';
 import SitePage from './pages/SitePage';
+import TerminalPage from './pages/TerminalPage';
 
 function App() {
   return (
@@ -137,6 +138,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SitePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/terminal"
+            element={
+              <ProtectedRoute>
+                <TerminalPage />
               </ProtectedRoute>
             }
           />

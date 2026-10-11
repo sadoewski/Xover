@@ -25,6 +25,7 @@ const createTaskValidation = [
   body('isTimeBound').optional().isBoolean(),
 ];
 
+router.get('/', authMiddleware, tasksController.getAllTasks);
 router.get('/date/:date', authMiddleware, tasksController.getTasksByDate);
 router.get('/:id', authMiddleware, tasksController.getTaskById);
 router.get('/:id/logs', authMiddleware, tasksController.getTaskLogs);

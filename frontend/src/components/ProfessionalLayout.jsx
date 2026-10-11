@@ -18,6 +18,7 @@ import {
   Sun,
   Moon,
   Database,
+  Terminal,
   Menu,
   X,
 } from 'lucide-react';
@@ -52,11 +53,8 @@ const ProfessionalLayout = ({ children }) => {
     return saved === 'true';
   });
 
-  // Load toolbar collapsed state from localStorage
-  const [toolbarCollapsed, setToolbarCollapsed] = useState(() => {
-    const saved = localStorage.getItem('toolbarCollapsed');
-    return saved === 'true';
-  });
+  // Toolbar is always expanded
+  const toolbarCollapsed = false;
 
   // Sidebar resize state
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -106,15 +104,6 @@ const ProfessionalLayout = ({ children }) => {
     setSidebarCollapsed(prev => {
       const newValue = !prev;
       localStorage.setItem('sidebarCollapsed', String(newValue));
-      return newValue;
-    });
-  };
-
-  // Save toolbar state to localStorage when it changes
-  const toggleToolbar = () => {
-    setToolbarCollapsed(prev => {
-      const newValue = !prev;
-      localStorage.setItem('toolbarCollapsed', String(newValue));
       return newValue;
     });
   };
@@ -187,6 +176,7 @@ const ProfessionalLayout = ({ children }) => {
         { path: '/datatasks', label: 'DataTask', icon: Database },
         { path: '/groups', label: 'Группы', icon: Folder },
         { path: '/priorities', label: 'Приоритеты', icon: Star },
+        { path: '/terminal', label: 'Shell', icon: Terminal },
       ]
     },
   ];
@@ -198,6 +188,7 @@ const ProfessionalLayout = ({ children }) => {
     ...(location.pathname === '/datatasks' ? [{ label: 'DataTask', path: '/datatasks' }] : []),
     ...(location.pathname === '/groups' ? [{ label: 'Группы', path: '/groups' }] : []),
     ...(location.pathname === '/priorities' ? [{ label: 'Приоритеты', path: '/priorities' }] : []),
+    ...(location.pathname === '/terminal' ? [{ label: 'Shell', path: '/terminal' }] : []),
     ...(location.pathname.startsWith('/tasks/') ? [
       { label: 'Календарь', path: '/calendar' },
       { label: 'Задача', path: location.pathname }
@@ -215,7 +206,7 @@ const ProfessionalLayout = ({ children }) => {
       )}
 
       {/* Top Toolbar */}
-      <div className={`toolbar ${toolbarCollapsed ? 'collapsed' : ''}`}>
+      <div className="toolbar">
         <div className="toolbar-left">
           {/* Mobile Menu Button */}
           {isMobile && activeTab === 'xover' && (
@@ -231,20 +222,9 @@ const ProfessionalLayout = ({ children }) => {
           <div className="app-logo">
             <span className="app-name">Xover</span>
           </div>
-
-          {/* Toolbar Collapse Toggle */}
-          <button
-            className="toolbar-collapse-btn"
-            onClick={toggleToolbar}
-            title={toolbarCollapsed ? 'Развернуть панель' : 'Свернуть панель'}
-          >
-            {toolbarCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          </button>
         </div>
 
-        {!toolbarCollapsed && (
-          <>
-            <div className="toolbar-center">
+        <div className="toolbar-center">
               {/* Tab Switcher */}
               <div className="tab-switcher">
                 <button
@@ -319,11 +299,7 @@ const ProfessionalLayout = ({ children }) => {
                 <LogOut size={16} />
               </button>
             </div>
-          </>
-        )}
       </div>
-
-      {/* Breadcrumbs Bar - Remove this section as breadcrumbs are now in toolbar */}
 
       <div className="layout-body">
         {/* Sidebar Navigation Tree - только для Xover */}
@@ -397,7 +373,7 @@ const ProfessionalLayout = ({ children }) => {
               ))}
             </div>
 
-            {/* Sidebar Collapse Toggle */}
+            {/* Sidebar Collapse Toggle - moved inside sidebar-nav */}
             <button
               className="sidebar-toggle"
               onClick={toggleSidebar}

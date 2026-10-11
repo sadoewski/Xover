@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, FolderTree, FileText } from 'lucide-react';
+import { ChevronRight, ChevronDown, FolderTree, FileText, Edit2, Check, X } from 'lucide-react';
 import { rwprintService } from '../../services/api';
 import './FilesSettings.css';
 
@@ -9,6 +9,8 @@ export default function FilesSettings() {
   const [documents, setDocuments] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
   const [loading, setLoading] = useState(true);
+  const [editingEnvId, setEditingEnvId] = useState(null);
+  const [editingEnvName, setEditingEnvName] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -47,6 +49,33 @@ export default function FilesSettings() {
   };
 
   const isExpanded = (type, id) => expandedItems[`${type}-${id}`];
+
+  const startEditEnvironment = (env, e) => {
+    e.stopPropagation();
+    setEditingEnvId(env.id);
+    setEditingEnvName(env.name);
+  };
+
+  const saveEnvironmentName = async (envId) => {
+    if (!editingEnvName.trim()) return;
+
+    try {
+      await rwprintService.updateEnvironment(envId, { name: editingEnvName.trim() });
+      setEnvironments(prev => prev.map(env =>
+        env.id === envId ? { ...env, name: editingEnvName.trim() } : env
+      ));
+      setEditingEnvId(null);
+      setEditingEnvName('');
+    } catch (error) {
+      console.error('Ошибка обновления окружения:', error);
+      alert('Ошибка при сохранении названия');
+    }
+  };
+
+  const cancelEditEnvironment = () => {
+    setEditingEnvId(null);
+    setEditingEnvName('');
+  };
 
   const renderDocument = (doc, level) => {
     return (
@@ -98,12 +127,13 @@ export default function FilesSettings() {
     const envDocs = documents.filter(d => d.environment_id === env.id && !d.folder_id);
     const hasChildren = envFolders.length > 0 || envDocs.length > 0;
     const expanded = isExpanded('env', env.id);
+    const isEditing = editingEnvId === env.id;
 
     return (
       <div key={`env-${env.id}`} className="tree-item-group environment-group">
         <div
           className="tree-item environment-item"
-          onClick={() => hasChildren && toggleExpand('env', env.id)}
+          onClick={() => !isEditing && hasChildren && toggleExpand('env', env.id)}
         >
           <div className="tree-item-content">
             {hasChildren ? (
@@ -112,7 +142,53 @@ export default function FilesSettings() {
               <span className="tree-spacer"></span>
             )}
             <div className="environment-icon" style={{ background: env.color || '#6366f1' }}></div>
-            <span className="tree-label environment-label">{env.name}</span>
+            {isEditing ? (
+              <div className="environment-edit-group">
+                <input
+                  type="text"
+                  className="environment-name-input"
+                  value={editingEnvName}
+                  onChange={(e) => setEditingEnvName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') saveEnvironmentName(env.id);
+                    if (e.key === 'Escape') cancelEditEnvironment();
+                  }}
+                  autoFocus
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <button
+                  className="env-edit-btn save"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    saveEnvironmentName(env.id);
+                  }}
+                  title="Сохранить"
+                >
+                  <Check size={14} />
+                </button>
+                <button
+                  className="env-edit-btn cancel"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    cancelEditEnvironment();
+                  }}
+                  title="Отменить"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <span className="tree-label environment-label">{env.name}</span>
+                <button
+                  className="env-edit-btn"
+                  onClick={(e) => startEditEnvironment(env, e)}
+                  title="Редактировать название"
+                >
+                  <Edit2 size={14} />
+                </button>
+              </>
+            )}
           </div>
         </div>
         {expanded && hasChildren && (

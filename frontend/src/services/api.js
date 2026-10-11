@@ -96,6 +96,11 @@ export const authService = {
 };
 
 export const tasksService = {
+  getTasks: async () => {
+    const response = await api.get('/tasks');
+    return response.data;
+  },
+
   getTasksByDate: async (date) => {
     const response = await api.get(`/tasks/date/${date}`);
     return response.data;
@@ -307,10 +312,18 @@ export const dataTasksService = {
   },
 };
 
+
+export default api;
+
 export const rwprintService = {
   getEnvironments: async () => {
     const response = await api.get('/rwprint/environments');
     return response.data.environments || [];
+  },
+
+  updateEnvironment: async (id, data) => {
+    const response = await api.put(`/rwprint/environments/${id}`, data);
+    return response.data;
   },
 
   getFolders: async (environmentId) => {
@@ -327,6 +340,141 @@ export const rwprintService = {
     const response = await api.get('/rwprint/stats/storage');
     return response.data;
   },
+
+  // Document links
+  linkDocuments: async (sourceDocumentId, targetDocumentId) => {
+    const response = await api.post('/rwprint/documents/link', { sourceDocumentId, targetDocumentId });
+    return response.data;
+  },
+
+  unlinkDocuments: async (sourceDocumentId, targetDocumentId) => {
+    const response = await api.delete(`/rwprint/documents/${sourceDocumentId}/link/${targetDocumentId}`);
+    return response.data;
+  },
+
+  getDocumentLinks: async (documentId) => {
+    const response = await api.get(`/rwprint/documents/${documentId}/links`);
+    return response.data.links || [];
+  },
+
+  // Document-task links
+  linkDocumentToTask: async (documentId, taskId) => {
+    const response = await api.post('/rwprint/documents/link-task', { documentId, taskId });
+    return response.data;
+  },
+
+  unlinkDocumentFromTask: async (documentId, taskId) => {
+    const response = await api.delete(`/rwprint/documents/${documentId}/task/${taskId}`);
+    return response.data;
+  },
+
+  getDocumentTaskLinks: async (documentId) => {
+    const response = await api.get(`/rwprint/documents/${documentId}/task-links`);
+    return response.data.taskLinks || [];
+  },
+
+  getTaskDocumentLinks: async (taskId) => {
+    const response = await api.get(`/rwprint/tasks/${taskId}/document-links`);
+    return response.data.documentLinks || [];
+  },
+
+  createEnvironment: async (name) => {
+    const response = await api.post('/rwprint/environments', { name });
+    return response.data;
+  },
+
+  createFolder: async (environmentId, name) => {
+    const response = await api.post(`/rwprint/environments/${environmentId}/folders`, { name });
+    return response.data;
+  },
+
+  createDocument: async (environmentId, folderId, title, content) => {
+    const response = await api.post(`/rwprint/environments/${environmentId}/documents`, {
+      folder_id: folderId,
+      title,
+      content,
+    });
+    return response.data;
+  },
+
+  updateDocument: async (documentId, data) => {
+    const response = await api.put(`/rwprint/documents/${documentId}`, data);
+    return response.data;
+  },
+
+  deleteDocument: async (documentId) => {
+    const response = await api.delete(`/rwprint/documents/${documentId}`);
+    return response.data;
+  },
+
+  toggleBookmark: async (documentId) => {
+    const response = await api.post(`/rwprint/documents/${documentId}/bookmark`);
+    return response.data;
+  },
+
+  getAllBookmarks: async () => {
+    const response = await api.get('/rwprint/bookmarks');
+    return response.data.bookmarks || [];
+  },
 };
 
-export default api;
+export const terminalService = {
+  getBoard: async () => {
+    const response = await api.get('/terminal/board');
+    return response.data;
+  },
+
+  getTasksByDate: async (date, status = null) => {
+    const params = { date };
+    if (status) params.status = status;
+    const response = await api.get('/terminal/tasks/date', { params });
+    return response.data;
+  },
+
+  getTasksInRange: async (startDate, endDate, status = null) => {
+    const params = { startDate, endDate };
+    if (status) params.status = status;
+    const response = await api.get('/terminal/tasks/range', { params });
+    return response.data;
+  },
+
+  getTaskDetails: async (id) => {
+    const response = await api.get(`/terminal/tasks/${id}`);
+    return response.data;
+  },
+
+  updateTaskStatus: async (id, status, movedToDate = null) => {
+    const response = await api.put(`/terminal/tasks/${id}/status`, { status, movedToDate });
+    return response.data;
+  },
+
+  deleteTask: async (id) => {
+    const response = await api.delete(`/terminal/tasks/${id}`);
+    return response.data;
+  },
+
+  getTaskLinks: async (id) => {
+    const response = await api.get(`/terminal/tasks/${id}/links`);
+    return response.data;
+  },
+
+  addTaskLink: async (id, link) => {
+    const response = await api.post(`/terminal/tasks/${id}/links`, { link });
+    return response.data;
+  },
+
+  deleteTaskLink: async (id, linkId) => {
+    const response = await api.delete(`/terminal/tasks/${id}/links/${linkId}`);
+    return response.data;
+  },
+
+  getDatatasks: async () => {
+    const response = await api.get('/terminal/datatasks');
+    return response.data;
+  },
+
+  getEvents: async (filter = 'all') => {
+    const response = await api.get('/terminal/events', { params: { filter } });
+    return response.data;
+  },
+};

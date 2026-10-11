@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BarChart3, Calendar, Repeat, Folder, Star, FileText, Target, ChevronLeft, ChevronRight } from 'lucide-react';
+import { BarChart3, Calendar, Repeat, Folder, Star, FileText, Target, ChevronLeft, ChevronRight, Terminal } from 'lucide-react';
 import './XoverSidebar.css';
 
 export default function XoverSidebar() {
@@ -55,6 +55,7 @@ export default function XoverSidebar() {
     { id: 'priorities', label: 'Приоритеты', Icon: Star, path: '/priorities' },
     { id: 'templates', label: 'Шаблоны задач', Icon: FileText, path: '/templates' },
     { id: 'events', label: 'События', Icon: Target, path: '/events' },
+    { id: 'shell', label: 'Shell', Icon: Terminal, path: '/terminal' },
   ];
 
   const isActive = (path) => {

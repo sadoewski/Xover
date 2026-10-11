@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Trash2, X, TerminalSquare, Bookmark } from 'lucide-react';
+import { Trash2, X, TerminalSquare, Bookmark, Link2 } from 'lucide-react';
 import { Editor, rootCtx, defaultValueCtx, editorViewCtx } from '@milkdown/core';
 import { nord } from '@milkdown/theme-nord';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
@@ -21,6 +21,7 @@ import {
   runSyntaxHighlightSelfCheck,
 } from '../utils/syntaxHighlightValidation';
 import './DocumentEditor.css';
+import DocumentLinks from './DocumentLinks';
 
 // Запускаем самопроверку при загрузке модуля
 let SYNTAX_HIGHLIGHT_ENABLED = false;
@@ -342,6 +343,7 @@ export default function DocumentEditor({
 
   const [highlightData, setHighlightData] = useState({});
   const [showHotkeys, setShowHotkeys] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
   const hotkeysRef = useRef(null);
   const autoSaveTimerRef = useRef(null);
   const ruMorphologyRef = useRef({});
@@ -605,6 +607,13 @@ export default function DocumentEditor({
 
         <div className="toolbar-right">
           <button
+            className={`toolbar-btn-minimal ${showLinks ? 'active' : ''}`}
+            onClick={() => setShowLinks(!showLinks)}
+            title="Связи документа"
+          >
+            <Link2 size={18} />
+          </button>
+          <button
             className={`toolbar-btn-minimal ${document.is_bookmarked ? 'bookmarked' : ''}`}
             onClick={() => onToggleBookmark && onToggleBookmark(document.id)}
             title={document.is_bookmarked ? 'Удалить из закладок' : 'Добавить в закладки'}
@@ -629,17 +638,31 @@ export default function DocumentEditor({
       </div>
 
       {/* Milkdown Editor */}
-      <div className="editor-container">
-        <div className="milkdown-wrapper">
-          <MilkdownProvider>
-            <MilkdownEditor
-              content={markdownContent}
-              onChange={handleEditorChange}
-              syntaxHighlightEnabled={syntaxHighlightEnabled}
-              highlightData={highlightData}
-            />
-          </MilkdownProvider>
+      <div className="editor-content-wrapper">
+        <div className="editor-container">
+          <div className="milkdown-wrapper">
+            <MilkdownProvider>
+              <MilkdownEditor
+                content={markdownContent}
+                onChange={handleEditorChange}
+                syntaxHighlightEnabled={syntaxHighlightEnabled}
+                highlightData={highlightData}
+              />
+            </MilkdownProvider>
+          </div>
         </div>
+
+        {/* Links Panel */}
+        {showLinks && (
+          <DocumentLinks
+            documentId={document.id}
+            onNavigateToDocument={(docId) => {
+              // Callback для навигации к другому документу
+              // Эту функцию нужно будет передать через props от родительского компонента
+              console.log('Navigate to document:', docId);
+            }}
+          />
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,14 @@
+.terminal-page {
+  width: 100%;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .terminal-page {
+    height: calc(100vh - 120px);
+  }
+}

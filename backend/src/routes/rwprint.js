@@ -22,6 +22,18 @@ router.delete('/folders/:id', rwprintController.deleteFolder);
 // === DOCUMENTS ===
 router.get('/environments/:environmentId/documents', rwprintController.getDocuments);
 router.post('/environments/:environmentId/documents', rwprintController.createDocument);
+
+// === DOCUMENT LINKS (гиперссылки между документами) ===
+router.post('/documents/link', rwprintController.linkDocuments);
+router.delete('/documents/:sourceDocumentId/link/:targetDocumentId', rwprintController.unlinkDocuments);
+router.get('/documents/:documentId/links', rwprintController.getDocumentLinks);
+
+// === DOCUMENT-TASK LINKS (связи документов с задачами) ===
+router.post('/documents/link-task', rwprintController.linkDocumentToTask);
+router.delete('/documents/:documentId/task/:taskId', rwprintController.unlinkDocumentFromTask);
+router.get('/documents/:documentId/task-links', rwprintController.getDocumentTaskLinks);
+router.get('/tasks/:taskId/document-links', rwprintController.getTaskDocumentLinks);
+
 router.post('/documents/:id', rwprintController.getDocumentById); // POST для пароля
 router.put('/documents/:id', rwprintController.updateDocument);
 router.delete('/documents/:id', rwprintController.deleteDocument);

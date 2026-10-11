@@ -1,6 +1,34 @@
 import pool from '../config/database.js';
 
 export const tasksController = {
+  // Получить все задачи пользователя
+  async getAllTasks(req, res) {
+    const userId = req.userId;
+
+    try {
+      const result = await pool.query(
+        `SELECT
+          t.id,
+          t.title,
+          t.date,
+          t.status,
+          tg.name as group_name,
+          tg.color as group_color
+        FROM tasks t
+        JOIN task_groups tg ON t.group_id = tg.id
+        WHERE t.user_id = $1
+        ORDER BY t.date DESC, t.created_at DESC
+        LIMIT 100`,
+        [userId]
+      );
+
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Ошибка получения задач:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
   // Получить все записи за конкретный день
   async getTasksByDate(req, res) {
     const { date } = req.params;
