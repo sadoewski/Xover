@@ -388,4 +388,14 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
+
+    func toHex() -> String {
+        guard let components = NSColor(self).cgColor.components else {
+            return "#000000"
+        }
+        let r = Int((components.count > 0 ? components[0] : 0) * 255)
+        let g = Int((components.count > 1 ? components[1] : 0) * 255)
+        let b = Int((components.count > 2 ? components[2] : 0) * 255)
+        return String(format: "#%02X%02X%02X", r, g, b)
+    }
 }

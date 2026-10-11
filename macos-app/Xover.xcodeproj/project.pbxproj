@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1IC00000000000000000002 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A1IC00000000000000000001 /* AppIcon.icns */; };
 		A10000001BAB000000000001 /* XoverApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000001 /* XoverApp.swift */; };
 		A10000001BAB000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000002 /* ContentView.swift */; };
 		A10000001BAB000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000003 /* Assets.xcassets */; };
@@ -15,13 +14,38 @@
 		A10000001BAB000000000010 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000010 /* AppDelegate.swift */; };
 		A10000001BAB000000000011 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000011 /* SyncManager.swift */; };
 		A10000001BAB000000000012 /* MenuCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000012 /* MenuCommands.swift */; };
-		A10000001BAB000000000013 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000013 /* PreferencesView.swift */; };
 		A10000001BAB000000000014 /* WebViewBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000014 /* WebViewBridge.swift */; };
 		A10000001BAB000000000015 /* BackendManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000001BAA000000000015 /* BackendManager.swift */; };
+		A1IC00000000000000000002 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A1IC00000000000000000001 /* AppIcon.icns */; };
+		A9A6F136307BFE3100F52BA3 /* Group.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F134307BFE3100F52BA3 /* Group.swift */; };
+		A9A6F137307BFE3100F52BA3 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F133307BFE3100F52BA3 /* Event.swift */; };
+		A9A6F138307BFE3100F52BA3 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F135307BFE3100F52BA3 /* Template.swift */; };
+		A9A6F141307BFE6600F52BA3 /* TemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F13F307BFE6600F52BA3 /* TemplatesView.swift */; };
+		A9A6F142307BFE6600F52BA3 /* GroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F13B307BFE6600F52BA3 /* GroupsView.swift */; };
+		A9A6F143307BFE6600F52BA3 /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F139307BFE6600F52BA3 /* EventsView.swift */; };
+		A9A6F144307BFE6600F52BA3 /* PrioritiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F13D307BFE6600F52BA3 /* PrioritiesView.swift */; };
+		A9A6F147307BFEF900F52BA3 /* DataTasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9A6F145307BFEF900F52BA3 /* DataTasksView.swift */; };
+		A9E5DECF307BC5AD000288BA /* MonthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEBC307BC5AD000288BA /* MonthView.swift */; };
+		A9E5DED0307BC5AD000288BA /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DECD307BC5AD000288BA /* MainWindowView.swift */; };
+		A9E5DED1307BC5AD000288BA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEC4307BC5AD000288BA /* SettingsView.swift */; };
+		A9E5DED2307BC5AD000288BA /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEB7307BC5AD000288BA /* APIService.swift */; };
+		A9E5DED3307BC5AD000288BA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEB9307BC5AD000288BA /* LoginView.swift */; };
+		A9E5DED4307BC5AD000288BA /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEC6307BC5AD000288BA /* SidebarView.swift */; };
+		A9E5DED5307BC5AD000288BA /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEB4307BC5AD000288BA /* Task.swift */; };
+		A9E5DED6307BC5AD000288BA /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEC3307BC5AD000288BA /* PreferencesView.swift */; };
+		A9E5DED7307BC5AD000288BA /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEB5307BC5AD000288BA /* User.swift */; };
+		A9E5DED8307BC5AD000288BA /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEC9307BC5AD000288BA /* TasksView.swift */; };
+		A9E5DED9307BC5AD000288BA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEBB307BC5AD000288BA /* CalendarView.swift */; };
+		A9E5DEDA307BC5AD000288BA /* TaskDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEC8307BC5AD000288BA /* TaskDetailView.swift */; };
+		A9E5DEDB307BC5AD000288BA /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEBE307BC5AD000288BA /* DashboardView.swift */; };
+		A9E5DEDC307BC5AD000288BA /* TerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DECB307BC5AD000288BA /* TerminalView.swift */; };
+		A9E5DEDD307BC5AD000288BA /* RWPrintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEC1307BC5AD000288BA /* RWPrintView.swift */; };
+		A9E5DEDE307BC5AD000288BA /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEB3307BC5AD000288BA /* AppState.swift */; };
+		A9E5DEE0307BC854000288BA /* NotificationNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEDF307BC854000288BA /* NotificationNames.swift */; };
+		A9E5DEE2307BCA6C000288BA /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E5DEE1307BCA6C000288BA /* EmptyStateView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1IC00000000000000000001 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		A10000001BA9000000000001 /* Xover.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Xover.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000001BAA000000000001 /* XoverApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XoverApp.swift; sourceTree = "<group>"; };
 		A10000001BAA000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -32,9 +56,35 @@
 		A10000001BAA000000000010 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A10000001BAA000000000011 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 		A10000001BAA000000000012 /* MenuCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCommands.swift; sourceTree = "<group>"; };
-		A10000001BAA000000000013 /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		A10000001BAA000000000014 /* WebViewBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewBridge.swift; sourceTree = "<group>"; };
 		A10000001BAA000000000015 /* BackendManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendManager.swift; sourceTree = "<group>"; };
+		A1IC00000000000000000001 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		A9A6F133307BFE3100F52BA3 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		A9A6F134307BFE3100F52BA3 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
+		A9A6F135307BFE3100F52BA3 /* Template.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
+		A9A6F139307BFE6600F52BA3 /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
+		A9A6F13B307BFE6600F52BA3 /* GroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupsView.swift; sourceTree = "<group>"; };
+		A9A6F13D307BFE6600F52BA3 /* PrioritiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrioritiesView.swift; sourceTree = "<group>"; };
+		A9A6F13F307BFE6600F52BA3 /* TemplatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplatesView.swift; sourceTree = "<group>"; };
+		A9A6F145307BFEF900F52BA3 /* DataTasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTasksView.swift; sourceTree = "<group>"; };
+		A9E5DEB3307BC5AD000288BA /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		A9E5DEB4307BC5AD000288BA /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		A9E5DEB5307BC5AD000288BA /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A9E5DEB7307BC5AD000288BA /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		A9E5DEB9307BC5AD000288BA /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		A9E5DEBB307BC5AD000288BA /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		A9E5DEBC307BC5AD000288BA /* MonthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthView.swift; sourceTree = "<group>"; };
+		A9E5DEBE307BC5AD000288BA /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A9E5DEC1307BC5AD000288BA /* RWPrintView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RWPrintView.swift; sourceTree = "<group>"; };
+		A9E5DEC3307BC5AD000288BA /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
+		A9E5DEC4307BC5AD000288BA /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A9E5DEC6307BC5AD000288BA /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		A9E5DEC8307BC5AD000288BA /* TaskDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailView.swift; sourceTree = "<group>"; };
+		A9E5DEC9307BC5AD000288BA /* TasksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
+		A9E5DECB307BC5AD000288BA /* TerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalView.swift; sourceTree = "<group>"; };
+		A9E5DECD307BC5AD000288BA /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		A9E5DEDF307BC854000288BA /* NotificationNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationNames.swift; sourceTree = "<group>"; };
+		A9E5DEE1307BCA6C000288BA /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,14 +117,18 @@
 		A10000001BAA000000000007 /* Xover */ = {
 			isa = PBXGroup;
 			children = (
+				A9E5DEB6307BC5AD000288BA /* Models */,
+				A9E5DEB8307BC5AD000288BA /* Services */,
+				A9E5DECE307BC5AD000288BA /* Views */,
 				A10000001BAA000000000001 /* XoverApp.swift */,
 				A10000001BAA000000000010 /* AppDelegate.swift */,
 				A10000001BAA000000000002 /* ContentView.swift */,
 				A10000001BAA000000000012 /* MenuCommands.swift */,
-				A10000001BAA000000000013 /* PreferencesView.swift */,
 				A10000001BAA000000000011 /* SyncManager.swift */,
 				A10000001BAA000000000015 /* BackendManager.swift */,
 				A10000001BAA000000000014 /* WebViewBridge.swift */,
+				A9E5DEE1307BCA6C000288BA /* EmptyStateView.swift */,
+				A9E5DEDF307BC854000288BA /* NotificationNames.swift */,
 				A10000001BAA000000000003 /* Assets.xcassets */,
 				A10000001BAA000000000004 /* Entitlements.plist */,
 				A10000001BAA000000000006 /* Info.plist */,
@@ -90,6 +144,163 @@
 				A10000001BAA000000000005 /* Preview Assets.xcassets */,
 			);
 			path = PreviewContent;
+			sourceTree = "<group>";
+		};
+		A9A6F13A307BFE6600F52BA3 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F139307BFE6600F52BA3 /* EventsView.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
+		A9A6F13C307BFE6600F52BA3 /* Groups */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F13B307BFE6600F52BA3 /* GroupsView.swift */,
+			);
+			path = Groups;
+			sourceTree = "<group>";
+		};
+		A9A6F13E307BFE6600F52BA3 /* Priorities */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F13D307BFE6600F52BA3 /* PrioritiesView.swift */,
+			);
+			path = Priorities;
+			sourceTree = "<group>";
+		};
+		A9A6F140307BFE6600F52BA3 /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F13F307BFE6600F52BA3 /* TemplatesView.swift */,
+			);
+			path = Templates;
+			sourceTree = "<group>";
+		};
+		A9A6F146307BFEF900F52BA3 /* DataTasks */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F145307BFEF900F52BA3 /* DataTasksView.swift */,
+			);
+			path = DataTasks;
+			sourceTree = "<group>";
+		};
+		A9E5DEB6307BC5AD000288BA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F133307BFE3100F52BA3 /* Event.swift */,
+				A9A6F134307BFE3100F52BA3 /* Group.swift */,
+				A9A6F135307BFE3100F52BA3 /* Template.swift */,
+				A9E5DEB3307BC5AD000288BA /* AppState.swift */,
+				A9E5DEB4307BC5AD000288BA /* Task.swift */,
+				A9E5DEB5307BC5AD000288BA /* User.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A9E5DEB8307BC5AD000288BA /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEB7307BC5AD000288BA /* APIService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A9E5DEBA307BC5AD000288BA /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEB9307BC5AD000288BA /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		A9E5DEBD307BC5AD000288BA /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEBB307BC5AD000288BA /* CalendarView.swift */,
+				A9E5DEBC307BC5AD000288BA /* MonthView.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		A9E5DEBF307BC5AD000288BA /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEBE307BC5AD000288BA /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A9E5DEC0307BC5AD000288BA /* Inspector */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Inspector;
+			sourceTree = "<group>";
+		};
+		A9E5DEC2307BC5AD000288BA /* RWPrint */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEC1307BC5AD000288BA /* RWPrintView.swift */,
+			);
+			path = RWPrint;
+			sourceTree = "<group>";
+		};
+		A9E5DEC5307BC5AD000288BA /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEC3307BC5AD000288BA /* PreferencesView.swift */,
+				A9E5DEC4307BC5AD000288BA /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		A9E5DEC7307BC5AD000288BA /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEC6307BC5AD000288BA /* SidebarView.swift */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		A9E5DECA307BC5AD000288BA /* Tasks */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DEC8307BC5AD000288BA /* TaskDetailView.swift */,
+				A9E5DEC9307BC5AD000288BA /* TasksView.swift */,
+			);
+			path = Tasks;
+			sourceTree = "<group>";
+		};
+		A9E5DECC307BC5AD000288BA /* Terminal */ = {
+			isa = PBXGroup;
+			children = (
+				A9E5DECB307BC5AD000288BA /* TerminalView.swift */,
+			);
+			path = Terminal;
+			sourceTree = "<group>";
+		};
+		A9E5DECE307BC5AD000288BA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A9A6F146307BFEF900F52BA3 /* DataTasks */,
+				A9A6F13A307BFE6600F52BA3 /* Events */,
+				A9A6F13C307BFE6600F52BA3 /* Groups */,
+				A9A6F13E307BFE6600F52BA3 /* Priorities */,
+				A9A6F140307BFE6600F52BA3 /* Templates */,
+				A9E5DEBA307BC5AD000288BA /* Auth */,
+				A9E5DEBD307BC5AD000288BA /* Calendar */,
+				A9E5DEBF307BC5AD000288BA /* Dashboard */,
+				A9E5DEC0307BC5AD000288BA /* Inspector */,
+				A9E5DEC2307BC5AD000288BA /* RWPrint */,
+				A9E5DEC5307BC5AD000288BA /* Settings */,
+				A9E5DEC7307BC5AD000288BA /* Sidebar */,
+				A9E5DECA307BC5AD000288BA /* Tasks */,
+				A9E5DECC307BC5AD000288BA /* Terminal */,
+				A9E5DECD307BC5AD000288BA /* MainWindowView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -178,6 +389,7 @@
 				"$(BUILT_PRODUCTS_DIR)/$(PRODUCT_NAME).app/Contents/Resources/backend-bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
 			shellScript = "${PROJECT_DIR}/copy-backend-script.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -187,12 +399,37 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9A6F136307BFE3100F52BA3 /* Group.swift in Sources */,
+				A9A6F137307BFE3100F52BA3 /* Event.swift in Sources */,
+				A9A6F138307BFE3100F52BA3 /* Template.swift in Sources */,
 				A10000001BAB000000000002 /* ContentView.swift in Sources */,
 				A10000001BAB000000000001 /* XoverApp.swift in Sources */,
 				A10000001BAB000000000010 /* AppDelegate.swift in Sources */,
 				A10000001BAB000000000011 /* SyncManager.swift in Sources */,
+				A9E5DECF307BC5AD000288BA /* MonthView.swift in Sources */,
+				A9E5DED0307BC5AD000288BA /* MainWindowView.swift in Sources */,
+				A9E5DED1307BC5AD000288BA /* SettingsView.swift in Sources */,
+				A9E5DED2307BC5AD000288BA /* APIService.swift in Sources */,
+				A9E5DED3307BC5AD000288BA /* LoginView.swift in Sources */,
+				A9E5DED4307BC5AD000288BA /* SidebarView.swift in Sources */,
+				A9E5DED5307BC5AD000288BA /* Task.swift in Sources */,
+				A9E5DED6307BC5AD000288BA /* PreferencesView.swift in Sources */,
+				A9E5DEE2307BCA6C000288BA /* EmptyStateView.swift in Sources */,
+				A9E5DED7307BC5AD000288BA /* User.swift in Sources */,
+				A9E5DEE0307BC854000288BA /* NotificationNames.swift in Sources */,
+				A9E5DED8307BC5AD000288BA /* TasksView.swift in Sources */,
+				A9E5DED9307BC5AD000288BA /* CalendarView.swift in Sources */,
+				A9A6F147307BFEF900F52BA3 /* DataTasksView.swift in Sources */,
+				A9E5DEDA307BC5AD000288BA /* TaskDetailView.swift in Sources */,
+				A9E5DEDB307BC5AD000288BA /* DashboardView.swift in Sources */,
+				A9E5DEDC307BC5AD000288BA /* TerminalView.swift in Sources */,
+				A9E5DEDD307BC5AD000288BA /* RWPrintView.swift in Sources */,
+				A9A6F141307BFE6600F52BA3 /* TemplatesView.swift in Sources */,
+				A9A6F142307BFE6600F52BA3 /* GroupsView.swift in Sources */,
+				A9A6F143307BFE6600F52BA3 /* EventsView.swift in Sources */,
+				A9A6F144307BFE6600F52BA3 /* PrioritiesView.swift in Sources */,
+				A9E5DEDE307BC5AD000288BA /* AppState.swift in Sources */,
 				A10000001BAB000000000012 /* MenuCommands.swift in Sources */,
-				A10000001BAB000000000013 /* PreferencesView.swift in Sources */,
 				A10000001BAB000000000014 /* WebViewBridge.swift in Sources */,
 				A10000001BAB000000000015 /* BackendManager.swift in Sources */,
 			);
