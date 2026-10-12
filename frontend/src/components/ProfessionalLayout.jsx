@@ -32,7 +32,7 @@ const ProfessionalLayout = ({ children }) => {
   const user = authService.getCurrentUser();
   const { theme, toggleTheme } = useTheme();
   const [expandedSections, setExpandedSections] = useState({
-    xover: true,
+    properties: true,
   });
 
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -154,16 +154,13 @@ const ProfessionalLayout = ({ children }) => {
 
   const navigationTree = [
     {
-      id: 'xover',
-      title: 'XOVER',
-      icon: Home,
+      id: 'properties',
+      title: 'Свойства',
+      icon: Folder,
       items: [
-        { path: '/calendar', label: 'Календарь', icon: Calendar },
-        { path: '/events', label: 'События', icon: Clock },
         { path: '/datatasks', label: 'DataTask', icon: Database },
         { path: '/groups', label: 'Группы', icon: Folder },
         { path: '/priorities', label: 'Приоритеты', icon: Star },
-        { path: '/terminal', label: 'Shell', icon: Terminal },
       ]
     },
   ];
@@ -200,26 +197,21 @@ const ProfessionalLayout = ({ children }) => {
             className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
             style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
           >
-            {/* Logo & Mobile Menu Button */}
-            <div className="sidebar-header">
-              {isMobile && (
-                <button
-                  className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
-                  onClick={toggleMobileMenu}
-                  aria-label="Меню"
-                >
-                  {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
-              )}
-              {!sidebarCollapsed && (
-                <div className="app-logo">
-                  <span className="app-name">Xover</span>
-                </div>
-              )}
-            </div>
-
             <div className="nav-tree">
-              {/* Admin Panel - Outside tree */}
+              {/* Logo Button - Xover / X */}
+              <button
+                className={`nav-logo-btn ${isActive('/') ? 'active' : ''}`}
+                onClick={() => navigate('/')}
+                title="Админ-панель"
+              >
+                {sidebarCollapsed ? (
+                  <span className="logo-icon">X</span>
+                ) : (
+                  <span className="logo-text">Xover</span>
+                )}
+              </button>
+
+              {/* Admin Panel */}
               <button
                 className={`nav-item-standalone ${isActive('/') ? 'active' : ''}`}
                 onClick={() => navigate('/')}
@@ -229,6 +221,17 @@ const ProfessionalLayout = ({ children }) => {
                 {!sidebarCollapsed && <span className="nav-item-label">Админ-панель</span>}
               </button>
 
+              {/* Calendar */}
+              <button
+                className={`nav-item-standalone ${isActive('/calendar') ? 'active' : ''}`}
+                onClick={() => navigate('/calendar')}
+                title={sidebarCollapsed ? 'Календарь' : ''}
+              >
+                <Calendar size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">Календарь</span>}
+              </button>
+
+              {/* Properties Tree */}
               {navigationTree.map(section => (
                 <div key={section.id} className="nav-section">
                   <button
@@ -264,7 +267,7 @@ const ProfessionalLayout = ({ children }) => {
                     </div>
                   )}
 
-                  {sidebarCollapsed && (
+                  {sidebarCollapsed && expandedSections[section.id] && (
                     <div className="nav-items-collapsed">
                       {section.items.map(item => (
                         <button
@@ -280,20 +283,40 @@ const ProfessionalLayout = ({ children }) => {
                   )}
                 </div>
               ))}
-            </div>
 
-            {/* Sidebar Footer - Settings and User */}
-            <div className="sidebar-footer">
-              {/* Settings Button */}
+              {/* Events */}
               <button
-                className={`sidebar-footer-item ${isActive('/settings') ? 'active' : ''}`}
+                className={`nav-item-standalone ${isActive('/events') ? 'active' : ''}`}
+                onClick={() => navigate('/events')}
+                title={sidebarCollapsed ? 'События' : ''}
+              >
+                <Clock size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">События</span>}
+              </button>
+
+              {/* Shell */}
+              <button
+                className={`nav-item-standalone ${isActive('/terminal') ? 'active' : ''}`}
+                onClick={() => navigate('/terminal')}
+                title={sidebarCollapsed ? 'Shell' : ''}
+              >
+                <Terminal size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">Shell</span>}
+              </button>
+
+              {/* Settings */}
+              <button
+                className={`nav-item-standalone ${isActive('/settings') ? 'active' : ''}`}
                 onClick={() => navigate('/settings')}
                 title={sidebarCollapsed ? 'Настройки' : ''}
               >
                 <Settings size={16} />
-                {!sidebarCollapsed && <span>Настройки</span>}
+                {!sidebarCollapsed && <span className="nav-item-label">Настройки</span>}
               </button>
+            </div>
 
+            {/* Sidebar Footer - Theme and User */}
+            <div className="sidebar-footer">
               {/* Theme Toggle */}
               <button
                 className="sidebar-footer-item"
@@ -331,7 +354,7 @@ const ProfessionalLayout = ({ children }) => {
               )}
             </div>
 
-            {/* Sidebar Collapse Toggle - moved inside sidebar-nav */}
+            {/* Sidebar Collapse Toggle */}
             <button
               className="sidebar-toggle"
               onClick={toggleSidebar}

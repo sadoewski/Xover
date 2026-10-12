@@ -39,12 +39,40 @@
 }
 
 /* Sidebar Header */
-.sidebar-header {
+.nav-logo-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: var(--spacing-md);
+  background: transparent;
+  border: none;
   border-bottom: 1px solid var(--border-primary);
-  gap: var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: 100%;
+  margin-bottom: var(--spacing-sm);
+}
+
+.nav-logo-btn:hover {
+  background: var(--bg-hover);
+}
+
+.nav-logo-btn .logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-class);
+  font-family: var(--font-mono);
+}
+
+.nav-logo-btn .logo-icon {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-class);
+  font-family: var(--font-mono);
+}
+
+.nav-logo-btn.active {
+  background: rgba(78, 201, 176, 0.15);
 }
 
 /* App Logo */

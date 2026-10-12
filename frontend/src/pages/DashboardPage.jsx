@@ -4,6 +4,7 @@ import { tasksService, eventsService } from '../services/api';
 import { format, addDays, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import ProfessionalLayout from '../components/ProfessionalLayout';
+import WeekCalendar from '../components/WeekCalendar';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import './DashboardPage.css';
 
@@ -24,6 +25,7 @@ export default function DashboardPage() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedStatus, setExpandedStatus] = useState(null);
+  const [weekCalendarCollapsed, setWeekCalendarCollapsed] = useState(false);
 
   useEffect(() => {
     loadTodayTasks();
@@ -151,6 +153,12 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Week Calendar */}
+        <WeekCalendar
+          collapsed={weekCalendarCollapsed}
+          onToggleCollapse={() => setWeekCalendarCollapsed(!weekCalendarCollapsed)}
+        />
 
           {loading ? (
             <div className="text-center py-12">
