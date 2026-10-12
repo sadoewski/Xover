@@ -14,11 +14,9 @@ import PrioritiesPage from './pages/PrioritiesPage';
 import TemplatesPage from './pages/TemplatesPage';
 import EventsPage from './pages/EventsPage';
 import SettingsPage from './pages/SettingsPage';
-import RWPrintPage from './pages/RWPrintPage';
 import DataTasksPage from './pages/DataTasksPage';
 import CreateDataTaskPage from './pages/CreateDataTaskPage';
 import DataTaskDetailPage from './pages/DataTaskDetailPage';
-import SitePage from './pages/SitePage';
 import TerminalPage from './pages/TerminalPage';
 
 function App() {
@@ -122,22 +120,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <SettingsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/rwprint"
-            element={
-              <ProtectedRoute>
-                <RWPrintPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/sites/:id"
-            element={
-              <ProtectedRoute>
-                <SitePage />
               </ProtectedRoute>
             }
           />

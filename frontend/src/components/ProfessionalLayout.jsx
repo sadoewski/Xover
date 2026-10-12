@@ -10,11 +10,9 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
-  ChevronUp,
   Home,
   Users,
   BarChart3,
-  FileText,
   Sun,
   Moon,
   Database,
@@ -37,14 +35,6 @@ const ProfessionalLayout = ({ children }) => {
     xover: true,
   });
 
-  // Определяем активную вкладку на основе текущего пути
-  const getActiveTab = () => {
-    if (location.pathname.startsWith('/rwprint')) return 'rwprint';
-    if (location.pathname === '/settings') return 'settings';
-    return 'xover';
-  };
-
-  const activeTab = getActiveTab();
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Load sidebar state from localStorage
@@ -52,9 +42,6 @@ const ProfessionalLayout = ({ children }) => {
     const saved = localStorage.getItem('sidebarCollapsed');
     return saved === 'true';
   });
-
-  // Toolbar is always expanded
-  const toolbarCollapsed = false;
 
   // Sidebar resize state
   const [sidebarWidth, setSidebarWidth] = useState(() => {
@@ -181,7 +168,7 @@ const ProfessionalLayout = ({ children }) => {
     },
   ];
 
-  const breadcrumbs = activeTab === 'xover' ? [
+  const breadcrumbs = [
     { label: 'Админ-панель', path: '/' },
     ...(location.pathname === '/calendar' ? [{ label: 'Календарь', path: '/calendar' }] : []),
     ...(location.pathname === '/events' ? [{ label: 'События', path: '/events' }] : []),
@@ -189,11 +176,12 @@ const ProfessionalLayout = ({ children }) => {
     ...(location.pathname === '/groups' ? [{ label: 'Группы', path: '/groups' }] : []),
     ...(location.pathname === '/priorities' ? [{ label: 'Приоритеты', path: '/priorities' }] : []),
     ...(location.pathname === '/terminal' ? [{ label: 'Shell', path: '/terminal' }] : []),
+    ...(location.pathname === '/settings' ? [{ label: 'Настройки', path: '/settings' }] : []),
     ...(location.pathname.startsWith('/tasks/') ? [
       { label: 'Календарь', path: '/calendar' },
       { label: 'Задача', path: location.pathname }
     ] : []),
-  ] : [];
+  ];
 
   return (
     <div className="professional-layout">
@@ -205,111 +193,32 @@ const ProfessionalLayout = ({ children }) => {
         />
       )}
 
-      {/* Top Toolbar */}
-      <div className="toolbar">
-        <div className="toolbar-left">
-          {/* Mobile Menu Button */}
-          {isMobile && activeTab === 'xover' && (
-            <button
-              className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
-              onClick={toggleMobileMenu}
-              aria-label="Меню"
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          )}
-
-          <div className="app-logo">
-            <span className="app-name">Xover</span>
-          </div>
-        </div>
-
-        <div className="toolbar-center">
-              {/* Tab Switcher */}
-              <div className="tab-switcher">
+      <div className="layout-body">
+        {/* Sidebar Navigation Tree */}
+        <>
+          <div
+            className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
+            style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
+          >
+            {/* Logo & Mobile Menu Button */}
+            <div className="sidebar-header">
+              {isMobile && (
                 <button
-                  className={`tab-btn ${activeTab === 'xover' ? 'active' : ''}`}
-                  onClick={() => navigate('/calendar')}
+                  className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
+                  onClick={toggleMobileMenu}
+                  aria-label="Меню"
                 >
-                  Xover
+                  {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
-                <button
-                  className={`tab-btn ${activeTab === 'rwprint' ? 'active' : ''}`}
-                  onClick={() => navigate('/rwprint')}
-                >
-                  rw:Print
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-                  onClick={() => navigate('/settings')}
-                >
-                  <Settings size={16} />
-                  Настройки
-                </button>
-              </div>
-            </div>
-
-            <div className="toolbar-right">
-              {/* Breadcrumbs - moved into toolbar */}
-              {breadcrumbs.length > 0 && (
-                <div className="toolbar-breadcrumbs">
-                  {breadcrumbs.map((crumb, index) => (
-                    <React.Fragment key={crumb.path}>
-                      {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
-                      <button
-                        className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
-                        onClick={() => navigate(crumb.path)}
-                        disabled={index === breadcrumbs.length - 1}
-                      >
-                        {crumb.label}
-                      </button>
-                    </React.Fragment>
-                  ))}
+              )}
+              {!sidebarCollapsed && (
+                <div className="app-logo">
+                  <span className="app-name">Xover</span>
                 </div>
               )}
-
-              {/* Theme Toggle */}
-              <button
-                className="theme-toggle"
-                onClick={toggleTheme}
-                title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
-              >
-                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-
-              <div className="user-info" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer' }}>
-                {user?.avatar_url ? (
-                  <img
-                    src={getAvatarUrl(user.avatar_url)}
-                    alt={user.name}
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      border: '1px solid var(--border-primary)'
-                    }}
-                  />
-                ) : (
-                  <Users size={16} />
-                )}
-                <span className="user-name">{user?.name}</span>
-              </div>
-              <button className="btn-icon" onClick={handleLogout} title="Выйти">
-                <LogOut size={16} />
-              </button>
             </div>
-      </div>
 
-      <div className="layout-body">
-        {/* Sidebar Navigation Tree - только для Xover */}
-        {activeTab === 'xover' && (
-          <>
-            <div
-              className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
-              style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
-            >
-              <div className="nav-tree">
+            <div className="nav-tree">
               {/* Admin Panel - Outside tree */}
               <button
                 className={`nav-item-standalone ${isActive('/') ? 'active' : ''}`}
@@ -373,6 +282,55 @@ const ProfessionalLayout = ({ children }) => {
               ))}
             </div>
 
+            {/* Sidebar Footer - Settings and User */}
+            <div className="sidebar-footer">
+              {/* Settings Button */}
+              <button
+                className={`sidebar-footer-item ${isActive('/settings') ? 'active' : ''}`}
+                onClick={() => navigate('/settings')}
+                title={sidebarCollapsed ? 'Настройки' : ''}
+              >
+                <Settings size={16} />
+                {!sidebarCollapsed && <span>Настройки</span>}
+              </button>
+
+              {/* Theme Toggle */}
+              <button
+                className="sidebar-footer-item"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                {!sidebarCollapsed && <span>{theme === 'dark' ? 'Светлая' : 'Темная'}</span>}
+              </button>
+
+              {/* User Profile */}
+              {!sidebarCollapsed && (
+                <div className="sidebar-user" onClick={() => setShowProfileModal(true)}>
+                  {user?.avatar_url ? (
+                    <img
+                      src={getAvatarUrl(user.avatar_url)}
+                      alt={user.name}
+                      className="sidebar-avatar"
+                    />
+                  ) : (
+                    <Users size={16} />
+                  )}
+                  <span className="sidebar-user-name">{user?.name}</span>
+                  <button
+                    className="sidebar-logout"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLogout();
+                    }}
+                    title="Выйти"
+                  >
+                    <LogOut size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Sidebar Collapse Toggle - moved inside sidebar-nav */}
             <button
               className="sidebar-toggle"
@@ -389,13 +347,32 @@ const ProfessionalLayout = ({ children }) => {
                 onMouseDown={startResizing}
               />
             )}
-            </div>
-          </>
-        )}
+          </div>
+        </>
 
         {/* Main Content Area */}
         <div className="main-content">
-          {children}
+          <div className="main-content-inner">
+            {children}
+          </div>
+
+          {/* Breadcrumbs - moved to bottom */}
+          {breadcrumbs.length > 0 && (
+            <div className="bottom-breadcrumbs">
+              {breadcrumbs.map((crumb, index) => (
+                <React.Fragment key={crumb.path}>
+                  {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
+                  <button
+                    className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
+                    onClick={() => navigate(crumb.path)}
+                    disabled={index === breadcrumbs.length - 1}
+                  >
+                    {crumb.label}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
