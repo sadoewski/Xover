@@ -29,11 +29,38 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+
+    // 401 - Неавторизован (невалидный токен или пользователь не существует)
+    if (status === 401 || status === 403) {
+      console.warn('Обнаружена ошибка авторизации. Очистка данных и перенаправление на логин.');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // Не делаем редирект здесь - пусть компоненты сами обрабатывают
+
+      // Перенаправляем на страницу логина только если мы не на ней
+      if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
+        window.location.href = '/login';
+      }
     }
+
+    // 500 - Внутренняя ошибка сервера
+    if (status === 500) {
+      console.error('Ошибка сервера 500:', error.response?.data);
+
+      // Если ошибка связана с foreign key (пользователь не существует)
+      const errorMessage = error.response?.data?.error || '';
+      if (errorMessage.includes('foreign key') || errorMessage.includes('user_id')) {
+        console.error('Обнаружена ошибка связанная с несуществующим пользователем. Выполняется выход.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        if (!window.location.pathname.startsWith('/login')) {
+          alert('Ваша сессия устарела или пользователь был удален. Пожалуйста, войдите снова.');
+          window.location.href = '/login';
+        }
+      }
+    }
+
     return Promise.reject(error);
   }
 );

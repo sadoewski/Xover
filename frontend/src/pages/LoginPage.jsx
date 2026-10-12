@@ -20,7 +20,25 @@ export default function LoginPage() {
       await login(username, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.error || 'Ошибка входа');
+      console.error('Login error:', err);
+
+      // Определяем тип ошибки
+      const status = err.response?.status;
+      const errorData = err.response?.data;
+
+      if (status === 401 || status === 403) {
+        // Неверный логин/пароль
+        setError('Неверный username или пароль');
+      } else if (status === 500) {
+        // Ошибка сервера
+        setError('Ошибка сервера. Пожалуйста, попробуйте позже или обратитесь к администратору.');
+      } else if (err.message === 'Network Error' || !err.response) {
+        // Ошибка сети
+        setError('Не удалось подключиться к серверу. Проверьте подключение к интернету.');
+      } else {
+        // Другие ошибки
+        setError(errorData?.error || errorData?.message || 'Ошибка входа. Попробуйте снова.');
+      }
     } finally {
       setLoading(false);
     }

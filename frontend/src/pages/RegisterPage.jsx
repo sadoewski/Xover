@@ -48,11 +48,24 @@ export default function RegisterPage() {
       await register(username, password, name, email || null, avatarPreview);
       navigate('/');
     } catch (err) {
-      const errorMsg = err.response?.data?.error;
-      if (Array.isArray(errorMsg)) {
-        setError(errorMsg.map(e => e.msg).join(', '));
+      console.error('Registration error:', err);
+
+      const status = err.response?.status;
+      const errorData = err.response?.data;
+
+      // Обработка ошибок валидации
+      if (errorData?.details && Array.isArray(errorData.details)) {
+        const messages = errorData.details.map(d => d.message).join('. ');
+        setError(messages);
+      } else if (status === 409 || status === 400) {
+        // Конфликт (пользователь уже существует) или некорректные данные
+        setError(errorData?.error || 'Пользователь с таким username или email уже существует');
+      } else if (status === 500) {
+        setError('Ошибка сервера. Пожалуйста, попробуйте позже.');
+      } else if (err.message === 'Network Error' || !err.response) {
+        setError('Не удалось подключиться к серверу. Проверьте подключение к интернету.');
       } else {
-        setError(errorMsg || 'Ошибка регистрации');
+        setError(errorData?.error || 'Ошибка регистрации. Попробуйте снова.');
       }
     } finally {
       setLoading(false);

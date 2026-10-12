@@ -8,10 +8,43 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    setUser(currentUser);
-    setLoading(false);
+    validateAuth();
   }, []);
+
+  const validateAuth = async () => {
+    const currentUser = authService.getCurrentUser();
+    const token = localStorage.getItem('token');
+
+    // Если есть токен и данные пользователя в localStorage
+    if (token && currentUser) {
+      try {
+        // Проверяем валидность токена через запрос к API
+        const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/auth/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // Токен невалидный или пользователь не существует - делаем logout
+          console.warn('Токен невалиден или пользователь не существует. Выполняется выход.');
+          authService.logout();
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Ошибка проверки токена:', error);
+        // В случае ошибки сети - пробуем использовать данные из localStorage
+        setUser(currentUser);
+      }
+    } else {
+      setUser(null);
+    }
+
+    setLoading(false);
+  };
 
   const login = async (username, password) => {
     const data = await authService.login(username, password);

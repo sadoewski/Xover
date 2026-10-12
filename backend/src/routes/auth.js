@@ -49,6 +49,7 @@ const changePasswordValidation = [
 router.post('/register', registerValidation, validate, authController.register);
 router.post('/login', loginValidation, validate, authController.login);
 router.get('/me', authMiddleware, authController.getCurrentUser);
+router.get('/profile', authMiddleware, authController.getCurrentUser); // Алиас для /me
 router.put('/profile', authMiddleware, updateProfileValidation, validate, authController.updateProfile);
 router.post('/upload-avatar', authMiddleware, upload.single('avatar'), authController.uploadAvatar);
 router.post('/change-password', authMiddleware, changePasswordValidation, validate, authController.changePassword);
