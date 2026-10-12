@@ -39,7 +39,10 @@ api.interceptors.response.use(
 
       // Перенаправляем на страницу логина только если мы не на ней
       if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
-        window.location.href = '/login';
+        // Используем setTimeout чтобы избежать race conditions с React
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 0);
       }
     }
 
@@ -56,7 +59,9 @@ api.interceptors.response.use(
 
         if (!window.location.pathname.startsWith('/login')) {
           alert('Ваша сессия устарела или пользователь был удален. Пожалуйста, войдите снова.');
-          window.location.href = '/login';
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 0);
         }
       }
     }
