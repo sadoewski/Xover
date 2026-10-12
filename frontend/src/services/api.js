@@ -38,11 +38,16 @@ api.interceptors.response.use(
       localStorage.removeItem('user');
 
       // Перенаправляем на страницу логина только если мы не на ней
-      if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
+      const isLoginPage = window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register');
+      if (!isLoginPage) {
         // Используем setTimeout чтобы избежать race conditions с React
         setTimeout(() => {
-          window.location.href = '/login';
-        }, 0);
+          try {
+            window.location.replace('/login');
+          } catch (e) {
+            console.error('Ошибка редиректа:', e);
+          }
+        }, 100);
       }
     }
 
@@ -60,8 +65,12 @@ api.interceptors.response.use(
         if (!window.location.pathname.startsWith('/login')) {
           alert('Ваша сессия устарела или пользователь был удален. Пожалуйста, войдите снова.');
           setTimeout(() => {
-            window.location.href = '/login';
-          }, 0);
+            try {
+              window.location.replace('/login');
+            } catch (e) {
+              console.error('Ошибка редиректа:', e);
+            }
+          }, 100);
         }
       }
     }

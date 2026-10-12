@@ -19,7 +19,8 @@ export const AuthProvider = ({ children }) => {
     if (token && currentUser) {
       try {
         // Проверяем валидность токена через запрос к API
-        const response = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/auth/profile`, {
+        const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001/api' : '/api');
+        const response = await fetch(`${API_URL}/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -36,8 +37,9 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Ошибка проверки токена:', error);
-        // В случае ошибки сети - пробуем использовать данные из localStorage
-        setUser(currentUser);
+        // В случае любой ошибки - очищаем токен для безопасности
+        authService.logout();
+        setUser(null);
       }
     } else {
       setUser(null);
