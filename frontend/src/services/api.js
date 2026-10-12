@@ -30,17 +30,18 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
+    const isLoginPage = window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register');
 
     // 401 - Неавторизован (невалидный токен или пользователь не существует)
     if (status === 401 || status === 403) {
-      console.warn('Обнаружена ошибка авторизации. Очистка данных и перенаправление на логин.');
+      console.warn('Обнаружена ошибка авторизации. Очистка данных.');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      // Перенаправляем на страницу логина только если мы не на ней
-      const isLoginPage = window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register');
+      // НЕ делаем редирект на странице логина - просто пробрасываем ошибку
+      // Компонент логина сам обработает ошибку и покажет сообщение
       if (!isLoginPage) {
-        // Используем setTimeout чтобы избежать race conditions с React
+        // Для других страниц - делаем редирект
         setTimeout(() => {
           try {
             window.location.replace('/login');
@@ -62,7 +63,7 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
-        if (!window.location.pathname.startsWith('/login')) {
+        if (!isLoginPage) {
           alert('Ваша сессия устарела или пользователь был удален. Пожалуйста, войдите снова.');
           setTimeout(() => {
             try {
