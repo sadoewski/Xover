@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider, useNotification } from './contexts/NotificationContext';
 import { setToastFunction } from './services/api';
+import { initGlobalErrorHandlers, setGlobalErrorToast } from './utils/globalErrorHandler';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoginPage from './pages/LoginPage';
@@ -24,13 +25,19 @@ import DataTaskDetailPage from './pages/DataTaskDetailPage';
 import TerminalPage from './pages/TerminalPage';
 import ToastTestPage from './pages/ToastTestPage';
 
-// Внутренний компонент для подключения Toast к API
+// Внутренний компонент для подключения Toast к API и глобальным обработчикам
 function AppContent() {
   const { showToast } = useNotification();
 
   useEffect(() => {
     // Подключаем Toast функцию к API interceptor
     setToastFunction(showToast);
+
+    // Подключаем Toast к глобальным обработчикам ошибок
+    setGlobalErrorToast(showToast);
+
+    // Инициализируем глобальные обработчики (один раз)
+    initGlobalErrorHandlers();
   }, [showToast]);
 
   return (
