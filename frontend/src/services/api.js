@@ -1,8 +1,16 @@
 import axios from 'axios';
+import { mapErrorToUserFriendly, isAuthError, getErrorDetails } from '../utils/errorMapper';
 
 // В production (Docker) используем относительный путь через nginx proxy
 // В development - прямое подключение к backend
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001/api' : '/api');
+
+// Функция для показа Toast будет установлена из App.jsx
+let showToastFunction = null;
+
+export const setToastFunction = (toastFunc) => {
+  showToastFunction = toastFunc;
+};
 
 const api = axios.create({
   baseURL: API_URL,
@@ -25,54 +33,45 @@ api.interceptors.request.use(
   }
 );
 
-// Обработка ошибок
+// Обработка ошибок с Toast уведомлениями
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
     const isLoginPage = window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register');
 
-    // 401 - Неавторизован (невалидный токен или пользователь не существует)
-    if (status === 401 || status === 403) {
+    // Логируем детали для разработчика
+    console.error('API Error:', getErrorDetails(error));
+
+    // Получаем понятное сообщение для пользователя
+    const userMessage = mapErrorToUserFriendly(error);
+
+    // 401/403 - Ошибки авторизации
+    if (isAuthError(error)) {
       console.warn('Обнаружена ошибка авторизации. Очистка данных.');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      // НЕ делаем редирект на странице логина - просто пробрасываем ошибку
-      // Компонент логина сам обработает ошибку и покажет сообщение
+      // НЕ показываем Toast на странице логина (там своя обработка)
+      // Для других страниц - показываем Toast и редиректим
       if (!isLoginPage) {
-        // Для других страниц - делаем редирект
+        if (showToastFunction) {
+          showToastFunction('Сессия истекла. Войдите в систему заново.', 'warning');
+        }
+
         setTimeout(() => {
           try {
             window.location.replace('/login');
           } catch (e) {
             console.error('Ошибка редиректа:', e);
           }
-        }, 100);
+        }, 1500);
       }
-    }
-
-    // 500 - Внутренняя ошибка сервера
-    if (status === 500) {
-      console.error('Ошибка сервера 500:', error.response?.data);
-
-      // Если ошибка связана с foreign key (пользователь не существует)
-      const errorMessage = error.response?.data?.error || '';
-      if (errorMessage.includes('foreign key') || errorMessage.includes('user_id')) {
-        console.error('Обнаружена ошибка связанная с несуществующим пользователем. Выполняется выход.');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-
-        if (!isLoginPage) {
-          alert('Ваша сессия устарела или пользователь был удален. Пожалуйста, войдите снова.');
-          setTimeout(() => {
-            try {
-              window.location.replace('/login');
-            } catch (e) {
-              console.error('Ошибка редиректа:', e);
-            }
-          }, 100);
-        }
+    } else {
+      // Для всех остальных ошибок - показываем Toast
+      // НЕ показываем на странице логина (там своя обработка)
+      if (showToastFunction && !isLoginPage) {
+        showToastFunction(userMessage, 'error');
       }
     }
 
@@ -128,8 +127,16 @@ export const authService = {
   },
 
   getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    try {
+      const user = localStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
+    } catch (error) {
+      console.warn('Failed to parse user from localStorage:', error);
+      // Очищаем поврежденные данные
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return null;
+    }
   },
 
   isAuthenticated: () => {
