@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { groupsService, dataTasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/CreateDataTaskPage.css';
 
 const CreateDataTaskPage = () => {
+  const { showSuccess, showError, showWarning } = useNotification();
   const [step, setStep] = useState(1); // 1: основная информация, 2: выбор дат, 3: подтверждение
   const [name, setName] = useState('');
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -35,16 +37,16 @@ const CreateDataTaskPage = () => {
   const handleNextStep = () => {
     if (step === 1) {
       if (!name.trim()) {
-        alert('Введите название DataTask');
+        showWarning('Введите название DataTask');
         return;
       }
       if (!selectedGroup) {
-        alert('Выберите группу задач');
+        showWarning('Выберите группу задач');
         return;
       }
     } else if (step === 2) {
       if (selectedDates.length === 0) {
-        alert('Выберите хотя бы одну дату');
+        showWarning('Выберите хотя бы одну дату');
         return;
       }
     }
@@ -99,11 +101,12 @@ const CreateDataTaskPage = () => {
         dates: selectedDates
       });
 
+      showSuccess('DataTask создан');
       // Переходим в свойства созданного datatask
       navigate(`/datatasks/${response.datatask.id}`);
     } catch (error) {
       console.error('Error creating datatask:', error);
-      alert('Ошибка при создании DataTask');
+      showError('Ошибка при создании DataTask');
     } finally {
       setLoading(false);
     }

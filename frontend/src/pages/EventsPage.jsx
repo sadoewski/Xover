@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { eventsService } from '../services/api';
 import { format, getDaysInMonth } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import { Plus, ArrowLeft, Trash2, FileText } from 'lucide-react';
 import './EventsPage.css';
@@ -12,6 +13,7 @@ const MONTHS = [
 ];
 
 export default function EventsPage() {
+  const { showSuccess, showError } = useNotification();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear] = useState(new Date().getFullYear());
@@ -109,6 +111,7 @@ export default function EventsPage() {
         isYearly: true,
       });
       setShowCreateModal(false);
+      showSuccess('Событие создано');
       loadEvents();
       // Обновить список событий месяца, если открыт месяц
       if (selectedMonth) {
@@ -117,7 +120,7 @@ export default function EventsPage() {
       }
     } catch (error) {
       console.error('Ошибка создания события:', error);
-      alert('Ошибка создания события');
+      showError('Ошибка создания события');
     }
   };
 
@@ -125,6 +128,7 @@ export default function EventsPage() {
     if (!confirm('Удалить событие?')) return;
     try {
       await eventsService.deleteEvent(id);
+      showSuccess('Событие удалено');
       await loadEvents();
       if (selectedDate) {
         const data = await eventsService.getEventsByDate(selectedDate.month, selectedDate.day);
@@ -136,6 +140,7 @@ export default function EventsPage() {
       }
     } catch (error) {
       console.error('Ошибка удаления события:', error);
+      showError('Ошибка удаления события');
     }
   };
 

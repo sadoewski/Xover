@@ -377,9 +377,10 @@ export default function TaskDetailPage() {
                             await tasksService.updateTask(id, { checklist: [] });
                             await loadTaskData();
                             setEditing(null);
+                            showSuccess('Чек-лист удалён');
                           } catch (error) {
                             console.error('Ошибка удаления чек-листа:', error);
-                            alert('Ошибка удаления чек-листа');
+                            showError('Ошибка удаления чек-листа');
                           }
                         }
                       }}
@@ -423,7 +424,7 @@ export default function TaskDetailPage() {
                             await loadTaskData();
                           } catch (error) {
                             console.error('Ошибка обновления чек-листа:', error);
-                            alert('Ошибка обновления чек-листа');
+                            showError('Ошибка обновления чек-листа');
                           }
                         }}
                         className="checkbox"
