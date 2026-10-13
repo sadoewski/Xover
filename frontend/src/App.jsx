@@ -22,6 +22,7 @@ import DataTasksPage from './pages/DataTasksPage';
 import CreateDataTaskPage from './pages/CreateDataTaskPage';
 import DataTaskDetailPage from './pages/DataTaskDetailPage';
 import TerminalPage from './pages/TerminalPage';
+import ToastTestPage from './pages/ToastTestPage';
 
 // Внутренний компонент для подключения Toast к API
 function AppContent() {
@@ -137,6 +138,14 @@ function AppContent() {
         element={
           <ProtectedRoute>
             <TerminalPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/toast-test"
+        element={
+          <ProtectedRoute>
+            <ToastTestPage />
           </ProtectedRoute>
         }
       />

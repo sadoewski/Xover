@@ -1,11 +1,13 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useNotification } from '../contexts/NotificationContext';
 import './Layout.css';
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { showInfo } = useNotification();
 
   const handleLogout = () => {
     logout();
@@ -26,7 +28,7 @@ export default function Layout({ children }) {
       navigate('/');
     } else if (section === 'wrprint') {
       // Пока заглушка
-      alert('Раздел wr:print будет реализован в следующих версиях');
+      showInfo('Раздел wr:print будет реализован в следующих версиях');
     } else if (section === 'settings') {
       navigate('/settings');
     }

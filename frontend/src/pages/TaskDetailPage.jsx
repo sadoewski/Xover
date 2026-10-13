@@ -4,6 +4,7 @@ import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { ArrowLeft, Clock, Calendar, Tag, Link as LinkIcon, CheckSquare, FileText, Trash2, Repeat } from 'lucide-react';
 import { tasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import RelatedTasksList from '../components/RelatedTasksList';
 import TaskRelationModal from '../components/TaskRelationModal';
@@ -22,6 +23,7 @@ export default function TaskDetailPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isReadonly = searchParams.get('readonly') === 'true';
+  const { showSuccess, showError, showWarning } = useNotification();
   const [task, setTask] = useState(null);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,16 +66,17 @@ export default function TaskDetailPage() {
 
     try {
       await tasksService.updateTask(id, { status: newStatus });
+      showSuccess('Статус задачи обновлен');
       await loadTaskData();
     } catch (error) {
       console.error('Ошибка изменения статуса:', error);
-      alert('Ошибка изменения статуса');
+      showError('Не удалось изменить статус задачи');
     }
   };
 
   const handleMoveTask = async () => {
     if (!moveToDate) {
-      alert('Выберите дату для переноса');
+      showWarning('Выберите дату для переноса');
       return;
     }
 
@@ -86,12 +89,13 @@ export default function TaskDetailPage() {
         movedToDate: moveToDate,
       });
       setShowMoveModal(false);
+      showSuccess('Задача успешно перенесена');
       await loadTaskData();
       // Перенаправляем на новую дату в календаре
       navigate(`/calendar?date=${moveToDate}`);
     } catch (error) {
       console.error('Ошибка переноса задачи:', error);
-      alert('Ошибка переноса задачи');
+      showError('Не удалось перенести задачу');
     }
   };
 
@@ -99,11 +103,12 @@ export default function TaskDetailPage() {
     try {
       const updatedChecklist = task.checklist || [];
       await tasksService.updateTask(id, { checklist: updatedChecklist });
+      showSuccess('Чек-лист обновлен');
       await loadTaskData();
       setEditing(null);
     } catch (error) {
       console.error('Ошибка обновления чеклиста:', error);
-      alert('Ошибка обновления чеклиста');
+      showError('Не удалось обновить чек-лист');
     }
   };
 
@@ -136,12 +141,13 @@ export default function TaskDetailPage() {
       };
       const updatedLinks = [...(task.links || []), newLink];
       await tasksService.updateTask(id, { links: updatedLinks });
+      showSuccess('Ссылка добавлена');
       await loadTaskData();
       setLinkInput('');
       setEditing(null);
     } catch (error) {
       console.error('Ошибка добавления линка:', error);
-      alert('Ошибка добавления линка');
+      showError('Не удалось добавить ссылку');
     }
   };
 
@@ -149,10 +155,11 @@ export default function TaskDetailPage() {
     try {
       const updatedLinks = task.links.filter((_, i) => i !== index);
       await tasksService.updateTask(id, { links: updatedLinks });
+      showSuccess('Ссылка удалена');
       await loadTaskData();
     } catch (error) {
       console.error('Ошибка удаления линка:', error);
-      alert('Ошибка удаления линка');
+      showError('Не удалось удалить ссылку');
     }
   };
 

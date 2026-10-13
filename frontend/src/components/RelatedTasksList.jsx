@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { tasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import './RelatedTasksList.css';
 
 const RelatedTasksList = ({ taskRelations, currentTaskId, onUnlink }) => {
   const [relatedTasks, setRelatedTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     loadRelatedTasks();
@@ -45,12 +47,13 @@ const RelatedTasksList = ({ taskRelations, currentTaskId, onUnlink }) => {
 
     try {
       await tasksService.unlinkTasks(currentTaskId, taskId);
+      showSuccess('Связь успешно удалена');
       if (onUnlink) {
         onUnlink();
       }
     } catch (error) {
       console.error('Ошибка удаления связи:', error);
-      alert('Не удалось удалить связь');
+      showError('Не удалось удалить связь');
     }
   };
 

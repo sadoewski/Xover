@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { dataTasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/DataTasksPage.css';
 
@@ -11,6 +12,7 @@ const DataTasksPage = () => {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [selectedDatatasks, setSelectedDatatasks] = useState([]);
   const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     loadDatatasks();
@@ -58,10 +60,11 @@ const DataTasksPage = () => {
       );
       setSelectedDatatasks([]);
       setShowActionsMenu(false);
+      showSuccess(`Удалено ${selectedDatatasks.length} DataTask(ов)`);
       await loadDatatasks();
     } catch (error) {
       console.error('Error deleting datatasks:', error);
-      alert('Ошибка при удалении datatasks');
+      showError('Ошибка при удалении DataTask');
     }
   };
 

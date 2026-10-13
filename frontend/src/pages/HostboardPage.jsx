@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { tasksService, groupsService, prioritiesService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 
 const STATUS_CONFIG = {
   pending: { label: 'Ожидается', color: 'gray' },
@@ -15,6 +16,7 @@ const STATUS_CONFIG = {
 export default function HostboardPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
 
   const [task, setTask] = useState(null);
   const [priorities, setPriorities] = useState([]);
@@ -76,7 +78,7 @@ export default function HostboardPage() {
       }
     } catch (error) {
       console.error('Ошибка загрузки задачи:', error);
-      alert('Задача не найдена');
+      showError('Задача не найдена');
       navigate(-1);
     } finally {
       setLoading(false);
@@ -96,10 +98,11 @@ export default function HostboardPage() {
       await tasksService.updateTask(id, { logs: JSON.stringify(newLogs) });
 
       setLogs(newLogs);
+      showSuccess('Задача обновлена');
       await loadData();
     } catch (error) {
       console.error('Ошибка обновления задачи:', error);
-      alert('Ошибка обновления задачи');
+      showError('Ошибка обновления задачи');
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { dataTasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/DataTaskDetailPage.css';
 
@@ -11,6 +12,7 @@ const DataTaskDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
+  const { showSuccess, showError, showWarning } = useNotification();
 
   useEffect(() => {
     loadDatatask();
@@ -35,17 +37,18 @@ const DataTaskDetailPage = () => {
 
   const handleUpdateName = async () => {
     if (!editedName.trim()) {
-      alert('Название не может быть пустым');
+      showWarning('Название не может быть пустым');
       return;
     }
 
     try {
       await dataTasksService.update(id, { name: editedName });
       setIsEditing(false);
+      showSuccess('Название обновлено');
       await loadDatatask();
     } catch (error) {
       console.error('Error updating name:', error);
-      alert('Ошибка при обновлении названия');
+      showError('Ошибка при обновлении названия');
     }
   };
 
@@ -56,10 +59,11 @@ const DataTaskDetailPage = () => {
 
     try {
       await dataTasksService.removeDate(id, date);
+      showSuccess('Дата удалена');
       await loadDatatask();
     } catch (error) {
       console.error('Error deleting date:', error);
-      alert('Ошибка при удалении даты');
+      showError('Ошибка при удалении даты');
     }
   };
 
@@ -74,10 +78,11 @@ const DataTaskDetailPage = () => {
 
     try {
       await dataTasksService.delete(id);
+      showSuccess('DataTask удален');
       navigate('/datatasks');
     } catch (error) {
       console.error('Error deleting datatask:', error);
-      alert('Ошибка при удалении datatask');
+      showError('Ошибка при удалении DataTask');
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { tasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import './TaskRelationModal.css';
 
 const TaskRelationModal = ({ isOpen, onClose, currentTaskId, onTaskLinked }) => {
@@ -10,6 +11,7 @@ const TaskRelationModal = ({ isOpen, onClose, currentTaskId, onTaskLinked }) => 
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { showSuccess, showError, showWarning } = useNotification();
 
   // Для создания новой задачи
   const [newTaskData, setNewTaskData] = useState({
@@ -56,20 +58,21 @@ const TaskRelationModal = ({ isOpen, onClose, currentTaskId, onTaskLinked }) => 
 
   const handleLinkExisting = async () => {
     if (!selectedTaskId) {
-      alert('Выберите задачу для связывания');
+      showWarning('Выберите задачу для связывания');
       return;
     }
 
     try {
       setLoading(true);
       await tasksService.linkTasks(currentTaskId, parseInt(selectedTaskId));
+      showSuccess('Задачи успешно связаны');
       if (onTaskLinked) {
         onTaskLinked();
       }
       onClose();
     } catch (error) {
       console.error('Ошибка связывания задач:', error);
-      alert('Не удалось связать задачи');
+      showError('Не удалось связать задачи');
     } finally {
       setLoading(false);
     }
@@ -77,7 +80,7 @@ const TaskRelationModal = ({ isOpen, onClose, currentTaskId, onTaskLinked }) => 
 
   const handleCreateAndLink = async () => {
     if (!newTaskData.title.trim()) {
-      alert('Введите название задачи');
+      showWarning('Введите название задачи');
       return;
     }
 
@@ -94,6 +97,7 @@ const TaskRelationModal = ({ isOpen, onClose, currentTaskId, onTaskLinked }) => 
       };
 
       await tasksService.createTask(taskData);
+      showSuccess('Задача создана и связана');
 
       if (onTaskLinked) {
         onTaskLinked();
@@ -101,7 +105,7 @@ const TaskRelationModal = ({ isOpen, onClose, currentTaskId, onTaskLinked }) => 
       onClose();
     } catch (error) {
       console.error('Ошибка создания и связывания задачи:', error);
-      alert(error.response?.data?.error || 'Не удалось создать задачу');
+      showError(error.response?.data?.error || 'Не удалось создать задачу');
     } finally {
       setLoading(false);
     }
