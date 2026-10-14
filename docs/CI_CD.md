@@ -78,7 +78,7 @@ npm ci (clean install)
 NODE_ENV=test
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=hostprint_test
+DB_NAME=xover_test
 DB_USER=postgres
 DB_PASSWORD=postgres
 JWT_SECRET=test-jwt-secret
@@ -152,7 +152,7 @@ JWT_SECRET=test-jwt-secret
 2. Generate Swagger UI
 3. Deploy to GitHub Pages
 
-**URL:** `https://sadoewski.github.io/hostprint/`
+**URL:** `https://sadoewski.github.io/xover/`
 
 ## Кеширование
 

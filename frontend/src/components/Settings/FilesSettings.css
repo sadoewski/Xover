@@ -109,3 +109,69 @@
   color: var(--color-text-secondary);
   font-size: 14px;
 }
+
+/* Environment editing styles */
+.environment-edit-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.environment-name-input {
+  flex: 1;
+  padding: 4px 8px;
+  background: var(--surface-2, #0F131C);
+  border: 1px solid var(--accent, #38BDF8);
+  border-radius: 4px;
+  color: var(--text-primary, #e5e7eb);
+  font-size: 14px;
+  outline: none;
+}
+
+.environment-name-input:focus {
+  border-color: var(--accent-bright, #60d5ff);
+}
+
+.env-edit-btn {
+  padding: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #9ca3af);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.env-edit-btn:hover {
+  background: var(--surface-2, #0F131C);
+  color: var(--text-primary, #e5e7eb);
+}
+
+.env-edit-btn.save {
+  color: var(--accent, #38BDF8);
+}
+
+.env-edit-btn.save:hover {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent-bright, #60d5ff);
+}
+
+.env-edit-btn.cancel {
+  color: var(--text-secondary, #9ca3af);
+}
+
+.env-edit-btn.cancel:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.tree-item-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}

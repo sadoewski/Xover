@@ -10,14 +10,13 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
-  ChevronUp,
   Home,
   Users,
   BarChart3,
-  FileText,
   Sun,
   Moon,
   Database,
+  Terminal,
   Menu,
   X,
 } from 'lucide-react';
@@ -33,28 +32,14 @@ const ProfessionalLayout = ({ children }) => {
   const user = authService.getCurrentUser();
   const { theme, toggleTheme } = useTheme();
   const [expandedSections, setExpandedSections] = useState({
-    xover: true,
+    properties: true,
   });
 
-  // Определяем активную вкладку на основе текущего пути
-  const getActiveTab = () => {
-    if (location.pathname.startsWith('/rwprint')) return 'rwprint';
-    if (location.pathname === '/settings') return 'settings';
-    return 'xover';
-  };
-
-  const activeTab = getActiveTab();
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Load sidebar state from localStorage
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebarCollapsed');
-    return saved === 'true';
-  });
-
-  // Load toolbar collapsed state from localStorage
-  const [toolbarCollapsed, setToolbarCollapsed] = useState(() => {
-    const saved = localStorage.getItem('toolbarCollapsed');
     return saved === 'true';
   });
 
@@ -106,15 +91,6 @@ const ProfessionalLayout = ({ children }) => {
     setSidebarCollapsed(prev => {
       const newValue = !prev;
       localStorage.setItem('sidebarCollapsed', String(newValue));
-      return newValue;
-    });
-  };
-
-  // Save toolbar state to localStorage when it changes
-  const toggleToolbar = () => {
-    setToolbarCollapsed(prev => {
-      const newValue = !prev;
-      localStorage.setItem('toolbarCollapsed', String(newValue));
       return newValue;
     });
   };
@@ -178,31 +154,31 @@ const ProfessionalLayout = ({ children }) => {
 
   const navigationTree = [
     {
-      id: 'xover',
-      title: 'XOVER',
-      icon: Home,
+      id: 'properties',
+      title: 'Свойства',
+      icon: Folder,
       items: [
-        { path: '/calendar', label: 'Календарь', icon: Calendar },
-        { path: '/events', label: 'События', icon: Clock },
-        { path: '/datatasks', label: 'DataTask', icon: Database },
+        { path: '/taskbases', label: 'TaskBase', icon: Database },
         { path: '/groups', label: 'Группы', icon: Folder },
         { path: '/priorities', label: 'Приоритеты', icon: Star },
       ]
     },
   ];
 
-  const breadcrumbs = activeTab === 'xover' ? [
+  const breadcrumbs = [
     { label: 'Админ-панель', path: '/' },
     ...(location.pathname === '/calendar' ? [{ label: 'Календарь', path: '/calendar' }] : []),
     ...(location.pathname === '/events' ? [{ label: 'События', path: '/events' }] : []),
-    ...(location.pathname === '/datatasks' ? [{ label: 'DataTask', path: '/datatasks' }] : []),
+    ...(location.pathname === '/taskbases' ? [{ label: 'TaskBase', path: '/taskbases' }] : []),
     ...(location.pathname === '/groups' ? [{ label: 'Группы', path: '/groups' }] : []),
     ...(location.pathname === '/priorities' ? [{ label: 'Приоритеты', path: '/priorities' }] : []),
+    ...(location.pathname === '/terminal' ? [{ label: 'Shell', path: '/terminal' }] : []),
+    ...(location.pathname === '/settings' ? [{ label: 'Настройки', path: '/settings' }] : []),
     ...(location.pathname.startsWith('/tasks/') ? [
       { label: 'Календарь', path: '/calendar' },
       { label: 'Задача', path: location.pathname }
     ] : []),
-  ] : [];
+  ];
 
   return (
     <div className="professional-layout">
@@ -214,127 +190,28 @@ const ProfessionalLayout = ({ children }) => {
         />
       )}
 
-      {/* Top Toolbar */}
-      <div className={`toolbar ${toolbarCollapsed ? 'collapsed' : ''}`}>
-        <div className="toolbar-left">
-          {/* Mobile Menu Button */}
-          {isMobile && activeTab === 'xover' && (
-            <button
-              className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
-              onClick={toggleMobileMenu}
-              aria-label="Меню"
-            >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          )}
-
-          <div className="app-logo">
-            <span className="app-name">Xover</span>
-          </div>
-
-          {/* Toolbar Collapse Toggle */}
-          <button
-            className="toolbar-collapse-btn"
-            onClick={toggleToolbar}
-            title={toolbarCollapsed ? 'Развернуть панель' : 'Свернуть панель'}
-          >
-            {toolbarCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-          </button>
-        </div>
-
-        {!toolbarCollapsed && (
-          <>
-            <div className="toolbar-center">
-              {/* Tab Switcher */}
-              <div className="tab-switcher">
-                <button
-                  className={`tab-btn ${activeTab === 'xover' ? 'active' : ''}`}
-                  onClick={() => navigate('/calendar')}
-                >
-                  Xover
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === 'rwprint' ? 'active' : ''}`}
-                  onClick={() => navigate('/rwprint')}
-                >
-                  rw:Print
-                </button>
-                <button
-                  className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
-                  onClick={() => navigate('/settings')}
-                >
-                  <Settings size={16} />
-                  Настройки
-                </button>
-              </div>
-            </div>
-
-            <div className="toolbar-right">
-              {/* Breadcrumbs - moved into toolbar */}
-              {breadcrumbs.length > 0 && (
-                <div className="toolbar-breadcrumbs">
-                  {breadcrumbs.map((crumb, index) => (
-                    <React.Fragment key={crumb.path}>
-                      {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
-                      <button
-                        className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
-                        onClick={() => navigate(crumb.path)}
-                        disabled={index === breadcrumbs.length - 1}
-                      >
-                        {crumb.label}
-                      </button>
-                    </React.Fragment>
-                  ))}
-                </div>
-              )}
-
-              {/* Theme Toggle */}
-              <button
-                className="theme-toggle"
-                onClick={toggleTheme}
-                title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
-              >
-                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-
-              <div className="user-info" onClick={() => setShowProfileModal(true)} style={{ cursor: 'pointer' }}>
-                {user?.avatar_url ? (
-                  <img
-                    src={getAvatarUrl(user.avatar_url)}
-                    alt={user.name}
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      border: '1px solid var(--border-primary)'
-                    }}
-                  />
-                ) : (
-                  <Users size={16} />
-                )}
-                <span className="user-name">{user?.name}</span>
-              </div>
-              <button className="btn-icon" onClick={handleLogout} title="Выйти">
-                <LogOut size={16} />
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Breadcrumbs Bar - Remove this section as breadcrumbs are now in toolbar */}
-
       <div className="layout-body">
-        {/* Sidebar Navigation Tree - только для Xover */}
-        {activeTab === 'xover' && (
-          <>
-            <div
-              className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
-              style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
-            >
-              <div className="nav-tree">
-              {/* Admin Panel - Outside tree */}
+        {/* Sidebar Navigation Tree */}
+        <>
+          <div
+            className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
+            style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
+          >
+            <div className="nav-tree">
+              {/* Logo Button - Xover / X */}
+              <button
+                className={`nav-logo-btn ${isActive('/') ? 'active' : ''}`}
+                onClick={() => navigate('/')}
+                title="Админ-панель"
+              >
+                {sidebarCollapsed ? (
+                  <span className="logo-icon">X</span>
+                ) : (
+                  <span className="logo-text">Xover</span>
+                )}
+              </button>
+
+              {/* Admin Panel */}
               <button
                 className={`nav-item-standalone ${isActive('/') ? 'active' : ''}`}
                 onClick={() => navigate('/')}
@@ -344,6 +221,17 @@ const ProfessionalLayout = ({ children }) => {
                 {!sidebarCollapsed && <span className="nav-item-label">Админ-панель</span>}
               </button>
 
+              {/* Calendar */}
+              <button
+                className={`nav-item-standalone ${isActive('/calendar') ? 'active' : ''}`}
+                onClick={() => navigate('/calendar')}
+                title={sidebarCollapsed ? 'Календарь' : ''}
+              >
+                <Calendar size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">Календарь</span>}
+              </button>
+
+              {/* Properties Tree */}
               {navigationTree.map(section => (
                 <div key={section.id} className="nav-section">
                   <button
@@ -379,7 +267,7 @@ const ProfessionalLayout = ({ children }) => {
                     </div>
                   )}
 
-                  {sidebarCollapsed && (
+                  {sidebarCollapsed && expandedSections[section.id] && (
                     <div className="nav-items-collapsed">
                       {section.items.map(item => (
                         <button
@@ -395,6 +283,75 @@ const ProfessionalLayout = ({ children }) => {
                   )}
                 </div>
               ))}
+
+              {/* Events */}
+              <button
+                className={`nav-item-standalone ${isActive('/events') ? 'active' : ''}`}
+                onClick={() => navigate('/events')}
+                title={sidebarCollapsed ? 'События' : ''}
+              >
+                <Clock size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">События</span>}
+              </button>
+
+              {/* Shell */}
+              <button
+                className={`nav-item-standalone ${isActive('/terminal') ? 'active' : ''}`}
+                onClick={() => navigate('/terminal')}
+                title={sidebarCollapsed ? 'Shell' : ''}
+              >
+                <Terminal size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">Shell</span>}
+              </button>
+
+              {/* Settings */}
+              <button
+                className={`nav-item-standalone ${isActive('/settings') ? 'active' : ''}`}
+                onClick={() => navigate('/settings')}
+                title={sidebarCollapsed ? 'Настройки' : ''}
+              >
+                <Settings size={16} />
+                {!sidebarCollapsed && <span className="nav-item-label">Настройки</span>}
+              </button>
+            </div>
+
+            {/* Sidebar Footer - Theme and User */}
+            <div className="sidebar-footer">
+              {/* Theme Toggle */}
+              <button
+                className="sidebar-footer-item"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
+              >
+                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                {!sidebarCollapsed && <span>{theme === 'dark' ? 'Светлая' : 'Темная'}</span>}
+              </button>
+
+              {/* User Profile */}
+              {!sidebarCollapsed && (
+                <div className="sidebar-user" onClick={() => setShowProfileModal(true)}>
+                  {user?.avatar_url ? (
+                    <img
+                      src={getAvatarUrl(user.avatar_url)}
+                      alt={user.name}
+                      className="sidebar-avatar"
+                    />
+                  ) : (
+                    <Users size={16} />
+                  )}
+                  <span className="sidebar-user-name">{user?.name}</span>
+                  <button
+                    className="sidebar-logout"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLogout();
+                    }}
+                    title="Выйти"
+                  >
+                    <LogOut size={14} />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Sidebar Collapse Toggle */}
@@ -413,13 +370,32 @@ const ProfessionalLayout = ({ children }) => {
                 onMouseDown={startResizing}
               />
             )}
-            </div>
-          </>
-        )}
+          </div>
+        </>
 
         {/* Main Content Area */}
         <div className="main-content">
-          {children}
+          <div className="main-content-inner">
+            {children}
+          </div>
+
+          {/* Breadcrumbs - moved to bottom */}
+          {breadcrumbs.length > 0 && (
+            <div className="bottom-breadcrumbs">
+              {breadcrumbs.map((crumb, index) => (
+                <React.Fragment key={crumb.path}>
+                  {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
+                  <button
+                    className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
+                    onClick={() => navigate(crumb.path)}
+                    disabled={index === breadcrumbs.length - 1}
+                  >
+                    {crumb.label}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

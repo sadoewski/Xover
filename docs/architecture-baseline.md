@@ -1,4 +1,4 @@
-# Architecture Baseline — Hostprint
+# Architecture Baseline — Xover
 
 > Снимок состояния на 4 октября 2026 перед началом рефакторинга
 
@@ -13,7 +13,7 @@
 
 ### Структура проекта
 ```
-hostprint/
+xover/
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/
@@ -287,7 +287,7 @@ GET    /health
 PORT=5000
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=hostprint
+DB_NAME=xover
 DB_USER=postgres
 DB_PASSWORD=postgres
 JWT_SECRET=your-secret-key

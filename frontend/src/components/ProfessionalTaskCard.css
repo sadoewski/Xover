@@ -101,7 +101,7 @@
   color: var(--accent-primary);
 }
 
-.task-datatask-indicator {
+.task-taskbase-indicator {
   display: flex;
   align-items: center;
   color: #22D3EE;
@@ -109,7 +109,7 @@
   transition: all 0.2s;
 }
 
-.task-datatask-indicator:hover {
+.task-taskbase-indicator:hover {
   color: #06B6D4;
   transform: scale(1.1);
 }

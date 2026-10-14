@@ -29,6 +29,10 @@ export default function GroupsPage() {
   const [showCreateType, setShowCreateType] = useState(false);
   const [newGroup, setNewGroup] = useState({ name: '', color: '#3B82F6' });
   const [newType, setNewType] = useState({ name: '', group_id: '' });
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+  const [isCreatingType, setIsCreatingType] = useState(false);
+  const [isDeletingGroup, setIsDeletingGroup] = useState(false);
+  const [isDeletingType, setIsDeletingType] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -55,24 +59,12 @@ export default function GroupsPage() {
   const loadAllTasks = async () => {
     try {
       const today = new Date();
-      const year = today.getFullYear();
-      const tasks = [];
+      const startDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+      const endDate = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0];
 
-      // Загружаем задачи за текущий год
-      for (let month = 0; month < 12; month++) {
-        for (let day = 1; day <= 31; day++) {
-          try {
-            const date = new Date(year, month, day);
-            if (date.getMonth() === month) {
-              const dateStr = date.toISOString().split('T')[0];
-              const data = await tasksService.getTasksByDate(dateStr);
-              tasks.push(...data.tasks);
-            }
-          } catch (e) {
-            // Пропускаем ошибки
-          }
-        }
-      }
+      // Используем один запрос вместо 365
+      const data = await tasksService.getTasksInRange(startDate, endDate);
+      const tasks = data.tasks || [];
 
       setAllTasks(tasks);
 
@@ -120,49 +112,61 @@ export default function GroupsPage() {
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
+    setIsCreatingGroup(true);
     try {
       await groupsService.createGroup(newGroup);
       setNewGroup({ name: '', color: '#3B82F6' });
       setShowCreateGroup(false);
-      loadData();
+      await loadData();
     } catch (error) {
       console.error('Ошибка создания группы:', error);
+    } finally {
+      setIsCreatingGroup(false);
     }
   };
 
   const handleCreateType = async (e) => {
     e.preventDefault();
+    setIsCreatingType(true);
     try {
       await groupsService.createType(newType);
       setNewType({ name: '', group_id: '' });
       setShowCreateType(false);
-      loadData();
+      await loadData();
     } catch (error) {
       console.error('Ошибка создания типа:', error);
+    } finally {
+      setIsCreatingType(false);
     }
   };
 
   const handleDeleteGroup = async (id) => {
     if (!confirm('Удалить группу? Все связанные типы также будут удалены.')) return;
+    setIsDeletingGroup(true);
     try {
       await groupsService.deleteGroup(id);
       if (selectedGroup?.id === id) {
         setSelectedGroup(null);
         setGroupTasks([]);
       }
-      loadData();
+      await loadData();
     } catch (error) {
       console.error('Ошибка удаления группы:', error);
+    } finally {
+      setIsDeletingGroup(false);
     }
   };
 
   const handleDeleteType = async (id) => {
     if (!confirm('Удалить тип?')) return;
+    setIsDeletingType(true);
     try {
       await groupsService.deleteType(id);
-      loadData();
+      await loadData();
     } catch (error) {
       console.error('Ошибка удаления типа:', error);
+    } finally {
+      setIsDeletingType(false);
     }
   };
 
@@ -247,11 +251,14 @@ export default function GroupsPage() {
                     />
                   </div>
                   <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
-                    <button type="submit" className="btn btn-primary">Создать</button>
+                    <button type="submit" className="btn btn-primary" disabled={isCreatingType}>
+                      {isCreatingType ? 'Создание...' : 'Создать'}
+                    </button>
                     <button
                       type="button"
                       onClick={() => setShowCreateType(false)}
                       className="btn btn-secondary"
+                      disabled={isCreatingType}
                     >
                       Отмена
                     </button>
@@ -320,6 +327,7 @@ export default function GroupsPage() {
                         className="btn-icon"
                         style={{ color: 'var(--error)', marginLeft: '16px' }}
                         title="Удалить"
+                        disabled={isDeletingType}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -431,11 +439,14 @@ export default function GroupsPage() {
                   </div>
                 </div>
                 <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
-                  <button type="submit" className="btn btn-primary">Создать</button>
+                  <button type="submit" className="btn btn-primary" disabled={isCreatingGroup}>
+                    {isCreatingGroup ? 'Создание...' : 'Создать'}
+                  </button>
                   <button
                     type="button"
                     onClick={() => setShowCreateGroup(false)}
                     className="btn btn-secondary"
+                    disabled={isCreatingGroup}
                   >
                     Отмена
                   </button>
@@ -505,6 +516,7 @@ export default function GroupsPage() {
                         className="btn-icon"
                         style={{ color: 'var(--error)' }}
                         title="Удалить"
+                        disabled={isDeletingGroup}
                       >
                         <Trash2 size={16} />
                       </button>

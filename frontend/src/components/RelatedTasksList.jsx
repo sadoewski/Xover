@@ -3,36 +3,48 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { tasksService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
+import { useSafeAsync } from '../hooks/useSafeAsync';
 import './RelatedTasksList.css';
 
 const RelatedTasksList = ({ taskRelations, currentTaskId, onUnlink }) => {
   const [relatedTasks, setRelatedTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification();
+  const runAsync = useSafeAsync();
 
   useEffect(() => {
-    loadRelatedTasks();
-  }, [taskRelations]);
+    runAsync(async (isMounted) => {
+      if (!taskRelations || taskRelations.length === 0) {
+        if (isMounted.current) {
+          setRelatedTasks([]);
+          setLoading(false);
+        }
+        return;
+      }
 
-  const loadRelatedTasks = async () => {
-    if (!taskRelations || taskRelations.length === 0) {
-      setRelatedTasks([]);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const taskIds = taskRelations.map(rel => rel.task_id);
-      const response = await tasksService.getTasksByIds(taskIds);
-      setRelatedTasks(response.tasks || []);
-    } catch (error) {
-      console.error('Ошибка загрузки связанных задач:', error);
-      setRelatedTasks([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        if (isMounted.current) {
+          setLoading(true);
+        }
+        const taskIds = taskRelations.map(rel => rel.task_id);
+        const response = await tasksService.getTasksByIds(taskIds);
+        if (isMounted.current) {
+          setRelatedTasks(response.tasks || []);
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          console.error('Ошибка загрузки связанных задач:', error);
+          setRelatedTasks([]);
+        }
+      } finally {
+        if (isMounted.current) {
+          setLoading(false);
+        }
+      }
+    });
+  }, [taskRelations, runAsync]);
 
   const handleTaskClick = (taskId) => {
     navigate(`/tasks/${taskId}?readonly=true`);
@@ -45,12 +57,13 @@ const RelatedTasksList = ({ taskRelations, currentTaskId, onUnlink }) => {
 
     try {
       await tasksService.unlinkTasks(currentTaskId, taskId);
+      showSuccess('Связь успешно удалена');
       if (onUnlink) {
         onUnlink();
       }
     } catch (error) {
       console.error('Ошибка удаления связи:', error);
-      alert('Не удалось удалить связь');
+      showError('Не удалось удалить связь');
     }
   };
 

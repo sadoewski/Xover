@@ -19,7 +19,7 @@ if (dbType === 'postgresql') {
 } else {
   console.log('🔍 DB Connection Config:', {
     type: 'SQLite',
-    path: process.env.SQLITE_DB_PATH || 'data/hostprint.db'
+    path: process.env.SQLITE_DB_PATH || 'data/xover.db'
   });
 }
 

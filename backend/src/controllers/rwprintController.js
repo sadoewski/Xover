@@ -501,5 +501,193 @@ export const rwprintController = {
       res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
   },
-};
 
+  // === DOCUMENT LINKS (гиперссылки между документами) ===
+
+  async linkDocuments(req, res) {
+    const { sourceDocumentId, targetDocumentId } = req.body;
+    try {
+      // Проверяем, что оба документа существуют и принадлежат пользователю
+      const docsCheck = await pool.query(
+        `SELECT d.id FROM rwprint_documents d
+         JOIN rwprint_environments e ON d.environment_id = e.id
+         WHERE d.id IN ($1, $2) AND e.user_id = $3`,
+        [sourceDocumentId, targetDocumentId, req.userId]
+      );
+      
+      if (docsCheck.rows.length !== 2) {
+        return res.status(404).json({ error: 'Один или оба документа не найдены' });
+      }
+
+      const result = await pool.query(
+        `INSERT INTO document_links (source_document_id, target_document_id)
+         VALUES ($1, $2)
+         ON CONFLICT (source_document_id, target_document_id) DO NOTHING
+         RETURNING *`,
+        [sourceDocumentId, targetDocumentId]
+      );
+      
+      res.json({ link: result.rows[0] });
+    } catch (error) {
+      console.error('Ошибка создания связи документов:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
+  async unlinkDocuments(req, res) {
+    const { sourceDocumentId, targetDocumentId } = req.params;
+    try {
+      await pool.query(
+        `DELETE FROM document_links 
+         WHERE source_document_id = $1 AND target_document_id = $2`,
+        [sourceDocumentId, targetDocumentId]
+      );
+      res.json({ message: 'Связь удалена' });
+    } catch (error) {
+      console.error('Ошибка удаления связи документов:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
+  async getDocumentLinks(req, res) {
+    const { documentId } = req.params;
+    try {
+      // Получаем все связи: где документ источник или цель
+      const result = await pool.query(
+        `SELECT 
+          dl.id,
+          dl.source_document_id,
+          dl.target_document_id,
+          dl.created_at,
+          CASE 
+            WHEN dl.source_document_id = $1 THEN d2.title
+            ELSE d1.title
+          END as linked_document_title,
+          CASE 
+            WHEN dl.source_document_id = $1 THEN dl.target_document_id
+            ELSE dl.source_document_id
+          END as linked_document_id,
+          CASE 
+            WHEN dl.source_document_id = $1 THEN 'outgoing'
+            ELSE 'incoming'
+          END as direction
+         FROM document_links dl
+         LEFT JOIN rwprint_documents d1 ON dl.source_document_id = d1.id
+         LEFT JOIN rwprint_documents d2 ON dl.target_document_id = d2.id
+         WHERE dl.source_document_id = $1 OR dl.target_document_id = $1`,
+        [documentId]
+      );
+      res.json({ links: result.rows });
+    } catch (error) {
+      console.error('Ошибка получения связей документа:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
+  // === DOCUMENT-TASK LINKS (связи документов с задачами) ===
+  
+  async linkDocumentToTask(req, res) {
+    const { documentId, taskId } = req.body;
+    try {
+      // Проверяем, что документ принадлежит пользователю
+      const docCheck = await pool.query(
+        `SELECT d.id FROM rwprint_documents d
+         JOIN rwprint_environments e ON d.environment_id = e.id
+         WHERE d.id = $1 AND e.user_id = $2`,
+        [documentId, req.userId]
+      );
+      
+      if (docCheck.rows.length === 0) {
+        return res.status(404).json({ error: 'Документ не найден' });
+      }
+
+      // Проверяем, что задача принадлежит пользователю
+      const taskCheck = await pool.query(
+        `SELECT id FROM tasks WHERE id = $1 AND user_id = $2`,
+        [taskId, req.userId]
+      );
+      
+      if (taskCheck.rows.length === 0) {
+        return res.status(404).json({ error: 'Задача не найдена' });
+      }
+
+      const result = await pool.query(
+        `INSERT INTO document_task_links (document_id, task_id)
+         VALUES ($1, $2)
+         ON CONFLICT (document_id, task_id) DO NOTHING
+         RETURNING *`,
+        [documentId, taskId]
+      );
+      
+      res.json({ link: result.rows[0] });
+    } catch (error) {
+      console.error('Ошибка связывания документа с задачей:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
+  async unlinkDocumentFromTask(req, res) {
+    const { documentId, taskId } = req.params;
+    try {
+      await pool.query(
+        `DELETE FROM document_task_links 
+         WHERE document_id = $1 AND task_id = $2`,
+        [documentId, taskId]
+      );
+      res.json({ message: 'Связь удалена' });
+    } catch (error) {
+      console.error('Ошибка удаления связи документа с задачей:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
+  async getDocumentTaskLinks(req, res) {
+    const { documentId } = req.params;
+    try {
+      const result = await pool.query(
+        `SELECT 
+          dtl.id,
+          dtl.task_id,
+          dtl.created_at,
+          t.title as task_title,
+          t.status as task_status,
+          t.date as task_date
+         FROM document_task_links dtl
+         JOIN tasks t ON dtl.task_id = t.id
+         WHERE dtl.document_id = $1
+         ORDER BY t.date DESC`,
+        [documentId]
+      );
+      res.json({ taskLinks: result.rows });
+    } catch (error) {
+      console.error('Ошибка получения связей документа с задачами:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+
+  async getTaskDocumentLinks(req, res) {
+    const { taskId } = req.params;
+    try {
+      const result = await pool.query(
+        `SELECT 
+          dtl.id,
+          dtl.document_id,
+          dtl.created_at,
+          d.title as document_title,
+          d.updated_at as document_updated_at,
+          e.name as environment_name,
+          e.color as environment_color
+         FROM document_task_links dtl
+         JOIN rwprint_documents d ON dtl.document_id = d.id
+         JOIN rwprint_environments e ON d.environment_id = e.id
+         WHERE dtl.task_id = $1
+         ORDER BY dtl.created_at DESC`,
+        [taskId]
+      );
+      res.json({ documentLinks: result.rows });
+    } catch (error) {
+      console.error('Ошибка получения связей задачи с документами:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+  },
+};

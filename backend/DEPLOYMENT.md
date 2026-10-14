@@ -18,7 +18,7 @@ error: column "updated_at" does not exist
 
 ```bash
 ssh user@your-server
-cd /path/to/hostprint/backend
+cd /path/to/xover/backend
 ```
 
 ### 2. Создайте бэкап базы данных (ОБЯЗАТЕЛЬНО!)
@@ -56,8 +56,8 @@ npm run db:migrate:all
    - task_logs
    - events
    - event_year_notes
-   - datatasks
-   - datatask_dates
+   - taskbases
+   - taskbase_dates
    - schema_migrations
 ```
 
@@ -68,7 +68,7 @@ npm run db:migrate:all
 pm2 restart backend
 
 # Или если используется systemd
-sudo systemctl restart hostprint-backend
+sudo systemctl restart xover-backend
 
 # Или через Docker
 docker-compose restart backend
@@ -80,7 +80,7 @@ docker-compose restart backend
 # Проверьте логи
 pm2 logs backend
 # или
-docker logs hostprint-backend-1
+docker logs xover-backend-1
 
 # Проверьте API
 curl http://localhost:5001/health
@@ -99,11 +99,11 @@ curl http://localhost:5001/health
 - ✅ `user_id` - для связи с пользователем
 
 ### tasks
-- ✅ `datatask_id` - для связи с datatasks
+- ✅ `taskbase_id` - для связи с taskbases
 - ✅ Все колонки для статусов, чек-листов, связей
 - ✅ `time_slot_start`, `time_slot_end`, `is_time_bound`
 
-### datatasks и datatask_dates
+### taskbases и taskbase_dates
 - ✅ Создает таблицы если их нет
 - ✅ Все необходимые колонки и индексы
 
@@ -179,7 +179,7 @@ npm run db:migrate:all
 pm2 logs backend --lines 100
 
 # Docker
-docker logs -f hostprint-backend-1 --tail 100
+docker logs -f xover-backend-1 --tail 100
 ```
 
 Проверяйте на наличие ошибок типа:

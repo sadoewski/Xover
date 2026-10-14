@@ -1,39 +1,23 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Calendar, HardDrive } from 'lucide-react';
-import { authService, rwprintService } from '../../services/api';
+import { User, Mail, Calendar } from 'lucide-react';
+import { authService } from '../../services/api';
 import './UsersSettings.css';
 
 export default function UsersSettings() {
   const [user, setUser] = useState(null);
-  const [stats, setStats] = useState({
-    totalDocuments: 0,
-    totalSize: 0,
-    totalWords: 0,
-    totalChars: 0
-  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUserData();
-    fetchStats();
   }, []);
 
   const fetchUserData = () => {
     try {
       const currentUser = authService.getCurrentUser();
       setUser(currentUser);
+      setLoading(false);
     } catch (error) {
       console.error('Ошибка загрузки пользователя:', error);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const statsData = await rwprintService.getStorageStats();
-      setStats(statsData);
-    } catch (error) {
-      console.error('Ошибка загрузки статистики:', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -58,7 +42,9 @@ export default function UsersSettings() {
     <div className="users-settings">
       <h2>Пользователи</h2>
 
-      {user && (
+      {loading ? (
+        <div className="loading-spinner">Загрузка...</div>
+      ) : user ? (
         <div className="user-profile-card">
           <div className="user-avatar-large">
             {user.avatar_url ? (
@@ -81,52 +67,9 @@ export default function UsersSettings() {
             </div>
           </div>
         </div>
+      ) : (
+        <div>Пользователь не найден</div>
       )}
-
-      <div className="stats-section">
-        <h3>Статистика RW:Print</h3>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon documents">
-              <HardDrive size={24} />
-            </div>
-            <div className="stat-content">
-              <div className="stat-label">Всего документов</div>
-              <div className="stat-value">{stats.totalDocuments}</div>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon size">
-              <HardDrive size={24} />
-            </div>
-            <div className="stat-content">
-              <div className="stat-label">Занято места</div>
-              <div className="stat-value">{formatBytes(stats.totalSize)}</div>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon words">
-              <HardDrive size={24} />
-            </div>
-            <div className="stat-content">
-              <div className="stat-label">Всего слов</div>
-              <div className="stat-value">{formatNumber(stats.totalWords)}</div>
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon chars">
-              <HardDrive size={24} />
-            </div>
-            <div className="stat-content">
-              <div className="stat-label">Всего символов</div>
-              <div className="stat-value">{formatNumber(stats.totalChars)}</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -19,6 +19,8 @@ export default function PrioritiesPage() {
   const navigate = useNavigate();
   const [priorities, setPriorities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState(null);
   const [priorityTasks, setPriorityTasks] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
@@ -49,25 +51,13 @@ export default function PrioritiesPage() {
 
   const loadPriorityTasks = async (priorityId) => {
     try {
-      // Загружаем все задачи и фильтруем по приоритету
+      // Загружаем все задачи за год одним запросом
       const today = new Date();
-      const year = today.getFullYear();
+      const startDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+      const endDate = new Date(today.getFullYear(), 11, 31).toISOString().split('T')[0];
 
-      const allTasks = [];
-      for (let month = 0; month < 12; month++) {
-        for (let day = 1; day <= 31; day++) {
-          try {
-            const date = new Date(year, month, day);
-            if (date.getMonth() === month) {
-              const dateStr = date.toISOString().split('T')[0];
-              const data = await tasksService.getTasksByDate(dateStr);
-              allTasks.push(...data.tasks);
-            }
-          } catch (e) {
-            // Пропускаем ошибки
-          }
-        }
-      }
+      const data = await tasksService.getTasksInRange(startDate, endDate);
+      const allTasks = data.tasks || [];
 
       const filtered = allTasks.filter(task => task.priority_id === priorityId);
       setPriorityTasks(filtered);
@@ -83,6 +73,7 @@ export default function PrioritiesPage() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    setIsCreating(true);
     try {
       await prioritiesService.createPriority(newPriority);
       setNewPriority({ name: '', color: '#3B82F6', level: 1 });
@@ -90,11 +81,14 @@ export default function PrioritiesPage() {
       loadPriorities();
     } catch (error) {
       console.error('Ошибка создания приоритета:', error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Удалить приоритет?')) return;
+    setIsDeleting(true);
     try {
       await prioritiesService.deletePriority(id);
       if (selectedPriority?.id === id) {
@@ -104,6 +98,8 @@ export default function PrioritiesPage() {
       loadPriorities();
     } catch (error) {
       console.error('Ошибка удаления приоритета:', error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -265,11 +261,14 @@ export default function PrioritiesPage() {
                   </div>
                 </div>
                 <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
-                  <button type="submit" className="btn btn-primary">Создать</button>
+                  <button type="submit" className="btn btn-primary" disabled={isCreating}>
+                    {isCreating ? 'Создание...' : 'Создать'}
+                  </button>
                   <button
                     type="button"
                     onClick={() => setShowCreate(false)}
                     className="btn btn-secondary"
+                    disabled={isCreating}
                   >
                     Отмена
                   </button>
@@ -329,6 +328,7 @@ export default function PrioritiesPage() {
                         className="btn-icon"
                         style={{ color: 'var(--error)' }}
                         title="Удалить"
+                        disabled={isDeleting}
                       >
                         <Trash2 size={16} />
                       </button>

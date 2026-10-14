@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Eye, FolderTree, Users } from 'lucide-react';
+import { Eye, Users } from 'lucide-react';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import AppearanceSettings from '../components/Settings/AppearanceSettings';
-import FilesSettings from '../components/Settings/FilesSettings';
 import UsersSettings from '../components/Settings/UsersSettings';
 import './SettingsPage.css';
 
@@ -23,13 +22,6 @@ export default function SettingsPage() {
               <span>Внешний вид</span>
             </button>
             <button
-              className={`settings-nav-item ${activeTab === 'files' ? 'active' : ''}`}
-              onClick={() => setActiveTab('files')}
-            >
-              <FolderTree size={18} />
-              <span>Файлы</span>
-            </button>
-            <button
               className={`settings-nav-item ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
@@ -41,7 +33,6 @@ export default function SettingsPage() {
 
         <div className="settings-content">
           {activeTab === 'appearance' && <AppearanceSettings />}
-          {activeTab === 'files' && <FilesSettings />}
           {activeTab === 'users' && <UsersSettings />}
         </div>
       </div>

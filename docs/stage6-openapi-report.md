@@ -2,7 +2,7 @@
 
 ## 🎉 Единый API Contract создан!
 
-Полная OpenAPI 3.0.3 спецификация для всех API endpoints приложения Hostprint.
+Полная OpenAPI 3.0.3 спецификация для всех API endpoints приложения Xover.
 
 ---
 
@@ -51,7 +51,7 @@
 ```yaml
 openapi: 3.0.3
 info:
-  title: Hostprint API
+  title: Xover API
   version: 1.0.0
   
 servers:
@@ -110,7 +110,7 @@ Standalone Swagger UI для визуализации:
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Hostprint API Documentation</title>
+    <title>Xover API Documentation</title>
     <link rel="stylesheet" href="swagger-ui.css">
   </head>
   <body>

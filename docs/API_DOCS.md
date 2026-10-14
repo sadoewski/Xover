@@ -1,8 +1,8 @@
-# Hostprint API Documentation
+# Xover API Documentation
 
 ## OpenAPI спецификация создана! 🎉
 
-Полная OpenAPI 3.0.3 спецификация для всех API endpoints приложения Hostprint.
+Полная OpenAPI 3.0.3 спецификация для всех API endpoints приложения Xover.
 
 ---
 

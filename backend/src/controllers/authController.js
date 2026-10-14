@@ -12,6 +12,27 @@ import {
 const SALT_ROUNDS = 10;
 
 export const authController = {
+  // Проверка существования username
+  checkUsername: asyncHandler(async (req, res) => {
+    const { username } = req.body;
+
+    if (!username) {
+      throw new ValidationError('Username is required');
+    }
+
+    // Проверяем существует ли пользователь с таким username
+    const userExists = await pool.query(
+      'SELECT id FROM users WHERE username = $1',
+      [username]
+    );
+
+    if (userExists.rows.length > 0) {
+      res.json({ exists: true });
+    } else {
+      res.status(404).json({ exists: false, error: 'User not found' });
+    }
+  }),
+
   // Регистрация
   register: asyncHandler(async (req, res) => {
     const { username, password, name, email, avatar_url } = req.body;

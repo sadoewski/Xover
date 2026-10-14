@@ -71,7 +71,10 @@ export default function WeekView({ selectedDate, tasks, isDayOff, onDayClick }) 
                       key={task.id}
                       className={`week-task-item ${isContinuation ? 'continuation' : ''} ${hasNextDay ? 'has-next-day' : ''}`}
                       onClick={() => onDayClick(day)}
-                      style={{ borderLeftColor: STATUS_CONFIG[task.status]?.color }}
+                      style={{
+                        borderLeftColor: task.group_color || STATUS_CONFIG[task.status]?.color,
+                        backgroundColor: `${task.group_color || STATUS_CONFIG[task.status]?.color}15`
+                      }}
                     >
                       <div className="week-task-header">
                         <StatusIcon
@@ -94,6 +97,9 @@ export default function WeekView({ selectedDate, tasks, isDayOff, onDayClick }) 
                           </div>
                         )}
                         <div className="week-task-badges">
+                          <span className="week-task-status" style={{ color: STATUS_CONFIG[task.status]?.color }}>
+                            {STATUS_CONFIG[task.status]?.label}
+                          </span>
                           {task.group_name && (
                             <span
                               className="week-task-group"

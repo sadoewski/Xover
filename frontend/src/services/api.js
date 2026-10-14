@@ -1,8 +1,16 @@
 import axios from 'axios';
+import { mapErrorToUserFriendly, isAuthError, getErrorDetails } from '../utils/errorMapper';
 
 // В production (Docker) используем относительный путь через nginx proxy
 // В development - прямое подключение к backend
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001/api' : '/api');
+
+// Функция для показа Toast будет установлена из App.jsx
+let showToastFunction = null;
+
+export const setToastFunction = (toastFunc) => {
+  showToastFunction = toastFunc;
+};
 
 const api = axios.create({
   baseURL: API_URL,
@@ -25,15 +33,48 @@ api.interceptors.request.use(
   }
 );
 
-// Обработка ошибок
+// Обработка ошибок с Toast уведомлениями
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const isLoginPage = window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register');
+
+    // Логируем детали для разработчика
+    console.error('API Error:', getErrorDetails(error));
+
+    // Получаем понятное сообщение для пользователя
+    const userMessage = mapErrorToUserFriendly(error);
+
+    // 401/403 - Ошибки авторизации
+    if (isAuthError(error)) {
+      console.warn('Обнаружена ошибка авторизации. Очистка данных.');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // Не делаем редирект здесь - пусть компоненты сами обрабатывают
+
+      // НЕ показываем Toast на странице логина (там своя обработка)
+      // Для других страниц - показываем Toast и редиректим
+      if (!isLoginPage) {
+        if (showToastFunction) {
+          showToastFunction('Сессия истекла. Войдите в систему заново.', 'warning');
+        }
+
+        setTimeout(() => {
+          try {
+            window.location.replace('/login');
+          } catch (e) {
+            console.error('Ошибка редиректа:', e);
+          }
+        }, 1500);
+      }
+    } else {
+      // Для всех остальных ошибок - показываем Toast
+      // НЕ показываем на странице логина (там своя обработка)
+      if (showToastFunction && !isLoginPage) {
+        showToastFunction(userMessage, 'error');
+      }
     }
+
     return Promise.reject(error);
   }
 );
@@ -86,8 +127,16 @@ export const authService = {
   },
 
   getCurrentUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    try {
+      const user = localStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
+    } catch (error) {
+      console.warn('Failed to parse user from localStorage:', error);
+      // Очищаем поврежденные данные
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return null;
+    }
   },
 
   isAuthenticated: () => {
@@ -96,6 +145,11 @@ export const authService = {
 };
 
 export const tasksService = {
+  getTasks: async () => {
+    const response = await api.get('/tasks');
+    return response.data;
+  },
+
   getTasksByDate: async (date) => {
     const response = await api.get(`/tasks/date/${date}`);
     return response.data;
@@ -138,6 +192,22 @@ export const tasksService = {
 
   unlinkTasks: async (taskId1, taskId2) => {
     const response = await api.post('/tasks/unlink', { taskId1, taskId2 });
+    return response.data;
+  },
+
+  getTasksInRange: async (startDate, endDate) => {
+    const params = { startDate, endDate };
+    const response = await api.get('/terminal/tasks/range', { params });
+    return response.data;
+  },
+
+  getTasksByGroup: async (groupId) => {
+    const response = await api.get(`/tasks/group/${groupId}`);
+    return response.data;
+  },
+
+  getTasksByPriority: async (priorityId) => {
+    const response = await api.get(`/tasks/priority/${priorityId}`);
     return response.data;
   },
 };
@@ -267,66 +337,116 @@ export const eventsService = {
 
 export const dataTasksService = {
   getAll: async () => {
-    const response = await api.get('/datatasks');
+    const response = await api.get('/taskbases');
     return response.data;
   },
 
   getById: async (id) => {
-    const response = await api.get(`/datatasks/${id}`);
+    const response = await api.get(`/taskbases/${id}`);
     return response.data;
   },
 
   create: async (dataTaskData) => {
-    const response = await api.post('/datatasks', dataTaskData);
+    const response = await api.post('/taskbases', dataTaskData);
     return response.data;
   },
 
   update: async (id, updates) => {
-    const response = await api.put(`/datatasks/${id}`, updates);
+    const response = await api.put(`/taskbases/${id}`, updates);
     return response.data;
   },
 
   delete: async (id) => {
-    const response = await api.delete(`/datatasks/${id}`);
+    const response = await api.delete(`/taskbases/${id}`);
     return response.data;
   },
 
   addDate: async (id, dateData) => {
-    const response = await api.post(`/datatasks/${id}/dates`, dateData);
+    const response = await api.post(`/taskbases/${id}/dates`, dateData);
     return response.data;
   },
 
   removeDate: async (id, date) => {
-    const response = await api.delete(`/datatasks/${id}/dates/${date}`);
+    const response = await api.delete(`/taskbases/${id}/dates/${date}`);
     return response.data;
   },
 
   updateDateStatus: async (id, date, status) => {
-    const response = await api.put(`/datatasks/${id}/dates/${date}/status`, { status });
+    const response = await api.put(`/taskbases/${id}/dates/${date}/status`, { status });
     return response.data;
   },
 };
 
-export const rwprintService = {
-  getEnvironments: async () => {
-    const response = await api.get('/rwprint/environments');
-    return response.data.environments || [];
-  },
-
-  getFolders: async (environmentId) => {
-    const response = await api.get(`/rwprint/environments/${environmentId}/folders`);
-    return response.data.folders || [];
-  },
-
-  getDocuments: async (environmentId) => {
-    const response = await api.get(`/rwprint/environments/${environmentId}/documents`);
-    return response.data.documents || [];
-  },
-
-  getStorageStats: async () => {
-    const response = await api.get('/rwprint/stats/storage');
-    return response.data;
-  },
-};
 
 export default api;
+
+export const terminalService = {
+  getBoard: async () => {
+    const response = await api.get('/terminal/board');
+    return response.data;
+  },
+
+  getTasksByDate: async (date, status = null) => {
+    const params = { date };
+    if (status) params.status = status;
+    const response = await api.get('/terminal/tasks/date', { params });
+    return response.data;
+  },
+
+  getTasksInRange: async (startDate, endDate, status = null) => {
+    const params = { startDate, endDate };
+    if (status) params.status = status;
+    const response = await api.get('/terminal/tasks/range', { params });
+    return response.data;
+  },
+
+  getTasksByGroup: async (groupId) => {
+    const response = await api.get(`/tasks/group/${groupId}`);
+    return response.data;
+  },
+
+  getTasksByPriority: async (priorityId) => {
+    const response = await api.get(`/tasks/priority/${priorityId}`);
+    return response.data;
+  },
+
+  getTaskDetails: async (id) => {
+    const response = await api.get(`/terminal/tasks/${id}`);
+    return response.data;
+  },
+
+  updateTaskStatus: async (id, status, movedToDate = null) => {
+    const response = await api.put(`/terminal/tasks/${id}/status`, { status, movedToDate });
+    return response.data;
+  },
+
+  deleteTask: async (id) => {
+    const response = await api.delete(`/terminal/tasks/${id}`);
+    return response.data;
+  },
+
+  getTaskLinks: async (id) => {
+    const response = await api.get(`/terminal/tasks/${id}/links`);
+    return response.data;
+  },
+
+  addTaskLink: async (id, link) => {
+    const response = await api.post(`/terminal/tasks/${id}/links`, { link });
+    return response.data;
+  },
+
+  deleteTaskLink: async (id, linkId) => {
+    const response = await api.delete(`/terminal/tasks/${id}/links/${linkId}`);
+    return response.data;
+  },
+
+  getTaskBases: async () => {
+    const response = await api.get('/terminal/taskbases');
+    return response.data;
+  },
+
+  getEvents: async (filter = 'all') => {
+    const response = await api.get('/terminal/events', { params: { filter } });
+    return response.data;
+  },
+};

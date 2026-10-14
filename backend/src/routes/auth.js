@@ -29,6 +29,11 @@ const loginValidation = [
   body('password').notEmpty().withMessage('Пароль обязателен'),
 ];
 
+// Валидация для проверки username
+const checkUsernameValidation = [
+  body('username').notEmpty().trim().withMessage('Username обязателен'),
+];
+
 // Валидация для обновления профиля
 const updateProfileValidation = [
   body('name').optional().notEmpty().trim().escape().withMessage('Имя не может быть пустым'),
@@ -48,7 +53,9 @@ const changePasswordValidation = [
 
 router.post('/register', registerValidation, validate, authController.register);
 router.post('/login', loginValidation, validate, authController.login);
+router.post('/check-username', checkUsernameValidation, validate, authController.checkUsername);
 router.get('/me', authMiddleware, authController.getCurrentUser);
+router.get('/profile', authMiddleware, authController.getCurrentUser); // Алиас для /me
 router.put('/profile', authMiddleware, updateProfileValidation, validate, authController.updateProfile);
 router.post('/upload-avatar', authMiddleware, upload.single('avatar'), authController.uploadAvatar);
 router.post('/change-password', authMiddleware, changePasswordValidation, validate, authController.changePassword);

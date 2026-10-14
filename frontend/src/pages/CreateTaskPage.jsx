@@ -3,11 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { tasksService, groupsService, prioritiesService } from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 
 export default function CreateTaskPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const date = searchParams.get('date');
+  const { showSuccess, showError, showWarning } = useNotification();
 
   const [step, setStep] = useState('group'); // group, details
   const [groups, setGroups] = useState([]);
@@ -72,7 +74,7 @@ export default function CreateTaskPage() {
 
   const handleProceedToDetails = () => {
     if (!selectedGroup) {
-      alert('Выберите группу');
+      showWarning('Выберите группу');
       return;
     }
     setStep('details');
@@ -108,11 +110,12 @@ export default function CreateTaskPage() {
       };
 
       const result = await tasksService.createTask(taskData);
+      showSuccess('Задача успешно создана');
       navigate(`/calendar?date=${date}`);
     } catch (error) {
       console.error('Ошибка создания задачи:', error);
       console.error('Детали ошибки:', error.response?.data);
-      alert('Ошибка создания задачи: ' + (error.response?.data?.error || error.message));
+      showError(error.response?.data?.error || 'Не удалось создать задачу');
     } finally {
       setSaving(false);
     }

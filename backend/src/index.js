@@ -8,12 +8,13 @@ import prioritiesRoutes from './routes/priorities.js';
 import groupsRoutes from './routes/groups.js';
 import tasksRoutes from './routes/tasks.js';
 import eventsRoutes from './routes/events.js';
+import templatesRoutes from './routes/templates.js';
 import rwprintRoutes from './routes/rwprint.js';
 import morphologyRoutes from './routes/morphology.js';
-import datatasksRoutes from './routes/datatasks.js';
+import taskbasesRoutes from './routes/taskbases.js';
 import sitesRoutes from './routes/sites.js';
-import syncRoutes from './routes/sync.js';
 import healthRoutes from './routes/health.js';
+import terminalRoutes from './routes/terminal.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
@@ -82,11 +83,12 @@ app.use('/api/priorities', prioritiesRoutes);
 app.use('/api/groups', groupsRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/events', eventsRoutes);
+app.use('/api/templates', templatesRoutes);
 app.use('/api/rwprint', rwprintRoutes);
 app.use('/api/morphology', morphologyRoutes);
-app.use('/api/datatasks', datatasksRoutes);
+app.use('/api/taskbases', taskbasesRoutes);
 app.use('/api/sites', sitesRoutes);
-app.use('/api/sync', syncRoutes);
+app.use('/api/terminal', terminalRoutes);
 
 // Health check routes (no /api prefix for k8s compatibility)
 app.use('/', healthRoutes);
@@ -115,6 +117,26 @@ const shutdown = async () => {
     process.exit(1);
   }
 };
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  // В production логировать в файл или сервис мониторинга
+  if (process.env.NODE_ENV === 'production') {
+    // Graceful shutdown при критичной ошибке
+    shutdown();
+  }
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  // В production логировать в файл или сервис мониторинга
+  if (process.env.NODE_ENV === 'production') {
+    // Graceful shutdown при критичной ошибке
+    shutdown();
+  }
+});
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);

@@ -18,7 +18,7 @@ const getDbPath = () => {
     fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  return join(dataDir, 'hostprint.db');
+  return join(dataDir, 'xover.db');
 };
 
 const dbPath = getDbPath();

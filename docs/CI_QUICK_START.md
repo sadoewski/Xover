@@ -14,7 +14,7 @@ git push origin main
 
 Перейти на GitHub:
 ```
-https://github.com/USERNAME/hostprint/actions
+https://github.com/USERNAME/xover/actions
 ```
 
 Должны запуститься:
@@ -76,7 +76,7 @@ git push origin main
 
 ### 3. Проверить
 ```
-https://USERNAME.github.io/hostprint/
+https://USERNAME.github.io/xover/
 ```
 
 Swagger UI должен показать OpenAPI spec
@@ -119,10 +119,10 @@ Dependabot создаст PR для обновления зависимосте�
 Добавьте в ваш README.md:
 
 ```markdown
-[![Backend CI](https://github.com/USERNAME/hostprint/workflows/Backend%20CI/badge.svg)](https://github.com/USERNAME/hostprint/actions/workflows/backend-ci.yml)
-[![Frontend CI](https://github.com/USERNAME/hostprint/workflows/Frontend%20CI/badge.svg)](https://github.com/USERNAME/hostprint/actions/workflows/frontend-ci.yml)
-[![Security](https://github.com/USERNAME/hostprint/workflows/Security%20Scan/badge.svg)](https://github.com/USERNAME/hostprint/actions/workflows/security.yml)
-[![codecov](https://codecov.io/gh/USERNAME/hostprint/branch/main/graph/badge.svg)](https://codecov.io/gh/USERNAME/hostprint)
+[![Backend CI](https://github.com/USERNAME/xover/workflows/Backend%20CI/badge.svg)](https://github.com/USERNAME/xover/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://github.com/USERNAME/xover/workflows/Frontend%20CI/badge.svg)](https://github.com/USERNAME/xover/actions/workflows/frontend-ci.yml)
+[![Security](https://github.com/USERNAME/xover/workflows/Security%20Scan/badge.svg)](https://github.com/USERNAME/xover/actions/workflows/security.yml)
+[![codecov](https://codecov.io/gh/USERNAME/xover/branch/main/graph/badge.svg)](https://codecov.io/gh/USERNAME/xover)
 ```
 
 Замените `USERNAME` на ваш GitHub username.
@@ -143,7 +143,7 @@ services:
   postgres:
     image: postgres:15-alpine
     env:
-      POSTGRES_DB: hostprint_test
+      POSTGRES_DB: xover_test
 ```
 
 ### Frontend CI не проходит

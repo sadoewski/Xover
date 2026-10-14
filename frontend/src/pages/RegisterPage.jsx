@@ -1,41 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Upload, X } from 'lucide-react';
 import './AuthPages.css';
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [avatarPreview, setAvatarPreview] = useState(null);
-  const [avatarFile, setAvatarFile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const removeAvatar = () => {
-    setAvatarPreview(null);
-    setAvatarFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,16 +17,28 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      // TODO: В будущем загрузить аватар на сервер и получить URL
-      // Сейчас передаем base64 напрямую (временное решение)
-      await register(username, password, name, email || null, avatarPreview);
+      // Передаем только username и password, name будет = username по умолчанию
+      await register(username, password, username, null, null);
       navigate('/');
     } catch (err) {
-      const errorMsg = err.response?.data?.error;
-      if (Array.isArray(errorMsg)) {
-        setError(errorMsg.map(e => e.msg).join(', '));
+      console.error('Registration error:', err);
+
+      const status = err.response?.status;
+      const errorData = err.response?.data;
+
+      // Обработка ошибок валидации
+      if (errorData?.details && Array.isArray(errorData.details)) {
+        const messages = errorData.details.map(d => d.message).join('. ');
+        setError(messages);
+      } else if (status === 409 || status === 400) {
+        // Конфликт (пользователь уже существует) или некорректные данные
+        setError(errorData?.error || 'Пользователь с таким username уже существует');
+      } else if (status === 500) {
+        setError('Ошибка сервера. Пожалуйста, попробуйте позже.');
+      } else if (err.message === 'Network Error' || !err.response) {
+        setError('Не удалось подключиться к серверу. Проверьте подключение к интернету.');
       } else {
-        setError(errorMsg || 'Ошибка регистрации');
+        setError(errorData?.error || 'Ошибка регистрации. Попробуйте снова.');
       }
     } finally {
       setLoading(false);
@@ -64,7 +50,6 @@ export default function RegisterPage() {
       <div className="auth-container">
         <div className="auth-header">
           <h2>Регистрация</h2>
-          <p>Создайте аккаунт для использования Xover</p>
         </div>
         <form className="auth-form" onSubmit={handleSubmit}>
           {error && (
@@ -72,37 +57,6 @@ export default function RegisterPage() {
               {error}
             </div>
           )}
-
-          <div className="avatar-upload">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleAvatarChange}
-              style={{ display: 'none' }}
-            />
-            {avatarPreview ? (
-              <div className="avatar-preview">
-                <img src={avatarPreview} alt="Avatar preview" />
-                <button
-                  type="button"
-                  className="remove-avatar"
-                  onClick={removeAvatar}
-                >
-                  <X size={16} />
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="avatar-upload-btn"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload size={24} />
-                <span>Добавить фото профиля</span>
-              </button>
-            )}
-          </div>
 
           <div className="form-group">
             <label htmlFor="username">
@@ -121,36 +75,7 @@ export default function RegisterPage() {
               maxLength={50}
               pattern="[a-zA-Z0-9_]+"
               title="Только буквы, цифры и подчеркивание"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="name">
-              Имя <span className="required">*</span>
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              className="form-input"
-              placeholder="Ваше имя"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email (необязательно)</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              className="form-input"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
             />
           </div>
 

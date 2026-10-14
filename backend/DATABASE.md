@@ -7,7 +7,7 @@
 DB_TYPE=postgresql
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=hostprint
+DB_NAME=xover
 DB_USER=postgres
 DB_PASSWORD=your_password
 ```
@@ -15,7 +15,7 @@ DB_PASSWORD=your_password
 ### SQLite (Default for embedded/local use)
 ```bash
 DB_TYPE=sqlite
-SQLITE_DB_PATH=/path/to/hostprint.db  # Optional, defaults to backend/data/hostprint.db
+SQLITE_DB_PATH=/path/to/xover.db  # Optional, defaults to backend/data/xover.db
 ```
 
 ## Usage

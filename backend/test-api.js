@@ -21,7 +21,7 @@ async function testDatabase() {
 async function testTableStructure() {
   console.log('\n2️⃣ Проверка структуры таблиц...');
 
-  const tables = ['users', 'priorities', 'task_groups', 'task_group_types', 'tasks', 'events', 'event_year_notes', 'datatasks', 'datatask_dates'];
+  const tables = ['users', 'priorities', 'task_groups', 'task_group_types', 'tasks', 'events', 'event_year_notes', 'taskbases', 'taskbase_dates'];
 
   for (const table of tables) {
     try {
@@ -53,8 +53,8 @@ async function testRequiredColumns() {
   const requiredColumns = {
     events: ['updated_at', 'is_day_off', 'is_yearly', 'month', 'day'],
     event_year_notes: ['user_id', 'updated_at'],
-    tasks: ['time_slot_start', 'time_slot_end', 'is_time_bound', 'datatask_id', 'updated_at'],
-    datatasks: ['user_id', 'name', 'group_id', 'time_slot_start', 'time_slot_end', 'is_time_bound'],
+    tasks: ['time_slot_start', 'time_slot_end', 'is_time_bound', 'taskbase_id', 'updated_at'],
+    taskbases: ['user_id', 'name', 'group_id', 'time_slot_start', 'time_slot_end', 'is_time_bound'],
   };
 
   for (const [table, columns] of Object.entries(requiredColumns)) {
@@ -226,30 +226,30 @@ async function testEventCreation(userId) {
   }
 }
 
-async function testDataTaskCreation(userId, groupId) {
-  console.log('\n9️⃣ Тест создания datatask...');
+async function testTaskBaseCreation(userId, groupId) {
+  console.log('\n9️⃣ Тест создания taskbase...');
 
   try {
     const result = await pool.query(
-      `INSERT INTO datatasks (
+      `INSERT INTO taskbases (
         user_id, name, group_id, time_slot_start, time_slot_end, is_time_bound
       ) VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id, name, time_slot_start, time_slot_end, is_time_bound, updated_at`,
       [userId, 'Повторяющаяся задача', groupId, '09:00:00', '10:00:00', true]
     );
 
-    const datatask = result.rows[0];
-    console.log('   ✅ DataTask создан:');
-    console.log('      id:', datatask.id);
-    console.log('      name:', datatask.name);
-    console.log('      time_slot_start:', datatask.time_slot_start);
-    console.log('      time_slot_end:', datatask.time_slot_end);
-    console.log('      is_time_bound:', datatask.is_time_bound);
-    console.log('      updated_at:', datatask.updated_at);
+    const taskbase = result.rows[0];
+    console.log('   ✅ TaskBase создан:');
+    console.log('      id:', taskbase.id);
+    console.log('      name:', taskbase.name);
+    console.log('      time_slot_start:', taskbase.time_slot_start);
+    console.log('      time_slot_end:', taskbase.time_slot_end);
+    console.log('      is_time_bound:', taskbase.is_time_bound);
+    console.log('      updated_at:', taskbase.updated_at);
 
-    return datatask.id;
+    return taskbase.id;
   } catch (error) {
-    const err = `❌ Ошибка создания datatask: ${error.message}`;
+    const err = `❌ Ошибка создания taskbase: ${error.message}`;
     console.log('   ' + err);
     errors.push(err);
     return null;
@@ -274,7 +274,7 @@ async function run() {
     if (priorityId && groupId) {
       await testTaskCreation(userId, groupId, priorityId);
       await testEventCreation(userId);
-      await testDataTaskCreation(userId, groupId);
+      await testTaskBaseCreation(userId, groupId);
     }
 
     console.log('\n' + '='.repeat(80));
