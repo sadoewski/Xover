@@ -117,7 +117,7 @@ const XoverTerminal = () => {
       writeLine('Available contexts:');
       writeLine('  task   - Move to task context');
       writeLine('  events - Move to events context');
-      writeLine('  dt     - Move to datatask context');
+      writeLine('  dt     - Move to taskbase context');
       writeLine('  ..     - Go back one level');
       writeLine('  root   - Return to root context');
     } else if (mainCommand === 'id' || parts[0].startsWith('id:')) {
@@ -167,7 +167,7 @@ const XoverTerminal = () => {
       ];
     } else if (ctx === 'dt') {
       return [
-        'dt                - Show all datatasks',
+        'dt                - Show all taskbases',
       ];
     }
     return [];
@@ -355,8 +355,8 @@ const XoverTerminal = () => {
       }
 
       if (target === 'dt') {
-        const data = await terminalService.getDatatasks();
-        return { output: TerminalFormatter.formatDatatasks(data.datatasks) };
+        const data = await terminalService.getTaskBases();
+        return { output: TerminalFormatter.formatTaskBases(data.taskbases) };
       }
 
       if (target === 'events') {

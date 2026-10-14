@@ -42,17 +42,17 @@ services:
   db:
     # ✅ Ports удалены
     networks:
-      - hostprint-network  # Только внутри Docker network
+      - xover-network  # Только внутри Docker network
 ```
 
 **Верификация:**
 ```bash
 # Test: попытка подключения с host
-psql -h localhost -p 5432 -U postgres -d hostprint
+psql -h localhost -p 5432 -U postgres -d xover
 # Expected: Connection refused ✓
 
 # Test: подключение из backend
-docker-compose exec backend sh -c "psql -h db -U postgres -d hostprint -c 'SELECT 1'"
+docker-compose exec backend sh -c "psql -h db -U postgres -d xover -c 'SELECT 1'"
 # Expected: Success ✓
 ```
 
@@ -141,7 +141,7 @@ volumes:
 ```bash
 # Test: volume exists
 docker volume ls | grep uploads_data
-# Expected: hostprint_uploads_data ✓
+# Expected: xover_uploads_data ✓
 
 # Test: data persists
 echo "test" | docker-compose exec -T backend sh -c "cat > /app/uploads/test.txt"
@@ -172,29 +172,29 @@ docker-compose exec backend cat /app/uploads/test.txt
 ```yaml
 # ПОСЛЕ
 networks:
-  hostprint-network:
+  xover-network:
     driver: bridge
 
 services:
   db:
     networks:
-      - hostprint-network
+      - xover-network
   backend:
     networks:
-      - hostprint-network
+      - xover-network
   frontend:
     networks:
-      - hostprint-network
+      - xover-network
 ```
 
 **Верификация:**
 ```bash
 # Test: network exists
-docker network ls | grep hostprint
-# Expected: hostprint_hostprint-network ✓
+docker network ls | grep xover
+# Expected: xover_xover-network ✓
 
 # Test: containers in network
-docker network inspect hostprint_hostprint-network | grep -A 5 Containers
+docker network inspect xover_xover-network | grep -A 5 Containers
 # Expected: db, backend, frontend ✓
 ```
 
@@ -274,8 +274,8 @@ app.use(helmet());
 **Recommendation:**
 ```bash
 # Scan images for vulnerabilities
-docker scan hostprint-backend
-docker scan hostprint-frontend
+docker scan xover-backend
+docker scan xover-frontend
 ```
 
 **Impact:** Detect CVEs in dependencies

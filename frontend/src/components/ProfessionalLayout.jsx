@@ -158,7 +158,7 @@ const ProfessionalLayout = ({ children }) => {
       title: 'Свойства',
       icon: Folder,
       items: [
-        { path: '/datatasks', label: 'DataTask', icon: Database },
+        { path: '/taskbases', label: 'TaskBase', icon: Database },
         { path: '/groups', label: 'Группы', icon: Folder },
         { path: '/priorities', label: 'Приоритеты', icon: Star },
       ]
@@ -169,7 +169,7 @@ const ProfessionalLayout = ({ children }) => {
     { label: 'Админ-панель', path: '/' },
     ...(location.pathname === '/calendar' ? [{ label: 'Календарь', path: '/calendar' }] : []),
     ...(location.pathname === '/events' ? [{ label: 'События', path: '/events' }] : []),
-    ...(location.pathname === '/datatasks' ? [{ label: 'DataTask', path: '/datatasks' }] : []),
+    ...(location.pathname === '/taskbases' ? [{ label: 'TaskBase', path: '/taskbases' }] : []),
     ...(location.pathname === '/groups' ? [{ label: 'Группы', path: '/groups' }] : []),
     ...(location.pathname === '/priorities' ? [{ label: 'Приоритеты', path: '/priorities' }] : []),
     ...(location.pathname === '/terminal' ? [{ label: 'Shell', path: '/terminal' }] : []),

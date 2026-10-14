@@ -15,7 +15,7 @@ describe('IDOR Security Tests', () => {
   let userAGroup, userBGroup;
   let userATask, userBTask;
   let userAEvent, userBEvent;
-  let userADataTask, userBDataTask;
+  let userATaskBase, userBTaskBase;
 
   beforeAll(async () => {
     // Создаем двух пользователей
@@ -76,15 +76,15 @@ describe('IDOR Security Tests', () => {
       });
     userAEvent = eventA.body.event.id;
 
-    const datataskA = await request(app)
-      .post('/api/datatasks')
+    const taskbaseA = await request(app)
+      .post('/api/taskbases')
       .set('Authorization', `Bearer ${userAToken}`)
       .send({
-        name: 'DataTask A',
+        name: 'TaskBase A',
         groupId: userAGroup,
         dates: ['2026-12-31']
       });
-    userADataTask = datataskA.body.datatask.id;
+    userATaskBase = taskbaseA.body.taskbase.id;
 
     // Создаем ресурсы для User B
     const priorityB = await request(app)
@@ -121,15 +121,15 @@ describe('IDOR Security Tests', () => {
       });
     userBEvent = eventB.body.event.id;
 
-    const datataskB = await request(app)
-      .post('/api/datatasks')
+    const taskbaseB = await request(app)
+      .post('/api/taskbases')
       .set('Authorization', `Bearer ${userBToken}`)
       .send({
-        name: 'DataTask B',
+        name: 'TaskBase B',
         groupId: userBGroup,
         dates: ['2026-12-31']
       });
-    userBDataTask = datataskB.body.datatask.id;
+    userBTaskBase = taskbaseB.body.taskbase.id;
   });
 
   afterAll(async () => {
@@ -246,27 +246,27 @@ describe('IDOR Security Tests', () => {
     });
   });
 
-  describe('DataTasks IDOR', () => {
-    test('User A cannot read User B datatask', async () => {
+  describe('TaskBases IDOR', () => {
+    test('User A cannot read User B taskbase', async () => {
       const response = await request(app)
-        .get(`/api/datatasks/${userBDataTask}`)
+        .get(`/api/taskbases/${userBTaskBase}`)
         .set('Authorization', `Bearer ${userAToken}`);
 
       expect(response.status).toBe(404);
     });
 
-    test('User A cannot update User B datatask', async () => {
+    test('User A cannot update User B taskbase', async () => {
       const response = await request(app)
-        .put(`/api/datatasks/${userBDataTask}`)
+        .put(`/api/taskbases/${userBTaskBase}`)
         .set('Authorization', `Bearer ${userAToken}`)
-        .send({ name: 'Hacked DataTask' });
+        .send({ name: 'Hacked TaskBase' });
 
       expect(response.status).toBe(404);
     });
 
-    test('User A cannot delete User B datatask', async () => {
+    test('User A cannot delete User B taskbase', async () => {
       const response = await request(app)
-        .delete(`/api/datatasks/${userBDataTask}`)
+        .delete(`/api/taskbases/${userBTaskBase}`)
         .set('Authorization', `Bearer ${userAToken}`);
 
       expect(response.status).toBe(404);
@@ -292,13 +292,13 @@ describe('IDOR Security Tests', () => {
       expect(response.body.groups.every(g => g.user_id === userAId)).toBe(true);
     });
 
-    test('User A sees only their datatasks', async () => {
+    test('User A sees only their taskbases', async () => {
       const response = await request(app)
-        .get('/api/datatasks')
+        .get('/api/taskbases')
         .set('Authorization', `Bearer ${userAToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.datatasks.every(d => d.user_id === userAId)).toBe(true);
+      expect(response.body.taskbases.every(d => d.user_id === userAId)).toBe(true);
     });
   });
 });

@@ -194,6 +194,22 @@ export const tasksService = {
     const response = await api.post('/tasks/unlink', { taskId1, taskId2 });
     return response.data;
   },
+
+  getTasksInRange: async (startDate, endDate) => {
+    const params = { startDate, endDate };
+    const response = await api.get('/terminal/tasks/range', { params });
+    return response.data;
+  },
+
+  getTasksByGroup: async (groupId) => {
+    const response = await api.get(`/tasks/group/${groupId}`);
+    return response.data;
+  },
+
+  getTasksByPriority: async (priorityId) => {
+    const response = await api.get(`/tasks/priority/${priorityId}`);
+    return response.data;
+  },
 };
 
 export const groupsService = {
@@ -321,42 +337,42 @@ export const eventsService = {
 
 export const dataTasksService = {
   getAll: async () => {
-    const response = await api.get('/datatasks');
+    const response = await api.get('/taskbases');
     return response.data;
   },
 
   getById: async (id) => {
-    const response = await api.get(`/datatasks/${id}`);
+    const response = await api.get(`/taskbases/${id}`);
     return response.data;
   },
 
   create: async (dataTaskData) => {
-    const response = await api.post('/datatasks', dataTaskData);
+    const response = await api.post('/taskbases', dataTaskData);
     return response.data;
   },
 
   update: async (id, updates) => {
-    const response = await api.put(`/datatasks/${id}`, updates);
+    const response = await api.put(`/taskbases/${id}`, updates);
     return response.data;
   },
 
   delete: async (id) => {
-    const response = await api.delete(`/datatasks/${id}`);
+    const response = await api.delete(`/taskbases/${id}`);
     return response.data;
   },
 
   addDate: async (id, dateData) => {
-    const response = await api.post(`/datatasks/${id}/dates`, dateData);
+    const response = await api.post(`/taskbases/${id}/dates`, dateData);
     return response.data;
   },
 
   removeDate: async (id, date) => {
-    const response = await api.delete(`/datatasks/${id}/dates/${date}`);
+    const response = await api.delete(`/taskbases/${id}/dates/${date}`);
     return response.data;
   },
 
   updateDateStatus: async (id, date, status) => {
-    const response = await api.put(`/datatasks/${id}/dates/${date}/status`, { status });
+    const response = await api.put(`/taskbases/${id}/dates/${date}/status`, { status });
     return response.data;
   },
 };
@@ -381,6 +397,16 @@ export const terminalService = {
     const params = { startDate, endDate };
     if (status) params.status = status;
     const response = await api.get('/terminal/tasks/range', { params });
+    return response.data;
+  },
+
+  getTasksByGroup: async (groupId) => {
+    const response = await api.get(`/tasks/group/${groupId}`);
+    return response.data;
+  },
+
+  getTasksByPriority: async (priorityId) => {
+    const response = await api.get(`/tasks/priority/${priorityId}`);
     return response.data;
   },
 
@@ -414,8 +440,8 @@ export const terminalService = {
     return response.data;
   },
 
-  getDatatasks: async () => {
-    const response = await api.get('/terminal/datatasks');
+  getTaskBases: async () => {
+    const response = await api.get('/terminal/taskbases');
     return response.data;
   },
 

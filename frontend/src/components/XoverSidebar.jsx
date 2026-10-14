@@ -50,7 +50,7 @@ export default function XoverSidebar() {
   const menuItems = [
     { id: 'dashboard', label: 'Админ-панель', Icon: BarChart3, path: '/' },
     { id: 'calendar', label: 'Календарь', Icon: Calendar, path: '/calendar' },
-    { id: 'datatasks', label: 'DataTask', Icon: Repeat, path: '/datatasks' },
+    { id: 'taskbases', label: 'TaskBase', Icon: Repeat, path: '/taskbases' },
     { id: 'groups', label: 'Группы записей', Icon: Folder, path: '/groups' },
     { id: 'priorities', label: 'Приоритеты', Icon: Star, path: '/priorities' },
     { id: 'templates', label: 'Шаблоны задач', Icon: FileText, path: '/templates' },

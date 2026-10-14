@@ -11,7 +11,7 @@ import eventsRoutes from './routes/events.js';
 import templatesRoutes from './routes/templates.js';
 import rwprintRoutes from './routes/rwprint.js';
 import morphologyRoutes from './routes/morphology.js';
-import datatasksRoutes from './routes/datatasks.js';
+import taskbasesRoutes from './routes/taskbases.js';
 import sitesRoutes from './routes/sites.js';
 import healthRoutes from './routes/health.js';
 import terminalRoutes from './routes/terminal.js';
@@ -86,7 +86,7 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/templates', templatesRoutes);
 app.use('/api/rwprint', rwprintRoutes);
 app.use('/api/morphology', morphologyRoutes);
-app.use('/api/datatasks', datatasksRoutes);
+app.use('/api/taskbases', taskbasesRoutes);
 app.use('/api/sites', sitesRoutes);
 app.use('/api/terminal', terminalRoutes);
 
@@ -117,6 +117,26 @@ const shutdown = async () => {
     process.exit(1);
   }
 };
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  // В production логировать в файл или сервис мониторинга
+  if (process.env.NODE_ENV === 'production') {
+    // Graceful shutdown при критичной ошибке
+    shutdown();
+  }
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  // В production логировать в файл или сервис мониторинга
+  if (process.env.NODE_ENV === 'production') {
+    // Graceful shutdown при критичной ошибке
+    shutdown();
+  }
+});
 
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);

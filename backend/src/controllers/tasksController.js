@@ -93,6 +93,66 @@ export const tasksController = {
     }
   },
 
+  // Получить задачи по группе
+  async getTasksByGroup(req, res) {
+    const { groupId } = req.params;
+    const userId = req.userId;
+
+    try {
+      const result = await pool.query(
+        `SELECT
+          t.*,
+          tg.name as group_name,
+          tg.color as group_color,
+          tgt.name as group_type_name,
+          p.name as priority_name,
+          p.color as priority_color
+        FROM tasks t
+        JOIN task_groups tg ON t.group_id = tg.id
+        LEFT JOIN task_group_types tgt ON t.group_type_id = tgt.id
+        JOIN priorities p ON t.priority_id = p.id
+        WHERE t.user_id = $1 AND t.group_id = $2
+        ORDER BY t.date DESC, t.created_at DESC`,
+        [userId, groupId]
+      );
+
+      res.json({ tasks: result.rows });
+    } catch (error) {
+      console.error('Ошибка получения задач по группе:', error);
+      res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  },
+
+  // Получить задачи по приоритету
+  async getTasksByPriority(req, res) {
+    const { priorityId } = req.params;
+    const userId = req.userId;
+
+    try {
+      const result = await pool.query(
+        `SELECT
+          t.*,
+          tg.name as group_name,
+          tg.color as group_color,
+          tgt.name as group_type_name,
+          p.name as priority_name,
+          p.color as priority_color
+        FROM tasks t
+        JOIN task_groups tg ON t.group_id = tg.id
+        LEFT JOIN task_group_types tgt ON t.group_type_id = tgt.id
+        JOIN priorities p ON t.priority_id = p.id
+        WHERE t.user_id = $1 AND t.priority_id = $2
+        ORDER BY t.date DESC, t.created_at DESC`,
+        [userId, priorityId]
+      );
+
+      res.json({ tasks: result.rows });
+    } catch (error) {
+      console.error('Ошибка получения задач по приоритету:', error);
+      res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  },
+
   // Получить одну запись по ID
   async getTaskById(req, res) {
     const { id } = req.params;

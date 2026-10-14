@@ -4,7 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider, useNotification } from './contexts/NotificationContext';
 import { setToastFunction } from './services/api';
-import { initGlobalErrorHandlers, setGlobalErrorToast } from './utils/globalErrorHandler';
+import { initErrorLogger, setNotificationCallback, cleanupErrorLogger } from './utils/errorLogger';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
 import LoginPage from './pages/LoginPage';
@@ -19,26 +19,29 @@ import PrioritiesPage from './pages/PrioritiesPage';
 import TemplatesPage from './pages/TemplatesPage';
 import EventsPage from './pages/EventsPage';
 import SettingsPage from './pages/SettingsPage';
-import DataTasksPage from './pages/DataTasksPage';
-import CreateDataTaskPage from './pages/CreateDataTaskPage';
-import DataTaskDetailPage from './pages/DataTaskDetailPage';
+import TaskBasesPage from './pages/TaskBasesPage';
+import CreateTaskBasePage from './pages/CreateTaskBasePage';
+import TaskBaseDetailPage from './pages/TaskBaseDetailPage';
 import TerminalPage from './pages/TerminalPage';
 import ToastTestPage from './pages/ToastTestPage';
 
 // Внутренний компонент для подключения Toast к API и глобальным обработчикам
 function AppContent() {
-  const { showToast } = useNotification();
+  const { showToast, showError } = useNotification();
 
   useEffect(() => {
     // Подключаем Toast функцию к API interceptor
     setToastFunction(showToast);
 
-    // Подключаем Toast к глобальным обработчикам ошибок
-    setGlobalErrorToast(showToast);
+    // Инициализируем error logger для unhandled errors
+    initErrorLogger();
+    setNotificationCallback(showError);
 
-    // Инициализируем глобальные обработчики (один раз)
-    initGlobalErrorHandlers();
-  }, [showToast]);
+    // Cleanup при unmount
+    return () => {
+      cleanupErrorLogger();
+    };
+  }, [showToast, showError]);
 
   return (
     <Routes>
@@ -109,26 +112,26 @@ function AppContent() {
         }
       />
       <Route
-        path="/datatasks"
+        path="/taskbases"
         element={
           <ProtectedRoute>
-            <DataTasksPage />
+            <TaskBasesPage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/datatasks/create"
+        path="/taskbases/create"
         element={
           <ProtectedRoute>
-            <CreateDataTaskPage />
+            <CreateTaskBasePage />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/datatasks/:id"
+        path="/taskbases/:id"
         element={
           <ProtectedRoute>
-            <DataTaskDetailPage />
+            <TaskBaseDetailPage />
           </ProtectedRoute>
         }
       />

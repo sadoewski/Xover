@@ -325,7 +325,7 @@ export class CommandParser {
       'year - year view',
       'slot today - time-bound tasks for today',
       'slot DD.MM.YYYY - time-bound tasks for date',
-      'dt - datatasks list',
+      'dt - taskbases list',
       'events -c - current month events',
       'events -p - past events',
       'events -f - future events',

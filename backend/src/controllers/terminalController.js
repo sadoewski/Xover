@@ -130,8 +130,9 @@ export const terminalController = {
     const { startDate, endDate, status } = req.query;
 
     try {
-      const parsedStart = parseDate(startDate);
-      const parsedEnd = parseDate(endDate);
+      // Support both ISO (YYYY-MM-DD) and DD.MM.YYYY formats
+      const parsedStart = startDate.includes('.') ? parseDate(startDate) : startDate;
+      const parsedEnd = endDate.includes('.') ? parseDate(endDate) : endDate;
 
       if (!parsedStart || !parsedEnd) {
         return res.status(400).json({ error: 'Invalid date format' });
@@ -143,7 +144,10 @@ export const terminalController = {
           t.title,
           t.description,
           t.date,
-          t.status
+          t.status,
+          t.group_id,
+          t.group_type_id,
+          t.priority_id
         FROM tasks t
         WHERE t.user_id = $1 AND t.date BETWEEN $2 AND $3
       `;
@@ -159,17 +163,8 @@ export const terminalController = {
 
       const result = await pool.query(query, params);
 
-      // Group by date
-      const grouped = {};
-      result.rows.forEach(task => {
-        const dateKey = formatDate(task.date);
-        if (!grouped[dateKey]) {
-          grouped[dateKey] = [];
-        }
-        grouped[dateKey].push(task);
-      });
-
-      res.json({ tasks: grouped });
+      // Return flat array of tasks (not grouped)
+      res.json({ tasks: result.rows });
     } catch (error) {
       console.error('Error getting tasks:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -375,23 +370,23 @@ export const terminalController = {
     }
   },
 
-  // Get datatasks
-  async getDatatasks(req, res) {
+  // Get taskbases
+  async getTaskBases(req, res) {
     const userId = req.userId;
 
     try {
       const result = await pool.query(
         `SELECT dt.*,
           (SELECT COUNT(*) FROM tasks t WHERE t.group_id = ANY(dt.task_groups)) as task_count
-        FROM datatasks dt
+        FROM taskbases dt
         WHERE dt.user_id = $1
         ORDER BY dt.name`,
         [userId]
       );
 
-      res.json({ datatasks: result.rows });
+      res.json({ taskbases: result.rows });
     } catch (error) {
-      console.error('Error getting datatasks:', error);
+      console.error('Error getting taskbases:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   },

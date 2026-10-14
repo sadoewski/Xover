@@ -40,13 +40,13 @@ ALTER TABLE site_items
   ADD CONSTRAINT site_items_width_valid CHECK (width > 0),
   ADD CONSTRAINT site_items_height_valid CHECK (height > 0);
 
--- 10. DataTasks: names не должны быть пустыми
-ALTER TABLE datatasks
-  ADD CONSTRAINT datatasks_name_not_empty CHECK (length(trim(name)) > 0);
+-- 10. TaskBases: names не должны быть пустыми
+ALTER TABLE taskbases
+  ADD CONSTRAINT taskbases_name_not_empty CHECK (length(trim(name)) > 0);
 
--- 11. DataTask dates: status должен быть валидным
-ALTER TABLE datatask_dates
-  ADD CONSTRAINT datatask_dates_status_valid CHECK (status IN ('pending', 'completed', 'skipped'));
+-- 11. TaskBase dates: status должен быть валидным
+ALTER TABLE taskbase_dates
+  ADD CONSTRAINT taskbase_dates_status_valid CHECK (status IN ('pending', 'completed', 'skipped'));
 
 -- 12. Event year notes: note не должна быть пустой
 ALTER TABLE event_year_notes
@@ -72,8 +72,8 @@ CREATE INDEX IF NOT EXISTS idx_sites_user ON sites(user_id);
 CREATE INDEX IF NOT EXISTS idx_site_items_site ON site_items(site_id);
 CREATE INDEX IF NOT EXISTS idx_site_items_parent ON site_items(parent_id);
 
--- DataTasks indexes
-CREATE INDEX IF NOT EXISTS idx_datatasks_user ON datatasks(user_id);
-CREATE INDEX IF NOT EXISTS idx_datatasks_group ON datatasks(group_id);
-CREATE INDEX IF NOT EXISTS idx_datatask_dates_datatask ON datatask_dates(datatask_id);
-CREATE INDEX IF NOT EXISTS idx_datatask_dates_date ON datatask_dates(date);
+-- TaskBases indexes
+CREATE INDEX IF NOT EXISTS idx_taskbases_user ON taskbases(user_id);
+CREATE INDEX IF NOT EXISTS idx_taskbases_group ON taskbases(group_id);
+CREATE INDEX IF NOT EXISTS idx_taskbase_dates_taskbase ON taskbase_dates(taskbase_id);
+CREATE INDEX IF NOT EXISTS idx_taskbase_dates_date ON taskbase_dates(date);

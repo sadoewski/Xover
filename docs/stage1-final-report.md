@@ -142,7 +142,7 @@ backend/
 }
 ```
 
-**package-lock.json:** `/Users/sadoewski/projects/hostprint/package-lock.json` ✅
+**package-lock.json:** `/Users/sadoewski/projects/xover/package-lock.json` ✅
 
 Frontend и backend используют shared `node_modules` в корне. Это правильная настройка для npm workspaces.
 

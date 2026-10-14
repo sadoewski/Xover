@@ -4,13 +4,13 @@
 
 set -e
 
-echo "🚀 Запуск локального Hostprint backend..."
+echo "🚀 Запуск локального Xover backend..."
 echo ""
 
 # Проверка что мы в правильной директории
 if [ ! -d "backend" ]; then
-    echo "❌ Ошибка: запустите скрипт из корня проекта hostprint"
-    echo "   cd /Users/sadoewski/projects/hostprint"
+    echo "❌ Ошибка: запустите скрипт из корня проекта xover"
+    echo "   cd /Users/sadoewski/projects/xover"
     exit 1
 fi
 

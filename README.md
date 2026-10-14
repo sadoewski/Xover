@@ -1,8 +1,8 @@
 # xover - планировщик, органайер и редактор
 
-[![Backend CI](https://github.com/sadoewski/hostprint/workflows/Backend%20CI/badge.svg)](https://github.com/sadoewski/hostprint/actions/workflows/backend-ci.yml)
-[![Frontend CI](https://github.com/sadoewski/hostprint/workflows/Frontend%20CI/badge.svg)](https://github.com/sadoewski/hostprint/actions/workflows/frontend-ci.yml)
-[![Security](https://github.com/sadoewski/hostprint/workflows/Security%20Scan/badge.svg)](https://github.com/sadoewski/hostprint/actions/workflows/security.yml)
+[![Backend CI](https://github.com/sadoewski/xover/workflows/Backend%20CI/badge.svg)](https://github.com/sadoewski/xover/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://github.com/sadoewski/xover/workflows/Frontend%20CI/badge.svg)](https://github.com/sadoewski/xover/actions/workflows/frontend-ci.yml)
+[![Security](https://github.com/sadoewski/xover/workflows/Security%20Scan/badge.svg)](https://github.com/sadoewski/xover/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 спасибо клоду за победу
@@ -41,13 +41,13 @@ npm run install:all
 Создайте базу данных PostgreSQL:
 
 ```bash
-createdb hostprint
+createdb xover
 ```
 
 Или через psql:
 
 ```sql
-CREATE DATABASE hostprint;
+CREATE DATABASE xover;
 ```
 
 ### 3. Настройка переменных окружения
@@ -80,10 +80,14 @@ npm run dev
 - Backend API на http://localhost:5001
 - Frontend на http://localhost:5173
 
+## 📚 Документация
+
+Полная документация доступна в [docs/](docs/) - включая deployment guides, development guides, API docs и архитектурные решения.
+
 ## Структура проекта
 
 ```
-hostprint/
+xover/
 ├── backend/               # Backend API
 │   ├── src/
 │   │   ├── config/       # Конфигурация (БД)
@@ -146,7 +150,7 @@ hostprint/
    - Создание приоритетов с названием и цветом
    - Цветовая индикация в списке записей
 
-6. **DataTask (Шаблонные задачи)**
+6. **TaskBase (Шаблонные задачи)**
    - Создание повторяющихся задач с расписанием
    - Назначение задач на несколько дат
    - Автоматическое отображение в календаре
@@ -178,12 +182,12 @@ hostprint/
 - `PUT /api/tasks/:id` - Обновить запись
 - `DELETE /api/tasks/:id` - Удалить запись
 
-### DataTasks (Шаблонные задачи)
-- `GET /api/datatasks` - Получить все шаблонные задачи
-- `POST /api/datatasks` - Создать шаблонную задачу
-- `GET /api/datatasks/:id` - Получить шаблонную задачу по ID
-- `PUT /api/datatasks/:id` - Обновить шаблонную задачу
-- `DELETE /api/datatasks/:id` - Удалить шаблонную задачу
+### TaskBases (Шаблонные задачи)
+- `GET /api/taskbases` - Получить все шаблонные задачи
+- `POST /api/taskbases` - Создать шаблонную задачу
+- `GET /api/taskbases/:id` - Получить шаблонную задачу по ID
+- `PUT /api/taskbases/:id` - Обновить шаблонную задачу
+- `DELETE /api/taskbases/:id` - Удалить шаблонную задачу
 
 ### Группы
 - `GET /api/groups` - Получить все группы

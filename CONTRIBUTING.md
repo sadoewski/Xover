@@ -1,4 +1,4 @@
-# Contributing to HostPrint
+# Contributing to Xover
 
 Спасибо за интерес к проекту! 🎉
 
@@ -7,8 +7,8 @@
 ### 1. Fork и Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/hostprint.git
-cd hostprint
+git clone https://github.com/YOUR_USERNAME/xover.git
+cd xover
 ```
 
 ### 2. Установка зависимостей
@@ -175,7 +175,7 @@ Button.defaultProps = {
 ## Структура проекта
 
 ```
-hostprint/
+xover/
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/    # Бизнес-логика
@@ -202,8 +202,8 @@ hostprint/
 
 ## Вопросы?
 
-- Создайте [Discussion](https://github.com/sadoewski/hostprint/discussions)
-- Или [Issue](https://github.com/sadoewski/hostprint/issues/new/choose)
+- Создайте [Discussion](https://github.com/sadoewski/xover/discussions)
+- Или [Issue](https://github.com/sadoewski/xover/issues/new/choose)
 
 ## License
 

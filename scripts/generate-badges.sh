@@ -8,7 +8,7 @@ if [ -z "$1" ]; then
 fi
 
 USERNAME=$1
-REPO="hostprint"
+REPO="xover"
 
 echo "# Badges for README.md"
 echo ""

@@ -5,6 +5,7 @@ import { ru } from 'date-fns/locale';
 import { ArrowLeft, Clock, Calendar, Tag, Link as LinkIcon, CheckSquare, FileText, Trash2, Repeat } from 'lucide-react';
 import { tasksService } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
+import { useSafeAsync } from '../hooks/useSafeAsync';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import RelatedTasksList from '../components/RelatedTasksList';
 import TaskRelationModal from '../components/TaskRelationModal';
@@ -24,6 +25,7 @@ export default function TaskDetailPage() {
   const [searchParams] = useSearchParams();
   const isReadonly = searchParams.get('readonly') === 'true';
   const { showSuccess, showError, showWarning } = useNotification();
+  const runAsync = useSafeAsync();
   const [task, setTask] = useState(null);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,26 +39,37 @@ export default function TaskDetailPage() {
   const [error, setError] = useState('');
   const [logsSortOrder, setLogsSortOrder] = useState('desc'); // 'desc' - новые вверху, 'asc' - старые вверху
 
+  // Функция для загрузки данных задачи
+  const loadTaskData = async () => {
+    return runAsync(async (isMounted) => {
+      try {
+        if (isMounted.current) {
+          setLoading(true);
+        }
+        const [taskData, logsData] = await Promise.all([
+          tasksService.getTaskById(id),
+          tasksService.getTaskLogs(id),
+        ]);
+        if (isMounted.current) {
+          setTask(taskData.task);
+          setLogs(logsData.logs);
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          console.error('Ошибка загрузки данных:', error);
+          setError('Не удалось загрузить данные задачи');
+        }
+      } finally {
+        if (isMounted.current) {
+          setLoading(false);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     loadTaskData();
   }, [id]);
-
-  const loadTaskData = async () => {
-    try {
-      setLoading(true);
-      const [taskData, logsData] = await Promise.all([
-        tasksService.getTaskById(id),
-        tasksService.getTaskLogs(id),
-      ]);
-      setTask(taskData.task);
-      setLogs(logsData.logs);
-    } catch (error) {
-      console.error('Ошибка загрузки данных:', error);
-      setError('Не удалось загрузить данные задачи');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleStatusChange = async (newStatus) => {
     if (newStatus === 'moved') {
@@ -121,8 +134,9 @@ export default function TaskDetailPage() {
   };
 
   const toggleChecklistItem = (index) => {
-    const updatedChecklist = [...task.checklist];
-    updatedChecklist[index].checked = !updatedChecklist[index].checked;
+    const updatedChecklist = task.checklist.map((item, i) =>
+      i === index ? { ...item, checked: !item.checked } : item
+    );
     setTask({ ...task, checklist: updatedChecklist });
   };
 
@@ -253,14 +267,14 @@ export default function TaskDetailPage() {
                       Перенесена с {format(parseISO(task.moved_from_date), 'd MMMM', { locale: ru })}
                     </span>
                   )}
-                  {task.datatask_id && (
+                  {task.taskbase_id && (
                     <span
-                      className="meta-tag meta-tag-datatask"
-                      onClick={() => navigate(`/datatasks/${task.datatask_id}`)}
+                      className="meta-tag meta-tag-taskbase"
+                      onClick={() => navigate(`/taskbases/${task.taskbase_id}`)}
                       style={{ cursor: 'pointer' }}
                     >
                       <Repeat size={14} />
-                      Создано из DataTask
+                      Создано из TaskBase
                     </span>
                   )}
                 </div>

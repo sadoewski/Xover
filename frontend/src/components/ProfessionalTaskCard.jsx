@@ -89,13 +89,13 @@ const ProfessionalTaskCard = ({ task, onUpdate, onDelete, onClick, isSelected })
               {task.group_name}
               {task.group_type_name && ` · ${task.group_type_name}`}
             </span>
-            {task.datatask_id && (
+            {task.taskbase_id && (
               <div
-                className="task-datatask-indicator"
-                title="Создано из DataTask"
+                className="task-taskbase-indicator"
+                title="Создано из TaskBase"
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/datatasks/${task.datatask_id}`);
+                  navigate(`/taskbases/${task.taskbase_id}`);
                 }}
               >
                 <Repeat size={14} />

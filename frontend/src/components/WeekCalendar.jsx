@@ -23,26 +23,43 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadWeekTasks();
-  }, [currentWeekStart]);
+    let isMounted = true;
 
-  const loadWeekTasks = async () => {
-    setLoading(true);
-    try {
-      const tasks = {};
-      for (let i = 0; i < 7; i++) {
-        const date = addDays(currentWeekStart, i);
-        const dateStr = format(date, 'yyyy-MM-dd');
-        const data = await tasksService.getTasksByDate(dateStr);
-        tasks[dateStr] = data.tasks || [];
+    const loadWeekTasks = async () => {
+      setLoading(true);
+      try {
+        const tasks = {};
+        for (let i = 0; i < 7; i++) {
+          const date = addDays(currentWeekStart, i);
+          const dateStr = format(date, 'yyyy-MM-dd');
+          const data = await tasksService.getTasksByDate(dateStr);
+
+          // Проверяем что компонент все еще смонтирован после каждого запроса
+          if (!isMounted) return;
+
+          tasks[dateStr] = data.tasks || [];
+        }
+
+        if (isMounted) {
+          setWeekTasks(tasks);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error('Ошибка загрузки задач недели:', error);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-      setWeekTasks(tasks);
-    } catch (error) {
-      console.error('Ошибка загрузки задач недели:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    loadWeekTasks();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentWeekStart]);
 
   const handlePrevWeek = () => {
     setCurrentWeekStart(addDays(currentWeekStart, -7));

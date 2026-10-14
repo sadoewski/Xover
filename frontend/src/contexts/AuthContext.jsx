@@ -8,45 +8,70 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    validateAuth();
-  }, []);
+    let isMounted = true;
+    const abortController = new AbortController();
 
-  const validateAuth = async () => {
-    const currentUser = authService.getCurrentUser();
-    const token = localStorage.getItem('token');
+    const validateAuth = async () => {
+      const currentUser = authService.getCurrentUser();
+      const token = localStorage.getItem('token');
 
-    // Если есть токен и данные пользователя в localStorage
-    if (token && currentUser) {
-      try {
-        // Проверяем валидность токена через запрос к API
-        const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001/api' : '/api');
-        const response = await fetch(`${API_URL}/auth/profile`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
+      // Если есть токен и данные пользователя в localStorage
+      if (token && currentUser) {
+        try {
+          // Проверяем валидность токена через запрос к API
+          const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001/api' : '/api');
+          const response = await fetch(`${API_URL}/auth/profile`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            signal: abortController.signal
+          });
+
+          if (!isMounted) return;
+
+          if (response.ok) {
+            const data = await response.json();
+            if (isMounted) {
+              setUser(data.user);
+            }
+          } else {
+            // Токен невалидный или пользователь не существует - делаем logout
+            console.warn('Токен невалиден или пользователь не существует. Выполняется выход.');
+            authService.logout();
+            if (isMounted) {
+              setUser(null);
+            }
           }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          // Токен невалидный или пользователь не существует - делаем logout
-          console.warn('Токен невалиден или пользователь не существует. Выполняется выход.');
+        } catch (error) {
+          // Игнорируем ошибки отмены запроса
+          if (error.name === 'AbortError') {
+            return;
+          }
+          console.error('Ошибка проверки токена:', error);
+          // В случае любой ошибки - очищаем токен для безопасности
           authService.logout();
+          if (isMounted) {
+            setUser(null);
+          }
+        }
+      } else {
+        if (isMounted) {
           setUser(null);
         }
-      } catch (error) {
-        console.error('Ошибка проверки токена:', error);
-        // В случае любой ошибки - очищаем токен для безопасности
-        authService.logout();
-        setUser(null);
       }
-    } else {
-      setUser(null);
-    }
 
-    setLoading(false);
-  };
+      if (isMounted) {
+        setLoading(false);
+      }
+    };
+
+    validateAuth();
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, []);
 
   const login = async (username, password) => {
     const data = await authService.login(username, password);

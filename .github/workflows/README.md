@@ -73,7 +73,7 @@
 NODE_ENV: test
 DB_HOST: localhost
 DB_PORT: 5432
-DB_NAME: hostprint_test
+DB_NAME: xover_test
 DB_USER: postgres
 DB_PASSWORD: postgres
 JWT_SECRET: test-jwt-secret
@@ -90,9 +90,9 @@ JWT_SECRET: test-jwt-secret
 Добавьте в README.md:
 
 ```markdown
-![Backend CI](https://github.com/USERNAME/hostprint/workflows/Backend%20CI/badge.svg)
-![Frontend CI](https://github.com/USERNAME/hostprint/workflows/Frontend%20CI/badge.svg)
-![Security](https://github.com/USERNAME/hostprint/workflows/Security%20Scan/badge.svg)
+![Backend CI](https://github.com/USERNAME/xover/workflows/Backend%20CI/badge.svg)
+![Frontend CI](https://github.com/USERNAME/xover/workflows/Frontend%20CI/badge.svg)
+![Security](https://github.com/USERNAME/xover/workflows/Security%20Scan/badge.svg)
 ```
 
 ---

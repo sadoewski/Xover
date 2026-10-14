@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Hostprint API
+  title: Xover API
   description: |
-    REST API для системы управления задачами и документами Hostprint.
+    REST API для системы управления задачами и документами Xover.
 
     ## Аутентификация
 
@@ -21,7 +21,7 @@ info:
 
   version: 1.0.0
   contact:
-    name: Hostprint Team
+    name: Xover Team
   license:
     name: Private
 

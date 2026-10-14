@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /Users/sadoewski/projects/hostprint
+cd /Users/sadoewski/projects/xover
 echo "Building frontend Docker image..."
 docker-compose build frontend
 echo "Restarting frontend container..."

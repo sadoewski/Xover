@@ -113,13 +113,13 @@ export class TerminalFormatter {
     return lines.join('\n');
   }
 
-  static formatDatatasks(datatasks) {
-    if (datatasks.length === 0) {
-      return 'No datatasks found';
+  static formatTaskBases(taskbases) {
+    if (taskbases.length === 0) {
+      return 'No taskbases found';
     }
 
-    const lines = ['DataTasks:'];
-    datatasks.forEach(dt => {
+    const lines = ['TaskBases:'];
+    taskbases.forEach(dt => {
       lines.push(`  ${dt.name} - ${dt.task_count || 0} task(s)`);
     });
 

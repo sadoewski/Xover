@@ -44,10 +44,10 @@ services:
   db:
     # ✅ ports удалены — база доступна только внутри Docker network
     networks:
-      - hostprint-network
+      - xover-network
 
 networks:
-  hostprint-network:
+  xover-network:
     driver: bridge
 ```
 
@@ -60,11 +60,11 @@ networks:
 **Тестирование:**
 ```bash
 # Test: попытка подключения с host (должна провалиться)
-psql -h localhost -p 5432 -U postgres -d hostprint
+psql -h localhost -p 5432 -U postgres -d xover
 # Result: Connection refused ✓
 
 # Test: подключение из backend (должно работать)
-docker-compose exec backend sh -c "psql -h db -U postgres -d hostprint -c 'SELECT 1'"
+docker-compose exec backend sh -c "psql -h db -U postgres -d xover -c 'SELECT 1'"
 # Result: Success ✓
 ```
 
@@ -203,7 +203,7 @@ docker-compose exec backend cat /app/uploads/avatars/test.jpg
 
 # Test: volume exists
 docker volume ls | grep uploads
-# Result: hostprint_uploads_data ✓
+# Result: xover_uploads_data ✓
 ```
 
 ---
@@ -215,19 +215,19 @@ docker volume ls | grep uploads
 **Добавлено:**
 ```yaml
 networks:
-  hostprint-network:
+  xover-network:
     driver: bridge
 
 services:
   db:
     networks:
-      - hostprint-network
+      - xover-network
   backend:
     networks:
-      - hostprint-network
+      - xover-network
   frontend:
     networks:
-      - hostprint-network
+      - xover-network
 ```
 
 **Преимущества:**
@@ -299,7 +299,7 @@ Internet
     ├─ Frontend :3000 (public)
     └─ Backend :5000 (public)
          ↓
-    hostprint-network (isolated)
+    xover-network (isolated)
          ↓
     PostgreSQL (internal only)
          ↓
@@ -475,7 +475,7 @@ docker-compose config > /dev/null
 ```bash
 # 1. Clone repo
 git clone <repo>
-cd hostprint
+cd xover
 
 # 2. Create .env from example
 cp .env.example .env
@@ -492,7 +492,7 @@ docker-compose logs -f
 ```bash
 # 1. Clone repo
 git clone <repo>
-cd hostprint
+cd xover
 
 # 2. Generate secrets
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -523,21 +523,21 @@ curl http://localhost:5000/api/health
 
 ```bash
 # Daily backup
-docker-compose exec db pg_dump -U postgres hostprint > backup_$(date +%Y%m%d).sql
+docker-compose exec db pg_dump -U postgres xover > backup_$(date +%Y%m%d).sql
 
 # Restore
-cat backup_20261004.sql | docker-compose exec -T db psql -U postgres hostprint
+cat backup_20261004.sql | docker-compose exec -T db psql -U postgres xover
 ```
 
 ### Uploads (HIGH)
 
 ```bash
 # Backup
-docker run --rm -v hostprint_uploads_data:/data -v $(pwd):/backup alpine \
+docker run --rm -v xover_uploads_data:/data -v $(pwd):/backup alpine \
   tar czf /backup/uploads_$(date +%Y%m%d).tar.gz -C /data .
 
 # Restore
-docker run --rm -v hostprint_uploads_data:/data -v $(pwd):/backup alpine \
+docker run --rm -v xover_uploads_data:/data -v $(pwd):/backup alpine \
   tar xzf /backup/uploads_20261004.tar.gz -C /data
 ```
 

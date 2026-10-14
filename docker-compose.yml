@@ -2,7 +2,7 @@ services:
   # PostgreSQL база данных
   db:
     image: postgres:14-alpine
-    container_name: hostprint-db
+    container_name: xover-db
     restart: unless-stopped
     env_file:
       - .env
@@ -19,14 +19,14 @@ services:
     mem_limit: 256m
     cpus: 0.5
     networks:
-      - hostprint-network
+      - xover-network
 
   # Backend API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: hostprint-backend
+    container_name: xover-backend
     restart: unless-stopped
     env_file:
       - .env
@@ -43,21 +43,21 @@ services:
         condition: service_healthy
     command: sh -c "npm run db:migrate && npm start"
     networks:
-      - hostprint-network
+      - xover-network
 
   # Frontend
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: hostprint-frontend
+    container_name: xover-frontend
     restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
       - backend
     networks:
-      - hostprint-network
+      - xover-network
 
 volumes:
   # Persistent PostgreSQL data
@@ -70,5 +70,5 @@ volumes:
 
 # ✅ ДОБАВЛЕНО: Isolated network для безопасности
 networks:
-  hostprint-network:
+  xover-network:
     driver: bridge

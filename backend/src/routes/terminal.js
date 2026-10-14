@@ -22,8 +22,8 @@ router.get('/tasks/:id/links', terminalController.getTaskLinks);
 router.post('/tasks/:id/links', terminalController.addTaskLink);
 router.delete('/tasks/:id/links/:linkId', terminalController.deleteTaskLink);
 
-// Datatasks
-router.get('/datatasks', terminalController.getDatatasks);
+// TaskBases
+router.get('/taskbases', terminalController.getTaskBases);
 
 // Events
 router.get('/events', terminalController.getEvents);

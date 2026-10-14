@@ -4,6 +4,7 @@ import { format, addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek,
 import { ru } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus } from 'lucide-react';
 import { tasksService, groupsService, prioritiesService, eventsService } from '../services/api';
+import { useSafeAsync } from '../hooks/useSafeAsync';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import ProfessionalCreateTaskModal from '../components/ProfessionalCreateTaskModal';
 import StatusIcon from '../components/StatusIcon';
@@ -24,6 +25,7 @@ const STATUS_CONFIG = {
 
 export default function CalendarPageNew() {
   const navigate = useNavigate();
+  const runAsync = useSafeAsync();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState('day');
   const [tasks, setTasks] = useState([]);
@@ -38,69 +40,91 @@ export default function CalendarPageNew() {
   const [allEvents, setAllEvents] = useState([]); // Все события для определения выходных
 
   useEffect(() => {
-    loadData();
-  }, [selectedDate, view]);
+    runAsync(async (isMounted) => {
+      try {
+        if (isMounted.current) {
+          setLoading(true);
+        }
+        const [groupsData, prioritiesData, eventsData] = await Promise.all([
+          groupsService.getGroups(),
+          prioritiesService.getPriorities(),
+          eventsService.getEvents(),
+        ]);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [groupsData, prioritiesData, eventsData] = await Promise.all([
-        groupsService.getGroups(),
-        prioritiesService.getPriorities(),
-        eventsService.getEvents(),
-      ]);
-      setGroups(groupsData.groups || []);
-      setPriorities(prioritiesData.priorities || []);
-      setAllEvents(eventsData.events || []);
+        if (!isMounted.current) return;
 
-      if (view === 'day') {
-        const dateStr = format(selectedDate, 'yyyy-MM-dd');
-        const tasksData = await tasksService.getTasksByDate(dateStr);
-        setTasks(tasksData.tasks || []);
-        const month = selectedDate.getMonth() + 1;
-        const day = selectedDate.getDate();
-        const eventsData = await eventsService.getEventsByDate(month, day);
-        setDayEvents(eventsData.events || []);
-      } else if (view === 'week') {
-        const start = startOfWeek(selectedDate, { locale: ru });
-        const end = endOfWeek(selectedDate, { locale: ru });
-        const days = eachDayOfInterval({ start, end });
-        const tasksPromises = days.map(day =>
-          tasksService.getTasksByDate(format(day, 'yyyy-MM-dd'))
-            .then(data => data.tasks || [])
-            .catch(() => [])
-        );
-        const tasksArrays = await Promise.all(tasksPromises);
-        setTasks(tasksArrays.flat());
-      } else if (view === 'month') {
-        const start = startOfMonth(selectedDate);
-        const end = endOfMonth(selectedDate);
-        const days = eachDayOfInterval({ start, end });
-        const tasksPromises = days.map(day =>
-          tasksService.getTasksByDate(format(day, 'yyyy-MM-dd'))
-            .then(data => data.tasks || [])
-            .catch(() => [])
-        );
-        const tasksArrays = await Promise.all(tasksPromises);
-        setTasks(tasksArrays.flat());
-      } else if (view === 'year') {
-        const start = startOfYear(selectedDate);
-        const end = endOfYear(selectedDate);
-        const days = eachDayOfInterval({ start, end });
-        const tasksPromises = days.map(day =>
-          tasksService.getTasksByDate(format(day, 'yyyy-MM-dd'))
-            .then(data => data.tasks || [])
-            .catch(() => [])
-        );
-        const tasksArrays = await Promise.all(tasksPromises);
-        setTasks(tasksArrays.flat());
+        setGroups(groupsData.groups || []);
+        setPriorities(prioritiesData.priorities || []);
+        setAllEvents(eventsData.events || []);
+
+        if (view === 'day') {
+          const dateStr = format(selectedDate, 'yyyy-MM-dd');
+          const tasksData = await tasksService.getTasksByDate(dateStr);
+
+          if (!isMounted.current) return;
+
+          setTasks(tasksData.tasks || []);
+          const month = selectedDate.getMonth() + 1;
+          const day = selectedDate.getDate();
+          const eventsData = await eventsService.getEventsByDate(month, day);
+
+          if (isMounted.current) {
+            setDayEvents(eventsData.events || []);
+          }
+        } else if (view === 'week') {
+          const start = startOfWeek(selectedDate, { locale: ru });
+          const end = endOfWeek(selectedDate, { locale: ru });
+          const days = eachDayOfInterval({ start, end });
+          const tasksPromises = days.map(day =>
+            tasksService.getTasksByDate(format(day, 'yyyy-MM-dd'))
+              .then(data => data.tasks || [])
+              .catch(() => [])
+          );
+          const tasksArrays = await Promise.all(tasksPromises);
+
+          if (isMounted.current) {
+            setTasks(tasksArrays.flat());
+          }
+        } else if (view === 'month') {
+          const start = startOfMonth(selectedDate);
+          const end = endOfMonth(selectedDate);
+          const days = eachDayOfInterval({ start, end });
+          const tasksPromises = days.map(day =>
+            tasksService.getTasksByDate(format(day, 'yyyy-MM-dd'))
+              .then(data => data.tasks || [])
+              .catch(() => [])
+          );
+          const tasksArrays = await Promise.all(tasksPromises);
+
+          if (isMounted.current) {
+            setTasks(tasksArrays.flat());
+          }
+        } else if (view === 'year') {
+          const start = startOfYear(selectedDate);
+          const end = endOfYear(selectedDate);
+          const days = eachDayOfInterval({ start, end });
+          const tasksPromises = days.map(day =>
+            tasksService.getTasksByDate(format(day, 'yyyy-MM-dd'))
+              .then(data => data.tasks || [])
+              .catch(() => [])
+          );
+          const tasksArrays = await Promise.all(tasksPromises);
+
+          if (isMounted.current) {
+            setTasks(tasksArrays.flat());
+          }
+        }
+      } catch (error) {
+        if (isMounted.current) {
+          console.error('Ошибка загрузки данных:', error);
+        }
+      } finally {
+        if (isMounted.current) {
+          setLoading(false);
+        }
       }
-    } catch (error) {
-      console.error('Ошибка загрузки данных:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    });
+  }, [selectedDate, view, runAsync]);
 
   // Проверка, является ли день выходным (суббота/воскресенье или событие с is_day_off)
   const isDayOff = (date) => {

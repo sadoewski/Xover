@@ -22,7 +22,7 @@
 - `.hostsched-*` → `.hostlog-*`
 - Все стили обновлены
 
-### 2. `HostPrint` / `Hostprint` → `Xover`
+### 2. `HostPrint` / `Xover` → `Xover`
 Название проекта изменено на Xover.
 
 **Обновлено:**

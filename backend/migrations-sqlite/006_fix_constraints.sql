@@ -17,7 +17,7 @@ CREATE INDEX IF NOT EXISTS idx_sites_user ON sites(user_id);
 CREATE INDEX IF NOT EXISTS idx_site_items_site ON site_items(site_id);
 CREATE INDEX IF NOT EXISTS idx_site_items_parent ON site_items(parent_id);
 
-CREATE INDEX IF NOT EXISTS idx_datatasks_user ON datatasks(user_id);
-CREATE INDEX IF NOT EXISTS idx_datatasks_group ON datatasks(group_id);
-CREATE INDEX IF NOT EXISTS idx_datatask_dates_datatask ON datatask_dates(datatask_id);
-CREATE INDEX IF NOT EXISTS idx_datatask_dates_date ON datatask_dates(date);
+CREATE INDEX IF NOT EXISTS idx_taskbases_user ON taskbases(user_id);
+CREATE INDEX IF NOT EXISTS idx_taskbases_group ON taskbases(group_id);
+CREATE INDEX IF NOT EXISTS idx_taskbase_dates_datatask ON taskbase_dates(taskbase_id);
+CREATE INDEX IF NOT EXISTS idx_taskbase_dates_date ON taskbase_dates(date);
