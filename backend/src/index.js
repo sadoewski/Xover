@@ -12,7 +12,6 @@ import templatesRoutes from './routes/templates.js';
 import rwprintRoutes from './routes/rwprint.js';
 import morphologyRoutes from './routes/morphology.js';
 import taskbasesRoutes from './routes/taskbases.js';
-import sitesRoutes from './routes/sites.js';
 import healthRoutes from './routes/health.js';
 import terminalRoutes from './routes/terminal.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
@@ -87,7 +86,6 @@ app.use('/api/templates', templatesRoutes);
 app.use('/api/rwprint', rwprintRoutes);
 app.use('/api/morphology', morphologyRoutes);
 app.use('/api/taskbases', taskbasesRoutes);
-app.use('/api/sites', sitesRoutes);
 app.use('/api/terminal', terminalRoutes);
 
 // Health check routes (no /api prefix for k8s compatibility)

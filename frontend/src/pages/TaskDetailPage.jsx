@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { ArrowLeft, Clock, Calendar, Tag, Link as LinkIcon, CheckSquare, FileText, Trash2, Repeat } from 'lucide-react';
+import { IconArrowLeft, IconClock, IconCalendar, IconTag, IconLink, IconSquareCheck, IconFileText, IconTrash, IconRepeat } from '@tabler/icons-react';
 import { tasksService } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import { useSafeAsync } from '../hooks/useSafeAsync';
@@ -10,6 +10,7 @@ import ProfessionalLayout from '../components/ProfessionalLayout';
 import RelatedTasksList from '../components/RelatedTasksList';
 import TaskRelationModal from '../components/TaskRelationModal';
 import './TaskDetailPage.css';
+import TablerIconRenderer from '../components/TablerIconRenderer';
 
 const STATUS_CONFIG = {
   pending: { label: 'Ожидается', color: 'gray' },
@@ -210,14 +211,14 @@ export default function TaskDetailPage() {
               className="btn-icon"
               title="Назад"
             >
-              <ArrowLeft size={20} />
+              <IconArrowLeft size={20} />
             </button>
             <div className="task-detail-actions">
               <button
                 onClick={() => setShowLogsModal(true)}
                 className="btn btn-secondary"
               >
-                <FileText size={16} />
+                <IconFileText size={16} />
                 Логи
               </button>
               <span className="task-id">ID: {task.id}</span>
@@ -244,21 +245,29 @@ export default function TaskDetailPage() {
                       borderColor: task.group_color
                     }}
                   >
-                    <Tag size={14} />
+                    {task.group_icon ? (
+                      <TablerIconRenderer
+                        iconName={task.group_icon}
+                        size={14}
+                        color={task.group_color}
+                      />
+                    ) : (
+                      <IconTag size={14} />
+                    )}
                     {task.group_name}
                     {task.group_type_name && ` → ${task.group_type_name}`}
                   </span>
                   <span className="meta-tag">
-                    <Tag size={14} />
+                    <IconTag size={14} />
                     {task.priority_name}
                   </span>
                   <span className="meta-tag">
-                    <Calendar size={14} />
+                    <IconCalendar size={14} />
                     {format(parseISO(task.date), 'd MMMM yyyy', { locale: ru })}
                   </span>
                   {task.is_time_bound && task.time_slot_start && (
                     <span className="meta-tag">
-                      <Clock size={14} />
+                      <IconClock size={14} />
                       {task.time_slot_start.slice(0, 5)} - {task.time_slot_end?.slice(0, 5) || ''}
                     </span>
                   )}
@@ -273,7 +282,7 @@ export default function TaskDetailPage() {
                       onClick={() => navigate(`/taskbases/${task.taskbase_id}`)}
                       style={{ cursor: 'pointer' }}
                     >
-                      <Repeat size={14} />
+                      <IconRepeat size={14} />
                       Создано из TaskBase
                     </span>
                   )}
@@ -310,7 +319,7 @@ export default function TaskDetailPage() {
           <div className="card">
             <div className="card-header-flex">
               <h3 className="card-title">
-                <CheckSquare size={18} />
+                <IconSquareCheck size={18} />
                 Чек-лист
               </h3>
               {editing !== 'checklist' && (
@@ -347,7 +356,7 @@ export default function TaskDetailPage() {
                           title="Удалить пункт"
                           style={{ marginLeft: '0.5rem' }}
                         >
-                          <Trash2 size={16} />
+                          <IconTrash size={16} />
                         </button>
                       </div>
                     ))}
@@ -465,7 +474,7 @@ export default function TaskDetailPage() {
           <div className="card">
             <div className="card-header-flex">
               <h3 className="card-title">
-                <LinkIcon size={18} />
+                <IconLink size={18} />
                 Линки
               </h3>
               {editing !== 'links' && (
@@ -520,7 +529,7 @@ export default function TaskDetailPage() {
                         className="btn-icon btn-delete"
                         title="Удалить"
                       >
-                        <Trash2 size={14} />
+                        <IconTrash size={14} />
                       </button>
                     </div>
                   );

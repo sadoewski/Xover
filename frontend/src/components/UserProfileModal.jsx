@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { User, Mail, Calendar, Key, Upload, X, Check } from 'lucide-react';
+import { IconUser, IconMail, IconCalendar, IconKey, IconUpload, IconX, IconCheck } from '@tabler/icons-react';
 import { getAvatarUrl } from '../utils/url';
 import './UserProfileModal.css';
 
@@ -88,7 +88,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
         <div className="modal-header">
           <h3>Профиль пользователя</h3>
           <button className="btn-icon" onClick={onClose}>
-            <X size={20} />
+            <IconX size={20} />
           </button>
         </div>
 
@@ -97,14 +97,14 @@ export default function UserProfileModal({ isOpen, onClose }) {
             className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveTab('profile')}
           >
-            <User size={16} />
+            <IconUser size={16} />
             Профиль
           </button>
           <button
             className={`tab-btn ${activeTab === 'password' ? 'active' : ''}`}
             onClick={() => setActiveTab('password')}
           >
-            <Key size={16} />
+            <IconKey size={16} />
             Пароль
           </button>
         </div>
@@ -129,7 +129,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
                   {avatarPreview || user?.avatar_url ? (
                     <img src={avatarPreview || getAvatarUrl(user.avatar_url)} alt="Avatar" />
                   ) : (
-                    <User size={48} />
+                    <IconUser size={48} />
                   )}
                 </div>
                 <input
@@ -144,7 +144,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
                   className="btn-secondary btn-sm"
                   onClick={() => document.getElementById('avatar-input').click()}
                 >
-                  <Upload size={14} />
+                  <IconUpload size={14} />
                   Загрузить фото
                 </button>
                 {(avatarPreview || user?.avatar_url) && (
@@ -163,7 +163,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
 
               <div className="profile-info">
                 <div className="info-item">
-                  <User size={16} />
+                  <IconUser size={16} />
                   <div className="info-content">
                     <label>Username</label>
                     <span className="username-display">{user.username}</span>
@@ -195,7 +195,7 @@ export default function UserProfileModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="info-item">
-                  <Calendar size={16} />
+                  <IconCalendar size={16} />
                   <div className="info-content">
                     <label>Дата создания</label>
                     <span>{formatDate(user.created_at)}</span>

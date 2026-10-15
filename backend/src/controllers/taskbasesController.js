@@ -7,16 +7,17 @@ export const taskbasesController = {
 
     try {
       const result = await pool.query(
-        `SELECT 
+        `SELECT
           d.*,
           tg.name as group_name,
           tg.color as group_color,
+          tg.icon as group_icon,
           COUNT(dd.id) as dates_count
         FROM taskbases d
         JOIN task_groups tg ON d.group_id = tg.id
         LEFT JOIN taskbase_dates dd ON d.id = dd.taskbase_id
         WHERE d.user_id = $1
-        GROUP BY d.id, tg.name, tg.color
+        GROUP BY d.id, tg.name, tg.color, tg.icon
         ORDER BY d.created_at DESC`,
         [userId]
       );
@@ -35,10 +36,11 @@ export const taskbasesController = {
 
     try {
       const taskbaseResult = await pool.query(
-        `SELECT 
+        `SELECT
           d.*,
           tg.name as group_name,
-          tg.color as group_color
+          tg.color as group_color,
+          tg.icon as group_icon
         FROM taskbases d
         JOIN task_groups tg ON d.group_id = tg.id
         WHERE d.id = $1 AND d.user_id = $2`,
@@ -70,7 +72,7 @@ export const taskbasesController = {
 
   // Создать новый taskbase и задачи
   async createTaskBase(req, res) {
-    const { name, groupId, timeSlotStart, timeSlotEnd, isTimeBound, dates } = req.body;
+    const { name, groupId, timeSlotStart, timeSlotEnd, isTimeBound, dates, icon } = req.body;
     const userId = req.userId;
 
     if (!name || !groupId || !dates || dates.length === 0) {
@@ -83,10 +85,10 @@ export const taskbasesController = {
 
       // Создаем taskbase
       const taskbaseResult = await client.query(
-        `INSERT INTO taskbases (user_id, name, group_id, time_slot_start, time_slot_end, is_time_bound)
-         VALUES ($1, $2, $3, $4, $5, $6)
+        `INSERT INTO taskbases (user_id, name, group_id, time_slot_start, time_slot_end, is_time_bound, icon)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
-        [userId, name, groupId, timeSlotStart, timeSlotEnd, isTimeBound || false]
+        [userId, name, groupId, timeSlotStart, timeSlotEnd, isTimeBound || false, icon || 'refresh']
       );
 
       const taskbase = taskbaseResult.rows[0];
@@ -153,7 +155,7 @@ export const taskbasesController = {
   // Обновить taskbase
   async updateTaskBase(req, res) {
     const { id } = req.params;
-    const { name, groupId, timeSlotStart, timeSlotEnd, isTimeBound } = req.body;
+    const { name, groupId, timeSlotStart, timeSlotEnd, isTimeBound, icon } = req.body;
     const userId = req.userId;
 
     try {
@@ -164,10 +166,11 @@ export const taskbasesController = {
              time_slot_start = COALESCE($3, time_slot_start),
              time_slot_end = COALESCE($4, time_slot_end),
              is_time_bound = COALESCE($5, is_time_bound),
+             icon = COALESCE($6, icon),
              updated_at = CURRENT_TIMESTAMP
-         WHERE id = $6 AND user_id = $7
+         WHERE id = $7 AND user_id = $8
          RETURNING *`,
-        [name, groupId, timeSlotStart, timeSlotEnd, isTimeBound, id, userId]
+        [name, groupId, timeSlotStart, timeSlotEnd, isTimeBound, icon, id, userId]
       );
 
       if (result.rows.length === 0) {

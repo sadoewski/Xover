@@ -13,7 +13,8 @@ export const tasksController = {
           t.date,
           t.status,
           tg.name as group_name,
-          tg.color as group_color
+          tg.color as group_color,
+          tg.icon as group_icon
         FROM tasks t
         JOIN task_groups tg ON t.group_id = tg.id
         WHERE t.user_id = $1
@@ -43,6 +44,7 @@ export const tasksController = {
           t.*,
           tg.name as group_name,
           tg.color as group_color,
+          tg.icon as group_icon,
           tgt.name as group_type_name,
           p.name as priority_name,
           p.color as priority_color,
@@ -104,6 +106,7 @@ export const tasksController = {
           t.*,
           tg.name as group_name,
           tg.color as group_color,
+          tg.icon as group_icon,
           tgt.name as group_type_name,
           p.name as priority_name,
           p.color as priority_color
@@ -134,6 +137,7 @@ export const tasksController = {
           t.*,
           tg.name as group_name,
           tg.color as group_color,
+          tg.icon as group_icon,
           tgt.name as group_type_name,
           p.name as priority_name,
           p.color as priority_color
@@ -164,6 +168,7 @@ export const tasksController = {
           t.*,
           tg.name as group_name,
           tg.color as group_color,
+          tg.icon as group_icon,
           tgt.name as group_type_name,
           p.name as priority_name,
           p.color as priority_color
@@ -425,7 +430,7 @@ export const tasksController = {
 
       const result = await pool.query(
         `SELECT t.id, t.title, t.date, t.status,
-                tg.name as group_name, tg.color as group_color,
+                tg.name as group_name, tg.color as group_color, tg.icon as group_icon,
                 p.name as priority_name, p.color as priority_color
          FROM tasks t
          JOIN task_groups tg ON t.group_id = tg.id

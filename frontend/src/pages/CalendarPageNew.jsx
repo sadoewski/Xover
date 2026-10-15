@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format, addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, isSameDay, isSameWeek, isSameMonth } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus } from 'lucide-react';
+import { IconChevronLeft, IconChevronRight, IconCalendar as IconCalendarIcon, IconPlus } from '@tabler/icons-react';
 import { tasksService, groupsService, prioritiesService, eventsService } from '../services/api';
 import { useSafeAsync } from '../hooks/useSafeAsync';
 import ProfessionalLayout from '../components/ProfessionalLayout';
@@ -23,7 +23,7 @@ const STATUS_CONFIG = {
   moved: { label: 'Перенесен', color: '#a855f7' },
 };
 
-export default function CalendarPageNew() {
+export default function IconCalendarPageNew() {
   const navigate = useNavigate();
   const runAsync = useSafeAsync();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -35,6 +35,7 @@ export default function CalendarPageNew() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showWeekPicker, setShowWeekPicker] = useState(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const [dayEvents, setDayEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]); // Все события для определения выходных
@@ -124,7 +125,7 @@ export default function CalendarPageNew() {
         }
       }
     });
-  }, [selectedDate, view, runAsync]);
+  }, [selectedDate, view, runAsync, refreshTrigger]);
 
   // Проверка, является ли день выходным (суббота/воскресенье или событие с is_day_off)
   const isDayOff = (date) => {
@@ -166,7 +167,7 @@ export default function CalendarPageNew() {
   const handleCreateTask = async (taskData) => {
     try {
       await tasksService.createTask(taskData);
-      await loadData();
+      setRefreshTrigger(prev => prev + 1);
       setShowCreateModal(false);
     } catch (error) {
       console.error('Ошибка создания задачи:', error);
@@ -181,7 +182,7 @@ export default function CalendarPageNew() {
   const handleUpdateStatus = async (taskId, newStatus) => {
     try {
       await tasksService.updateTask(taskId, { status: newStatus });
-      await loadData();
+      setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       console.error('Ошибка обновления статуса:', error);
     }
@@ -191,7 +192,7 @@ export default function CalendarPageNew() {
     if (!window.confirm('Удалить эту задачу?')) return;
     try {
       await tasksService.deleteTask(taskId);
-      await loadData();
+      setRefreshTrigger(prev => prev + 1);
     } catch (error) {
       console.error('Ошибка удаления задачи:', error);
     }
@@ -231,8 +232,8 @@ export default function CalendarPageNew() {
     }
   };
 
-  const handleSelectWeek = (weekStart) => {
-    setSelectedDate(weekStart);
+  const handleSelectWeek = (weekIconStart) => {
+    setSelectedDate(weekIconStart);
   };
 
   const handleSelectMonth = (month) => {
@@ -245,7 +246,7 @@ export default function CalendarPageNew() {
         <div className="calendar-toolbar">
           <div className="toolbar-left">
             <button className="btn-icon" onClick={handlePrevPeriod}>
-              <ChevronLeft size={20} />
+              <IconChevronLeft size={20} />
             </button>
             <button
               className={`btn-secondary ${format(selectedDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd') && view === 'day' ? 'active' : ''}`}
@@ -254,12 +255,12 @@ export default function CalendarPageNew() {
               Сегодня
             </button>
             <button className="btn-icon" onClick={handleNextPeriod}>
-              <ChevronRight size={20} />
+              <IconChevronRight size={20} />
             </button>
           </div>
 
           <div className="toolbar-center">
-            <CalendarIcon size={18} />
+            <IconCalendarIcon size={18} />
             <span
               className={`date-label ${(view === 'week' || view === 'month') ? 'clickable' : ''}`}
               onClick={handleDateLabelClick}
@@ -269,11 +270,11 @@ export default function CalendarPageNew() {
               }}
               onMouseEnter={(e) => {
                 if (view === 'week' || view === 'month') {
-                  e.target.style.color = 'var(--color-keyword)';
+                  e.currentTarget.style.color = 'var(--color-keyword)';
                 }
               }}
               onMouseLeave={(e) => {
-                e.target.style.color = 'var(--color-function)';
+                e.currentTarget.style.color = 'var(--color-function)';
               }}
             >
               {getViewLabel()}
@@ -327,7 +328,7 @@ export default function CalendarPageNew() {
               disabled={isPastDate()}
               title={isPastDate() ? 'Нельзя создавать задачи на прошедшие даты' : ''}
             >
-              <Plus size={16} />
+              <IconPlus size={16} />
               Создать задачу
             </button>
           </div>
@@ -397,7 +398,7 @@ export default function CalendarPageNew() {
 
               {tasks.length === 0 && dayEvents.length === 0 ? (
                 <div className="empty-state">
-                  <CalendarIcon size={48} />
+                  <IconCalendarIcon size={48} />
                   <h3>Нет задач</h3>
                   <p>Создайте первую задачу на эту дату</p>
                 </div>

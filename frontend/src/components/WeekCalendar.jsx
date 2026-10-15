@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { IconChevronLeft, IconChevronRight, IconChevronDown, IconChevronUp, IconClock, IconPlayerPlay, IconCircleCheck, IconX, IconCalendarEvent } from '@tabler/icons-react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { tasksService } from '../services/api';
 import './WeekCalendar.css';
 
 const STATUS_CONFIG = {
-  pending: { label: 'Ожидается', color: '#6b7280', icon: '⏳' },
-  in_progress: { label: 'В процессе', color: '#3b82f6', icon: '🔄' },
-  completed: { label: 'Выполнено', color: '#10b981', icon: '✅' },
-  cancelled: { label: 'Отменен', color: '#ef4444', icon: '❌' },
-  moved: { label: 'Перенесен', color: '#8b5cf6', icon: '📅' },
+  pending: { label: 'Ожидается', color: '#6b7280', icon: IconClock },
+  in_progress: { label: 'В процессе', color: '#3b82f6', icon: IconPlayerPlay },
+  completed: { label: 'Выполнено', color: '#10b981', icon: IconCircleCheck },
+  cancelled: { label: 'Отменен', color: '#ef4444', icon: IconX },
+  moved: { label: 'Перенесен', color: '#8b5cf6', icon: IconCalendarEvent },
 };
 
-export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
+export default function WeekIconCalendar({ collapsed = false, onToggleCollapse }) {
   const navigate = useNavigate();
-  const [currentWeekStart, setCurrentWeekStart] = useState(() =>
-    startOfWeek(new Date(), { locale: ru, weekStartsOn: 1 })
+  const [currentWeekIconStart, setCurrentWeekIconStart] = useState(() =>
+    startOfWeek(new Date(), { locale: ru, weekIconStartsOn: 1 })
   );
   const [weekTasks, setWeekTasks] = useState({});
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
       try {
         const tasks = {};
         for (let i = 0; i < 7; i++) {
-          const date = addDays(currentWeekStart, i);
+          const date = addDays(currentWeekIconStart, i);
           const dateStr = format(date, 'yyyy-MM-dd');
           const data = await tasksService.getTasksByDate(dateStr);
 
@@ -59,25 +59,25 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
     return () => {
       isMounted = false;
     };
-  }, [currentWeekStart]);
+  }, [currentWeekIconStart]);
 
   const handlePrevWeek = () => {
-    setCurrentWeekStart(addDays(currentWeekStart, -7));
+    setCurrentWeekIconStart(addDays(currentWeekIconStart, -7));
   };
 
   const handleNextWeek = () => {
-    setCurrentWeekStart(addDays(currentWeekStart, 7));
+    setCurrentWeekIconStart(addDays(currentWeekIconStart, 7));
   };
 
   const handleToday = () => {
-    setCurrentWeekStart(startOfWeek(new Date(), { locale: ru, weekStartsOn: 1 }));
+    setCurrentWeekIconStart(startOfWeek(new Date(), { locale: ru, weekIconStartsOn: 1 }));
   };
 
   const handleTaskClick = (taskId) => {
     navigate(`/tasks/${taskId}`);
   };
 
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(currentWeekIconStart, i));
   const today = new Date();
 
   if (collapsed) {
@@ -86,7 +86,7 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
         <div className="week-calendar-header">
           <h3 className="week-calendar-title">Календарь недели</h3>
           <button onClick={onToggleCollapse} className="collapse-btn" title="Развернуть">
-            <ChevronDown size={16} />
+            <IconChevronDown size={16} />
           </button>
         </div>
       </div>
@@ -99,16 +99,16 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
         <h3 className="week-calendar-title">Календарь недели</h3>
         <div className="week-calendar-controls">
           <button onClick={handlePrevWeek} className="week-nav-btn" title="Предыдущая неделя">
-            <ChevronLeft size={16} />
+            <IconChevronLeft size={16} />
           </button>
           <button onClick={handleToday} className="week-today-btn">
             Сегодня
           </button>
           <button onClick={handleNextWeek} className="week-nav-btn" title="Следующая неделя">
-            <ChevronRight size={16} />
+            <IconChevronRight size={16} />
           </button>
           <button onClick={onToggleCollapse} className="collapse-btn" title="Свернуть">
-            <ChevronUp size={16} />
+            <IconChevronUp size={16} />
           </button>
         </div>
       </div>
@@ -138,6 +138,7 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
                   ) : (
                     dayTasks.map((task) => {
                       const status = STATUS_CONFIG[task.status] || STATUS_CONFIG.pending;
+                      const StatusIcon = status.icon;
                       return (
                         <div
                           key={task.id}
@@ -155,7 +156,7 @@ export default function WeekCalendar({ collapsed = false, onToggleCollapse }) {
                           </div>
                           <div className="week-task-title">{task.title}</div>
                           <div className="week-task-status" style={{ color: status.color }}>
-                            <span className="week-task-status-icon">{status.icon}</span>
+                            <StatusIcon size={14} className="week-task-status-icon" />
                             <span className="week-task-status-text">{status.label}</span>
                           </div>
                         </div>

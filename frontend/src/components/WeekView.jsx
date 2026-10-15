@@ -1,6 +1,6 @@
 import { format, eachDayOfInterval, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { Clock } from 'lucide-react';
+import { IconClock } from '@tabler/icons-react';
 import StatusIcon from './StatusIcon';
 import './WeekView.css';
 
@@ -13,9 +13,9 @@ const STATUS_CONFIG = {
 };
 
 export default function WeekView({ selectedDate, tasks, isDayOff, onDayClick }) {
-  const weekStart = startOfWeek(selectedDate, { locale: ru });
+  const weekIconStart = startOfWeek(selectedDate, { locale: ru });
   const weekEnd = endOfWeek(selectedDate, { locale: ru });
-  const days = eachDayOfInterval({ start: weekStart, end: weekEnd });
+  const days = eachDayOfInterval({ start: weekIconStart, end: weekEnd });
 
   const getTasksForDay = (day) => {
     return tasks.filter(task => {
@@ -91,7 +91,7 @@ export default function WeekView({ selectedDate, tasks, isDayOff, onDayClick }) 
                       <div className="week-task-meta">
                         {task.is_time_bound && task.time_slot_start && (
                           <div className="week-task-time">
-                            <Clock size={10} />
+                            <IconClock size={10} />
                             {task.time_slot_start.slice(0, 5)}
                             {task.time_slot_end ? `-${task.time_slot_end.slice(0, 5)}` : ''}
                           </div>

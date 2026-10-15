@@ -4,7 +4,7 @@ import { prioritiesService, tasksService } from '../services/api';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import ProfessionalLayout from '../components/ProfessionalLayout';
-import { Plus, ArrowLeft, Trash2 } from 'lucide-react';
+import { IconPlus, IconArrowLeft, IconTrash } from '@tabler/icons-react';
 import './PrioritiesPage.css';
 
 const STATUS_CONFIG = {
@@ -107,7 +107,7 @@ export default function PrioritiesPage() {
     <ProfessionalLayout>
       <div className="page-content">
         <div className="page-header">
-          <h1 className="page-title">Приоритеты</h1>
+          <h1 className="page-title">Теги</h1>
         </div>
 
         {loading ? (
@@ -125,7 +125,7 @@ export default function PrioritiesPage() {
                 }}
                 className="btn btn-secondary"
               >
-                <ArrowLeft size={16} />
+                <IconArrowLeft size={16} />
                 Назад
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -208,7 +208,7 @@ export default function PrioritiesPage() {
                 onClick={() => setShowCreate(true)}
                 className="btn btn-primary"
               >
-                <Plus size={16} />
+                <IconPlus size={16} />
                 Добавить приоритет
               </button>
             </div>
@@ -330,7 +330,7 @@ export default function PrioritiesPage() {
                         title="Удалить"
                         disabled={isDeleting}
                       >
-                        <Trash2 size={16} />
+                        <IconTrash size={16} />
                       </button>
                     </div>
                   </div>

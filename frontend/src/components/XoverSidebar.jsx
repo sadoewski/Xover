@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BarChart3, Calendar, Repeat, Folder, Star, FileText, Target, ChevronLeft, ChevronRight, Terminal } from 'lucide-react';
+import { IconChartBar, IconCalendar, IconRepeat, IconFolder, IconStar, IconFileText, IconTarget, IconChevronLeft, IconChevronRight, IconTerminal2, IconKey, IconTags } from '@tabler/icons-react';
 import './XoverSidebar.css';
 
 export default function XoverSidebar() {
@@ -48,14 +48,14 @@ export default function XoverSidebar() {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Админ-панель', Icon: BarChart3, path: '/' },
-    { id: 'calendar', label: 'Календарь', Icon: Calendar, path: '/calendar' },
-    { id: 'taskbases', label: 'TaskBase', Icon: Repeat, path: '/taskbases' },
-    { id: 'groups', label: 'Группы записей', Icon: Folder, path: '/groups' },
-    { id: 'priorities', label: 'Приоритеты', Icon: Star, path: '/priorities' },
-    { id: 'templates', label: 'Шаблоны задач', Icon: FileText, path: '/templates' },
-    { id: 'events', label: 'События', Icon: Target, path: '/events' },
-    { id: 'shell', label: 'Shell', Icon: Terminal, path: '/terminal' },
+    { id: 'dashboard', label: 'Админ-панель', Icon: IconChartBar, path: '/' },
+    { id: 'calendar', label: 'Календарь', Icon: IconCalendar, path: '/calendar' },
+    { id: 'taskbases', label: 'TaskBase', Icon: IconRepeat, path: '/taskbases' },
+    { id: 'groups', label: 'Ключи', Icon: IconKey, path: '/groups' },
+    { id: 'priorities', label: 'Теги', Icon: IconTags, path: '/priorities' },
+    { id: 'templates', label: 'Шаблоны задач', Icon: IconFileText, path: '/templates' },
+    { id: 'events', label: 'События', Icon: IconTarget, path: '/events' },
+    { id: 'shell', label: 'Shell', Icon: IconTerminal2, path: '/terminal' },
   ];
 
   const isActive = (path) => {
@@ -89,7 +89,7 @@ export default function XoverSidebar() {
         onClick={() => setIsCollapsed(!isCollapsed)}
         title={isCollapsed ? 'Развернуть' : 'Свернуть'}
       >
-        {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        {isCollapsed ? <IconChevronRight size={16} /> : <IconChevronLeft size={16} />}
       </button>
 
       {!isCollapsed && (

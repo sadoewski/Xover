@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { X, Folder, Table, FileText, StickyNote } from 'lucide-react';
+import { IconX, IconFolder, IconTable, IconFileText, IconNote } from '@tabler/icons-react';
 import './CreateItemModal.css';
 
 const ITEM_TYPES = [
-  { id: 'folder', label: 'Папка', icon: Folder, description: 'Организация элементов' },
-  { id: 'database', label: 'База данных', icon: Table, description: 'Таблица со строками и колонками' },
-  { id: 'textboard', label: 'Текстовая доска', icon: StickyNote, description: 'Быстрые заметки' },
-  { id: 'document', label: 'Документ', icon: FileText, description: 'Текстовый документ' }
+  { id: 'folder', label: 'Папка', icon: IconFolder, description: 'Организация элементов' },
+  { id: 'database', label: 'База данных', icon: IconTable, description: 'Таблица со строками и колонками' },
+  { id: 'textboard', label: 'Текстовая доска', icon: IconNote, description: 'Быстрые заметки' },
+  { id: 'document', label: 'Документ', icon: IconFileText, description: 'Текстовый документ' }
 ];
 
-function CreateItemModal({ onClose, onCreate, currentFolder }) {
+function CreateItemModal({ onClose, onCreate, currentIconFolder }) {
   const [step, setStep] = useState(1);
   const [selectedType, setSelectedType] = useState(null);
   const [name, setName] = useState('');
@@ -120,7 +120,7 @@ function CreateItemModal({ onClose, onCreate, currentFolder }) {
             onClick={onClose}
             disabled={loading}
           >
-            <X size={20} />
+            <IconX size={20} />
           </button>
         </div>
 

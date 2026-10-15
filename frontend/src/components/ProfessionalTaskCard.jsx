@@ -6,12 +6,13 @@ import {
   CheckCircle2,
   XCircle,
   RotateCw,
-  Clock,
-  Link2,
-  MoreVertical,
-  Trash2,
-  Repeat,
-} from 'lucide-react';
+  IconClock,
+  IconLink,
+  IconDots,
+  IconTrash,
+  IconRepeat,
+} from '@tabler/icons-react';
+import TablerIconRenderer from './TablerIconRenderer';
 import './ProfessionalTaskCard.css';
 
 const STATUS_CONFIG = {
@@ -86,6 +87,14 @@ const ProfessionalTaskCard = ({ task, onUpdate, onDelete, onClick, isSelected })
                 borderColor: `${task.group_color}40`,
               }}
             >
+              {task.group_icon && (
+                <TablerIconRenderer
+                  iconName={task.group_icon}
+                  size={14}
+                  color={task.group_color}
+                  style={{ marginRight: '4px' }}
+                />
+              )}
               {task.group_name}
               {task.group_type_name && ` · ${task.group_type_name}`}
             </span>
@@ -98,12 +107,12 @@ const ProfessionalTaskCard = ({ task, onUpdate, onDelete, onClick, isSelected })
                   navigate(`/taskbases/${task.taskbase_id}`);
                 }}
               >
-                <Repeat size={14} />
+                <IconRepeat size={14} />
               </div>
             )}
             {hasRelations && (
               <div className="task-relation-indicator" title={`Связей: ${task.task_relations.length}`}>
-                <Link2 size={14} />
+                <IconLink size={14} />
               </div>
             )}
           </div>
@@ -111,7 +120,7 @@ const ProfessionalTaskCard = ({ task, onUpdate, onDelete, onClick, isSelected })
           <div className="task-header-right">
             {task.is_time_bound && task.time_slot_start && (
               <div className="task-time-slot">
-                <Clock size={12} />
+                <IconClock size={12} />
                 <span>{task.time_slot_start.slice(0, 5)}</span>
               </div>
             )}
@@ -148,7 +157,7 @@ const ProfessionalTaskCard = ({ task, onUpdate, onDelete, onClick, isSelected })
               onClick={handleDelete}
               title="Удалить задачу"
             >
-              <Trash2 size={14} />
+              <IconTrash size={14} />
             </button>
           )}
         </div>

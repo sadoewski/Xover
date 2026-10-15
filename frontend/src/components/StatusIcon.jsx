@@ -1,25 +1,20 @@
-import { Clock, Play, Check, X, RotateCcw } from 'lucide-react';
+import { IconClock, IconPlayerPlay, IconCircleCheck, IconX, IconCalendarEvent } from '@tabler/icons-react';
 
 export default function StatusIcon({ status, color, size = 20 }) {
   const getIcon = () => {
     switch (status) {
       case 'pending':
-        return <Clock size={size * 0.7} />;
+        return <IconClock size={size * 0.7} />;
       case 'in_progress':
-        return (
-          <div style={{ position: 'relative', width: size * 0.7, height: size * 0.7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <RotateCcw size={size * 0.7} strokeWidth={2.5} />
-            <Play size={size * 0.35} style={{ position: 'absolute' }} fill="currentColor" />
-          </div>
-        );
+        return <IconPlayerPlay size={size * 0.7} />;
       case 'completed':
-        return <Check size={size * 0.7} strokeWidth={3} />;
+        return <IconCircleCheck size={size * 0.7} />;
       case 'cancelled':
-        return <X size={size * 0.7} strokeWidth={3} />;
+        return <IconX size={size * 0.7} />;
       case 'moved':
-        return <RotateCcw size={size * 0.7} strokeWidth={2.5} />;
+        return <IconCalendarEvent size={size * 0.7} />;
       default:
-        return <Clock size={size * 0.7} />;
+        return <IconClock size={size * 0.7} />;
     }
   };
 

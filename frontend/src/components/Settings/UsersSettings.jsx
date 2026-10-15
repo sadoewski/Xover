@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Calendar } from 'lucide-react';
+import { IconUser, IconMail, IconCalendar } from '@tabler/icons-react';
 import { authService } from '../../services/api';
 import './UsersSettings.css';
 
@@ -50,18 +50,18 @@ export default function UsersSettings() {
             {user.avatar_url ? (
               <img src={user.avatar_url} alt={user.username} />
             ) : (
-              <User size={48} />
+              <IconUser size={48} />
             )}
           </div>
           <div className="user-details">
             <h3>{user.username}</h3>
             <div className="user-info-grid">
               <div className="user-info-item">
-                <Mail size={16} />
+                <IconMail size={16} />
                 <span>{user.email}</span>
               </div>
               <div className="user-info-item">
-                <Calendar size={16} />
+                <IconCalendar size={16} />
                 <span>Регистрация: {new Date(user.created_at).toLocaleDateString('ru-RU')}</span>
               </div>
             </div>

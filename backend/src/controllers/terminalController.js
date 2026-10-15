@@ -97,6 +97,7 @@ export const terminalController = {
           t.created_at,
           tg.name as group_name,
           tg.color as group_color,
+          tg.icon as group_icon,
           tgt.name as group_type_name,
           p.name as priority_name,
           t.links
@@ -190,6 +191,8 @@ export const terminalController = {
           t.created_at,
           t.links,
           tg.name as group_name,
+          tg.color as group_color,
+          tg.icon as group_icon,
           tgt.name as group_type_name,
           p.name as priority_name
         FROM tasks t

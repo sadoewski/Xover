@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Link2, CheckSquare, GitMerge } from 'lucide-react';
+import { IconLink, IconSquareCheck, IconGitMerge } from '@tabler/icons-react';
 
 const STATUS_CONFIG = {
   pending: {
@@ -86,19 +86,19 @@ export default function TaskList({ tasks, onUpdateTask, onDeleteTask }) {
                   <div className="flex items-center gap-1">
                     {task.links && task.links.length > 0 && (
                       <span className="inline-flex items-center gap-1 text-xs text-blue-600" title={`Ссылок: ${task.links.length}`}>
-                        <Link2 size={14} />
+                        <IconLink size={14} />
                         <span>{task.links.length}</span>
                       </span>
                     )}
                     {task.checklists && task.checklists.length > 0 && (
                       <span className="inline-flex items-center gap-1 text-xs text-green-600" title={`Чеклистов: ${task.checklists.length}`}>
-                        <CheckSquare size={14} />
+                        <IconSquareCheck size={14} />
                         <span>{task.checklists.length}</span>
                       </span>
                     )}
                     {task.task_relations && task.task_relations.length > 0 && (
                       <span className="inline-flex items-center gap-1 text-xs text-purple-600" title={`Связанных задач: ${task.task_relations.length}`}>
-                        <GitMerge size={14} />
+                        <IconGitMerge size={14} />
                         <span>{task.task_relations.length}</span>
                       </span>
                     )}

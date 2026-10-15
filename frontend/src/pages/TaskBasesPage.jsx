@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { dataTasksService } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
+import TablerIconRenderer from '../components/TablerIconRenderer';
+import IconPickerButton from '../components/IconPicker/IconPickerButton';
 import '../styles/TaskBasesPage.css';
 
 const TaskBasesPage = () => {
@@ -11,6 +13,7 @@ const TaskBasesPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [selectedTaskBases, setSelectedTaskBases] = useState([]);
+  const [isUpdating, setIsUpdating] = useState(false);
   const navigate = useNavigate();
   const { showSuccess, showError } = useNotification();
 
@@ -65,6 +68,19 @@ const TaskBasesPage = () => {
     } catch (error) {
       console.error('Error deleting taskbases:', error);
       showError('Ошибка при удалении TaskBase');
+    }
+  };
+
+  const handleUpdateTaskBaseIcon = async (taskbaseId, icon) => {
+    setIsUpdating(true);
+    try {
+      await dataTasksService.update(taskbaseId, { icon });
+      await loadTaskBases();
+    } catch (error) {
+      console.error('Error updating taskbase icon:', error);
+      showError('Ошибка при обновлении иконки');
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -141,6 +157,12 @@ const TaskBasesPage = () => {
                   checked={selectedTaskBases.includes(taskbase.id)}
                   onChange={(e) => toggleSelectTaskBase(taskbase.id, e)}
                   className="taskbase-checkbox"
+                />
+                <TablerIconRenderer
+                  iconName={taskbase.icon || 'refresh'}
+                  size={20}
+                  color={taskbase.group_color || '#6366f1'}
+                  className="taskbase-icon"
                 />
                 <h3 className="taskbase-name">{taskbase.name}</h3>
               </div>

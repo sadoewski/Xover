@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Eye, Users } from 'lucide-react';
+import { IconEye, IconUsers } from '@tabler/icons-react';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import AppearanceSettings from '../components/Settings/AppearanceSettings';
-import UsersSettings from '../components/Settings/UsersSettings';
+import IconUsersSettings from '../components/Settings/UsersSettings';
 import './SettingsPage.css';
 
 export default function SettingsPage() {
@@ -18,14 +18,14 @@ export default function SettingsPage() {
               className={`settings-nav-item ${activeTab === 'appearance' ? 'active' : ''}`}
               onClick={() => setActiveTab('appearance')}
             >
-              <Eye size={18} />
+              <IconEye size={18} />
               <span>Внешний вид</span>
             </button>
             <button
               className={`settings-nav-item ${activeTab === 'users' ? 'active' : ''}`}
               onClick={() => setActiveTab('users')}
             >
-              <Users size={18} />
+              <IconUsers size={18} />
               <span>Пользователи</span>
             </button>
           </nav>
@@ -33,7 +33,7 @@ export default function SettingsPage() {
 
         <div className="settings-content">
           {activeTab === 'appearance' && <AppearanceSettings />}
-          {activeTab === 'users' && <UsersSettings />}
+          {activeTab === 'users' && <IconUsersSettings />}
         </div>
       </div>
     </ProfessionalLayout>

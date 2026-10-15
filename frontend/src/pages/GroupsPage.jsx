@@ -4,7 +4,9 @@ import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { groupsService, tasksService } from '../services/api';
 import ProfessionalLayout from '../components/ProfessionalLayout';
-import { Plus, ArrowLeft, Trash2 } from 'lucide-react';
+import { IconPlus, IconArrowLeft, IconTrash } from '@tabler/icons-react';
+import TablerIconRenderer from '../components/TablerIconRenderer';
+import IconPickerButton from '../components/IconPicker/IconPickerButton';
 import './GroupsPage.css';
 
 const STATUS_CONFIG = {
@@ -27,12 +29,14 @@ export default function GroupsPage() {
   const [groupTaskCounts, setGroupTaskCounts] = useState({});
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [showCreateType, setShowCreateType] = useState(false);
-  const [newGroup, setNewGroup] = useState({ name: '', color: '#3B82F6' });
+  const [newGroup, setNewGroup] = useState({ name: '', color: '#3B82F6', icon: 'folder' });
   const [newType, setNewType] = useState({ name: '', group_id: '' });
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const [isCreatingType, setIsCreatingType] = useState(false);
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
   const [isDeletingType, setIsDeletingType] = useState(false);
+  const [editingGroup, setEditingGroup] = useState(null);
+  const [isUpdatingGroup, setIsUpdatingGroup] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -170,6 +174,30 @@ export default function GroupsPage() {
     }
   };
 
+  const handleUpdateGroup = async (groupId, updates) => {
+    setIsUpdatingGroup(true);
+    try {
+      const response = await groupsService.updateGroup(groupId, updates);
+      console.log('Group updated:', response);
+
+      // Обновляем локальные данные
+      setGroups(prevGroups =>
+        prevGroups.map(g => g.id === groupId ? { ...g, ...updates } : g)
+      );
+
+      // Обновляем выбранную группу если она открыта
+      if (selectedGroup?.id === groupId) {
+        setSelectedGroup(prev => ({ ...prev, ...updates }));
+      }
+
+      setEditingGroup(null);
+    } catch (error) {
+      console.error('Ошибка обновления группы:', error);
+    } finally {
+      setIsUpdatingGroup(false);
+    }
+  };
+
   const getGroupTypes = (groupId) => {
     return types.filter(t => t.group_id === groupId);
   };
@@ -178,7 +206,7 @@ export default function GroupsPage() {
     <ProfessionalLayout>
       <div className="page-content">
         <div className="page-header">
-          <h1 className="page-title">Группы записей</h1>
+          <h1 className="page-title">Ключи</h1>
         </div>
 
         {loading ? (
@@ -196,18 +224,26 @@ export default function GroupsPage() {
                 }}
                 className="btn btn-secondary"
               >
-                <ArrowLeft size={16} />
+                <IconArrowLeft size={16} />
                 Назад
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '4px',
-                    backgroundColor: selectedGroup.color
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <TablerIconRenderer
+                    iconName={selectedGroup.icon || 'folder'}
+                    size={32}
+                    color={selectedGroup.color}
+                  />
+                  <div style={{ position: 'absolute', bottom: '-4px', right: '-4px' }}>
+                    <IconPickerButton
+                      currentIcon={selectedGroup.icon || 'folder'}
+                      groupColor={selectedGroup.color}
+                      onSelectIcon={(icon) => handleUpdateGroup(selectedGroup.id, { icon })}
+                      size={20}
+                      compact={true}
+                    />
+                  </div>
+                </div>
                 <h2 className="card-title-text">
                   {selectedGroup.name}
                 </h2>
@@ -225,7 +261,7 @@ export default function GroupsPage() {
                   }}
                   className="btn btn-primary"
                 >
-                  <Plus size={16} />
+                  <IconPlus size={16} />
                   Добавить тип
                 </button>
               </div>
@@ -329,7 +365,7 @@ export default function GroupsPage() {
                         title="Удалить"
                         disabled={isDeletingType}
                       >
-                        <Trash2 size={16} />
+                        <IconTrash size={16} />
                       </button>
                     </div>
                   );
@@ -395,12 +431,12 @@ export default function GroupsPage() {
           // Список всех групп
           <div className="card">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h2 className="card-title">Группы</h2>
+              <h2 className="card-title">Ключи</h2>
               <button
                 onClick={() => setShowCreateGroup(true)}
                 className="btn btn-primary"
               >
-                <Plus size={16} />
+                <IconPlus size={16} />
                 Добавить группу
               </button>
             </div>
@@ -437,6 +473,16 @@ export default function GroupsPage() {
                       style={{ height: '32px', width: '100%', borderRadius: '4px', border: '1px solid var(--border-primary)', background: 'var(--bg-tertiary)' }}
                     />
                   </div>
+                </div>
+                <div style={{ marginTop: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                    Иконка
+                  </label>
+                  <IconPickerButton
+                    currentIcon={newGroup.icon}
+                    groupColor={newGroup.color}
+                    onSelectIcon={(icon) => setNewGroup({ ...newGroup, icon })}
+                  />
                 </div>
                 <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
                   <button type="submit" className="btn btn-primary" disabled={isCreatingGroup}>
@@ -493,14 +539,10 @@ export default function GroupsPage() {
                           padding: 0
                         }}
                       >
-                        <div
-                          style={{
-                            width: '24px',
-                            height: '24px',
-                            borderRadius: '4px',
-                            flexShrink: 0,
-                            backgroundColor: group.color
-                          }}
+                        <TablerIconRenderer
+                          iconName={group.icon || 'folder'}
+                          size={24}
+                          color={group.color}
                         />
                         <div>
                           <div className="list-item-title">
@@ -518,7 +560,7 @@ export default function GroupsPage() {
                         title="Удалить"
                         disabled={isDeletingGroup}
                       >
-                        <Trash2 size={16} />
+                        <IconTrash size={16} />
                       </button>
                     </div>
                   </div>

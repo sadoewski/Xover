@@ -2,24 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { format, addDays, addWeeks, addMonths, addYears, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isToday, startOfWeek, endOfWeek } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import {
-  ChevronLeft,
-  ChevronRight,
-  Calendar as CalendarIcon,
-  Plus,
-  Grid3x3,
-  List,
-  Clock,
-  Filter,
-  Search,
-  X,
-} from 'lucide-react';
+  IconChevronLeft,
+  IconChevronRight,
+  IconCalendar as IconCalendarIcon,
+  IconPlus,
+  IconGridDots,
+  IconList,
+  IconClock,
+  IconFilter,
+  IconSearch,
+  IconX,
+} from '@tabler/icons-react';
 import { tasksService, groupsService, prioritiesService } from '../services/api';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import ProfessionalTaskCard from '../components/ProfessionalTaskCard';
 import ProfessionalCreateTaskModal from '../components/ProfessionalCreateTaskModal';
-import './ProfessionalCalendarPage.css';
+import './ProfessionalIconCalendarPage.css';
 
-const ProfessionalCalendarPage = () => {
+const ProfessionalIconCalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState('day'); // 'day', 'week', 'month', 'year'
   const [tasks, setTasks] = useState([]);
@@ -27,9 +27,9 @@ const ProfessionalCalendarPage = () => {
   const [priorities, setPriorities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [filterGroup, setFilterGroup] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [filterGroup, setIconFilterGroup] = useState('all');
+  const [filterPriority, setIconFilterPriority] = useState('all');
+  const [searchQuery, setIconSearchQuery] = useState('');
   const [selectedTask, setSelectedTask] = useState(null);
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const ProfessionalCalendarPage = () => {
     return checkDate < today;
   };
 
-  const getFilteredTasks = () => {
+  const getIconFilteredTasks = () => {
     return tasks.filter(task => {
       if (filterGroup !== 'all' && task.group_id !== parseInt(filterGroup)) return false;
       if (filterPriority !== 'all' && task.priority_id !== parseInt(filterPriority)) return false;
@@ -120,24 +120,24 @@ const ProfessionalCalendarPage = () => {
     });
   };
 
-  const filteredTasks = getFilteredTasks();
+  const filteredTasks = getIconFilteredTasks();
 
-  const renderMiniCalendar = () => {
-    const monthStart = startOfMonth(selectedDate);
+  const renderMiniIconCalendar = () => {
+    const monthIconStart = startOfMonth(selectedDate);
     const monthEnd = endOfMonth(selectedDate);
-    const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+    const calendarDays = eachDayOfInterval({ start: monthIconStart, end: monthEnd });
 
     return (
       <div className="mini-calendar">
         <div className="mini-calendar-header">
           <button className="btn-icon" onClick={() => setSelectedDate(addMonths(selectedDate, -1))}>
-            <ChevronLeft size={16} />
+            <IconChevronLeft size={16} />
           </button>
           <span className="mini-calendar-title">
             {format(selectedDate, 'LLLL yyyy', { locale: ru })}
           </span>
           <button className="btn-icon" onClick={() => setSelectedDate(addMonths(selectedDate, 1))}>
-            <ChevronRight size={16} />
+            <IconChevronRight size={16} />
           </button>
         </div>
 
@@ -165,13 +165,13 @@ const ProfessionalCalendarPage = () => {
   return (
     <ProfessionalLayout>
       <div className="professional-calendar">
-        {/* Left Panel - Mini Calendar & Filters */}
+        {/* Left Panel - Mini IconCalendar & IconFilters */}
         <div className="calendar-left-panel">
-          {renderMiniCalendar()}
+          {renderMiniIconCalendar()}
 
           <div className="filters-section">
             <div className="section-header">
-              <Filter size={16} />
+              <IconFilter size={16} />
               <span>Фильтры</span>
             </div>
 
@@ -180,7 +180,7 @@ const ProfessionalCalendarPage = () => {
               <select
                 className="select"
                 value={filterGroup}
-                onChange={(e) => setFilterGroup(e.target.value)}
+                onChange={(e) => setIconFilterGroup(e.target.value)}
               >
                 <option value="all">Все группы</option>
                 {groups.map(group => (
@@ -194,7 +194,7 @@ const ProfessionalCalendarPage = () => {
               <select
                 className="select"
                 value={filterPriority}
-                onChange={(e) => setFilterPriority(e.target.value)}
+                onChange={(e) => setIconFilterPriority(e.target.value)}
               >
                 <option value="all">Все приоритеты</option>
                 {priorities.map(priority => (
@@ -207,11 +207,11 @@ const ProfessionalCalendarPage = () => {
               <button
                 className="btn-secondary btn-sm"
                 onClick={() => {
-                  setFilterGroup('all');
-                  setFilterPriority('all');
+                  setIconFilterGroup('all');
+                  setIconFilterPriority('all');
                 }}
               >
-                <X size={14} />
+                <IconX size={14} />
                 Сбросить фильтры
               </button>
             )}
@@ -223,18 +223,18 @@ const ProfessionalCalendarPage = () => {
           <div className="panel-toolbar">
             <div className="toolbar-section">
               <button className="btn-icon" onClick={handlePrevPeriod}>
-                <ChevronLeft size={20} />
+                <IconChevronLeft size={20} />
               </button>
               <button className="btn-secondary" onClick={handleToday}>
                 Сегодня
               </button>
               <button className="btn-icon" onClick={handleNextPeriod}>
-                <ChevronRight size={20} />
+                <IconChevronRight size={20} />
               </button>
             </div>
 
             <div className="date-display">
-              <CalendarIcon size={18} />
+              <IconCalendarIcon size={18} />
               <span className="date-text">
                 {format(selectedDate, 'd MMMM yyyy, EEEE', { locale: ru })}
               </span>
@@ -268,24 +268,24 @@ const ProfessionalCalendarPage = () => {
                 disabled={isPastDate()}
                 title={isPastDate() ? 'Нельзя создавать задачи на прошедшие даты' : ''}
               >
-                <Plus size={16} />
+                <IconPlus size={16} />
                 Создать задачу
               </button>
             </div>
           </div>
 
           <div className="search-bar">
-            <Search size={16} />
+            <IconSearch size={16} />
             <input
               type="text"
               className="search-input"
               placeholder="Поиск задач..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => setIconSearchQuery(e.target.value)}
             />
             {searchQuery && (
-              <button className="btn-icon" onClick={() => setSearchQuery('')}>
-                <X size={16} />
+              <button className="btn-icon" onClick={() => setIconSearchQuery('')}>
+                <IconX size={16} />
               </button>
             )}
           </div>
@@ -298,7 +298,7 @@ const ProfessionalCalendarPage = () => {
               </div>
             ) : filteredTasks.length === 0 ? (
               <div className="empty-state">
-                <CalendarIcon size={48} />
+                <IconCalendarIcon size={48} />
                 <h3>Нет задач</h3>
                 <p>Создайте первую задачу на эту дату</p>
               </div>
@@ -326,7 +326,7 @@ const ProfessionalCalendarPage = () => {
               <div className="panel-header">
                 <h3>Детали задачи</h3>
                 <button className="btn-icon" onClick={() => setSelectedTask(null)}>
-                  <X size={18} />
+                  <IconX size={18} />
                 </button>
               </div>
               <div className="task-details-content">
@@ -337,7 +337,7 @@ const ProfessionalCalendarPage = () => {
             </div>
           ) : (
             <div className="no-selection-state">
-              <List size={48} />
+              <IconList size={48} />
               <h3>Выберите задачу</h3>
               <p>Выберите задачу из списка для просмотра деталей</p>
             </div>
@@ -359,4 +359,4 @@ const ProfessionalCalendarPage = () => {
   );
 };
 
-export default ProfessionalCalendarPage;
+export default ProfessionalIconCalendarPage;

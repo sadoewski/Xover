@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { dataTasksService } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
+import TablerIconRenderer from '../components/TablerIconRenderer';
+import IconPickerButton from '../components/IconPicker/IconPickerButton';
 import '../styles/TaskBaseDetailPage.css';
 
 const TaskBaseDetailPage = () => {
@@ -49,6 +51,17 @@ const TaskBaseDetailPage = () => {
     } catch (error) {
       console.error('Error updating name:', error);
       showError('Ошибка при обновлении названия');
+    }
+  };
+
+  const handleUpdateIcon = async (icon) => {
+    try {
+      await dataTasksService.update(id, { icon });
+      showSuccess('Иконка обновлена');
+      await loadTaskBase();
+    } catch (error) {
+      console.error('Error updating icon:', error);
+      showError('Ошибка при обновлении иконки');
     }
   };
 
@@ -171,11 +184,29 @@ const TaskBaseDetailPage = () => {
             <div className="taskbase-detail-row">
               <span className="taskbase-detail-label">Группа:</span>
               <div className="taskbase-detail-value">
-                <div
-                  className="taskbase-detail-group-color"
-                  style={{ backgroundColor: taskbase.group_color }}
-                />
-                <span>{taskbase.group_name}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ position: 'relative' }}>
+                    <TablerIconRenderer
+                      iconName={taskbase.icon || 'refresh'}
+                      size={24}
+                      color={taskbase.group_color}
+                    />
+                    <div style={{ position: 'absolute', bottom: '-4px', right: '-4px' }}>
+                      <IconPickerButton
+                        currentIcon={taskbase.icon || 'refresh'}
+                        groupColor={taskbase.group_color}
+                        onSelectIcon={handleUpdateIcon}
+                        size={20}
+                        compact={true}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    className="taskbase-detail-group-color"
+                    style={{ backgroundColor: taskbase.group_color }}
+                  />
+                  <span>{taskbase.group_name}</span>
+                </div>
               </div>
             </div>
 

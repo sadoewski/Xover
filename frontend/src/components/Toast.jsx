@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { IconX } from '@tabler/icons-react';
 import './Toast.css';
 
 export default function Toast({ message, type = 'error', onClose, duration = 5000 }) {
@@ -15,7 +15,7 @@ export default function Toast({ message, type = 'error', onClose, duration = 500
       <div className="toast-content">
         <span className="toast-message">{message}</span>
         <button onClick={onClose} className="toast-close" aria-label="Закрыть">
-          <X size={16} />
+          <IconX size={16} />
         </button>
       </div>
     </div>

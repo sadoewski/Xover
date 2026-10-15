@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+import { IconAlertCircle, IconRefresh, IconHome } from '@tabler/icons-react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -168,15 +168,15 @@ class ErrorBoundary extends React.Component {
                       transition: 'all 0.2s',
                       boxShadow: '0 2px 8px rgba(59, 109, 255, 0.3)'
                     }}
-                    onMouseOver={(e) => e.target.style.transform = 'translateY(-1px)'}
-                    onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                    onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
+                    onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                   >
-                    <RefreshCw size={16} />
+                    <IconRefresh size={16} />
                     Обновить страницу
                   </button>
 
                   <button
-                    onClick={this.handleGoHome}
+                    onClick={this.handleGoIconHome}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -192,15 +192,15 @@ class ErrorBoundary extends React.Component {
                       transition: 'all 0.2s'
                     }}
                     onMouseOver={(e) => {
-                      e.target.style.background = 'var(--surface-3, #1E2636)';
-                      e.target.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.background = 'var(--surface-3, #1E2636)';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
                     }}
                     onMouseOut={(e) => {
-                      e.target.style.background = 'var(--surface-2, #161D2B)';
-                      e.target.style.transform = 'translateY(0)';
+                      e.currentTarget.style.background = 'var(--surface-2, #161D2B)';
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
-                    <Home size={16} />
+                    <IconHome size={16} />
                     На главную
                   </button>
                 </>
@@ -223,15 +223,15 @@ class ErrorBoundary extends React.Component {
                   transition: 'all 0.2s'
                 }}
                 onMouseOver={(e) => {
-                  e.target.style.borderColor = 'var(--border-hover, #374151)';
-                  e.target.style.color = 'var(--text-primary, #ffffff)';
+                  e.currentTarget.style.borderColor = 'var(--border-hover, #374151)';
+                  e.currentTarget.style.color = 'var(--text-primary, #ffffff)';
                 }}
                 onMouseOut={(e) => {
-                  e.target.style.borderColor = 'var(--border-primary, #1E2636)';
-                  e.target.style.color = 'var(--text-secondary, #9CA3AF)';
+                  e.currentTarget.style.borderColor = 'var(--border-primary, #1E2636)';
+                  e.currentTarget.style.color = 'var(--text-secondary, #9CA3AF)';
                 }}
               >
-                <AlertCircle size={16} />
+                <IconAlertCircle size={16} />
                 Войти заново
               </button>
             </div>

@@ -1,14 +1,14 @@
 import { format, eachMonthOfInterval, startOfYear, endOfYear, isSameMonth } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { X } from 'lucide-react';
+import { IconX } from '@tabler/icons-react';
 import './MonthPickerModal.css';
 
 export default function MonthPickerModal({ isOpen, onClose, selectedDate, onSelectMonth }) {
   if (!isOpen) return null;
 
-  const yearStart = startOfYear(selectedDate);
+  const yearIconStart = startOfYear(selectedDate);
   const yearEnd = endOfYear(selectedDate);
-  const months = eachMonthOfInterval({ start: yearStart, end: yearEnd });
+  const months = eachMonthOfInterval({ start: yearIconStart, end: yearEnd });
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -16,7 +16,7 @@ export default function MonthPickerModal({ isOpen, onClose, selectedDate, onSele
         <div className="modal-header">
           <h3>Выберите месяц в {format(selectedDate, 'yyyy', { locale: ru })} году</h3>
           <button className="btn-icon" onClick={onClose}>
-            <X size={20} />
+            <IconX size={20} />
           </button>
         </div>
         <div className="modal-body">

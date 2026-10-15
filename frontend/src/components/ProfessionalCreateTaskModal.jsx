@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { X, Plus, Clock, Link2, Search } from 'lucide-react';
+import { IconX, IconPlus, IconClock, IconLink, IconSearch } from '@tabler/icons-react';
 import { tasksService } from '../services/api';
 import './ProfessionalCreateTaskModal.css';
 
@@ -13,7 +13,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
     groupTypeId: '',
     priorityId: '',
     isTimeBound: false,
-    timeSlotStart: '',
+    timeSlotIconStart: '',
     timeSlotEnd: '',
     taskRelations: [],
   });
@@ -21,7 +21,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
   const [loading, setLoading] = useState(false);
   const [showTaskSelector, setShowTaskSelector] = useState(false);
   const [availableTasks, setAvailableTasks] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setIconSearchQuery] = useState('');
 
   const selectedGroup = groups.find(g => g.id === parseInt(formData.groupId));
   const groupTypes = selectedGroup?.types || [];
@@ -75,7 +75,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
         priorityId: parseInt(formData.priorityId),
         date: format(selectedDate, 'yyyy-MM-dd'),
         isTimeBound: formData.isTimeBound,
-        timeSlotStart: formData.isTimeBound ? formData.timeSlotStart : null,
+        timeSlotIconStart: formData.isTimeBound ? formData.timeSlotIconStart : null,
         timeSlotEnd: formData.isTimeBound ? formData.timeSlotEnd : null,
         taskRelations: formData.taskRelations.length > 0 ? formData.taskRelations : undefined,
       };
@@ -89,7 +89,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
         groupTypeId: '',
         priorityId: priorities[0]?.id || '',
         isTimeBound: false,
-        timeSlotStart: '',
+        timeSlotIconStart: '',
         timeSlotEnd: '',
         taskRelations: [],
       });
@@ -127,7 +127,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
             </p>
           </div>
           <button className="btn-icon" onClick={onClose}>
-            <X size={20} />
+            <IconX size={20} />
           </button>
         </div>
 
@@ -157,7 +157,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
           <div className="form-row">
             <div className="form-field">
               <label className="form-label">
-                Группа <span className="required">*</span>
+                Ключ <span className="required">*</span>
               </label>
               <select
                 required
@@ -176,7 +176,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
 
             <div className="form-field">
               <label className="form-label">
-                Приоритет <span className="required">*</span>
+                Тег <span className="required">*</span>
               </label>
               <select
                 required
@@ -234,7 +234,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
                 checked={formData.isTimeBound}
                 onChange={(e) => setFormData({ ...formData, isTimeBound: e.target.checked })}
               />
-              <Clock size={16} />
+              <IconClock size={16} />
               <span>Привязать ко времени</span>
             </label>
           </div>
@@ -248,8 +248,8 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
                   type="time"
                   required
                   className="input"
-                  value={formData.timeSlotStart}
-                  onChange={(e) => setFormData({ ...formData, timeSlotStart: e.target.value })}
+                  value={formData.timeSlotIconStart}
+                  onChange={(e) => setFormData({ ...formData, timeSlotIconStart: e.target.value })}
                 />
               </div>
               <div className="form-field">
@@ -268,7 +268,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
           <div className="form-field">
             <div className="relation-header">
               <label className="form-label">
-                <Link2 size={16} />
+                <IconLink size={16} />
                 Связанные задачи
               </label>
               <button
@@ -289,12 +289,12 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
             {showTaskSelector && (
               <div className="task-selector">
                 <div className="search-box">
-                  <Search size={14} />
+                  <IconSearch size={14} />
                   <input
                     type="text"
                     placeholder="Поиск задачи..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => setIconSearchQuery(e.target.value)}
                     className="search-input"
                   />
                 </div>
@@ -341,7 +341,7 @@ const ProfessionalCreateTaskModal = ({ isOpen, onClose, onCreateTask, groups, pr
                 </>
               ) : (
                 <>
-                  <Plus size={16} />
+                  <IconPlus size={16} />
                   Создать задачу
                 </>
               )}

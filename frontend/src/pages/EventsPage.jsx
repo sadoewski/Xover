@@ -4,7 +4,7 @@ import { format, getDaysInMonth } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
-import { Plus, ArrowLeft, Trash2, FileText } from 'lucide-react';
+import { IconPlus, IconArrowLeft, IconTrash, IconFileText } from '@tabler/icons-react';
 import './EventsPage.css';
 
 const MONTHS = [
@@ -155,7 +155,7 @@ export default function EventsPage() {
     }
   };
 
-  const handleSaveNote = async () => {
+  const handleIconDeviceFloppyNote = async () => {
     if (!newNote.trim()) return;
     try {
       await eventsService.upsertEventYearNote(selectedEvent.id, selectedYear, newNote);
@@ -198,7 +198,7 @@ export default function EventsPage() {
             }}
             className="btn btn-primary"
           >
-            <Plus size={16} />
+            <IconPlus size={16} />
             {selectedMonth ? `Добавить событие в ${MONTHS[selectedMonth - 1]}` : 'Добавить событие'}
           </button>
         </div>
@@ -218,7 +218,7 @@ export default function EventsPage() {
                 }}
                 className="btn btn-secondary"
               >
-                <ArrowLeft size={16} />
+                <IconArrowLeft size={16} />
                 Назад к календарю
               </button>
               <h2 className="card-title-text">
@@ -273,7 +273,7 @@ export default function EventsPage() {
                             className="btn-icon"
                             title="Заметки"
                           >
-                            <FileText size={16} />
+                            <IconFileText size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteEvent(event.id)}
@@ -281,7 +281,7 @@ export default function EventsPage() {
                             style={{ color: 'var(--error)' }}
                             title="Удалить"
                           >
-                            <Trash2 size={16} />
+                            <IconTrash size={16} />
                           </button>
                         </div>
                       </div>
@@ -301,7 +301,7 @@ export default function EventsPage() {
                 }}
                 className="btn btn-secondary"
               >
-                <ArrowLeft size={16} />
+                <IconArrowLeft size={16} />
                 Назад к календарю
               </button>
               <h2 className="card-title-text">
@@ -358,7 +358,7 @@ export default function EventsPage() {
                             className="btn-icon"
                             title="Заметки"
                           >
-                            <FileText size={16} />
+                            <IconFileText size={16} />
                           </button>
                           <button
                             onClick={() => handleDeleteEvent(event.id)}
@@ -366,7 +366,7 @@ export default function EventsPage() {
                             style={{ color: 'var(--error)' }}
                             title="Удалить"
                           >
-                            <Trash2 size={16} />
+                            <IconTrash size={16} />
                           </button>
                         </div>
                       </div>
@@ -671,7 +671,7 @@ export default function EventsPage() {
                 placeholder="Введите заметку для этого года..."
               />
               <button
-                onClick={handleSaveNote}
+                onClick={handleIconDeviceFloppyNote}
                 className="btn btn-primary"
                 disabled={!newNote.trim()}
                 style={{ marginTop: '8px' }}

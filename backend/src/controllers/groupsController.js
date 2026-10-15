@@ -38,13 +38,13 @@ export const groupsController = {
 
   // Создать группу
   async createGroup(req, res) {
-    const { name, color, description } = req.body;
+    const { name, color, description, icon } = req.body;
     const userId = req.userId;
 
     try {
       const result = await pool.query(
-        'INSERT INTO task_groups (user_id, name, color, description) VALUES ($1, $2, $3, $4) RETURNING *',
-        [userId, name, color, description || null]
+        'INSERT INTO task_groups (user_id, name, color, description, icon) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [userId, name, color, description || null, icon || 'folder']
       );
 
       res.status(201).json({ group: result.rows[0] });
@@ -131,7 +131,7 @@ export const groupsController = {
   // Обновить группу
   async updateGroup(req, res) {
     const { id } = req.params;
-    const { name, color, description } = req.body;
+    const { name, color, description, icon } = req.body;
     const userId = req.userId;
 
     try {
@@ -150,6 +150,10 @@ export const groupsController = {
       if (description !== undefined) {
         updates.push(`description = $${paramCount++}`);
         values.push(description);
+      }
+      if (icon !== undefined) {
+        updates.push(`icon = $${paramCount++}`);
+        values.push(icon);
       }
 
       if (updates.length === 0) {

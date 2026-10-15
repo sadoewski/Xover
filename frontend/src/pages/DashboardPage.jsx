@@ -5,7 +5,7 @@ import { format, addDays, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import WeekCalendar from '../components/WeekCalendar';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import './DashboardPage.css';
 
 const STATUS_CONFIG = {
@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedStatus, setExpandedStatus] = useState(null);
-  const [weekCalendarCollapsed, setWeekCalendarCollapsed] = useState(false);
+  const [weekIconCalendarCollapsed, setWeekCalendarCollapsed] = useState(false);
 
   useEffect(() => {
     loadTodayTasks();
@@ -154,10 +154,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Week Calendar */}
+        {/* Week IconCalendar */}
         <WeekCalendar
-          collapsed={weekCalendarCollapsed}
-          onToggleCollapse={() => setWeekCalendarCollapsed(!weekCalendarCollapsed)}
+          collapsed={weekIconCalendarCollapsed}
+          onToggleCollapse={() => setWeekCalendarCollapsed(!weekIconCalendarCollapsed)}
         />
 
           {loading ? (
@@ -263,7 +263,7 @@ export default function DashboardPage() {
                       className="btn-icon"
                       title="Предыдущий день"
                     >
-                      <ChevronLeft size={20} />
+                      <IconChevronLeft size={20} />
                     </button>
                     <button
                       onClick={handleToday}
@@ -277,7 +277,7 @@ export default function DashboardPage() {
                       className="btn-icon"
                       title="Следующий день"
                     >
-                      <ChevronRight size={20} />
+                      <IconChevronRight size={20} />
                     </button>
                   </div>
                 </div>

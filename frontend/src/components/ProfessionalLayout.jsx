@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  Calendar,
-  Clock,
-  Folder,
-  Star,
-  Settings,
-  LogOut,
-  ChevronRight,
-  ChevronDown,
-  ChevronLeft,
-  Home,
-  Users,
-  BarChart3,
-  Sun,
-  Moon,
-  Database,
-  Terminal,
-  Menu,
-  X,
-} from 'lucide-react';
+  IconCalendar,
+  IconClock,
+  IconFolder,
+  IconStar,
+  IconSettings,
+  IconLogout,
+  IconChevronRight,
+  IconChevronDown,
+  IconChevronLeft,
+  IconHome,
+  IconUsers,
+  IconChartBar,
+  IconSun,
+  IconMoon,
+  IconDatabase,
+  IconTerminal2,
+  IconMenu2,
+  IconX,
+  IconKey,
+  IconTags,
+} from '@tabler/icons-react';
 import { authService } from '../services/api';
 import { useTheme } from '../contexts/ThemeContext';
 import { getAvatarUrl } from '../utils/url';
@@ -49,11 +51,11 @@ const ProfessionalLayout = ({ children }) => {
     return saved ? parseInt(saved, 10) : 240;
   });
   const [isResizing, setIsResizing] = useState(false);
-  const [resizeStartX, setResizeStartX] = useState(0);
-  const [resizeStartWidth, setResizeStartWidth] = useState(0);
+  const [resizeIconStartX, setResizeIconStartX] = useState(0);
+  const [resizeIconStartWidth, setResizeIconStartWidth] = useState(0);
 
   // Mobile menu state
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileIconMenu2Open, setMobileIconMenu2Open] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile viewport
@@ -70,12 +72,12 @@ const ProfessionalLayout = ({ children }) => {
 
   // Close mobile menu on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
+    setMobileIconMenu2Open(false);
   }, [location.pathname]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (mobileMenuOpen && isMobile) {
+    if (mobileIconMenu2Open && isMobile) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -84,9 +86,9 @@ const ProfessionalLayout = ({ children }) => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [mobileMenuOpen, isMobile]);
+  }, [mobileIconMenu2Open, isMobile]);
 
-  // Save sidebar state to localStorage when it changes
+  // IconDeviceFloppy sidebar state to localStorage when it changes
   const toggleSidebar = () => {
     setSidebarCollapsed(prev => {
       const newValue = !prev;
@@ -98,8 +100,8 @@ const ProfessionalLayout = ({ children }) => {
   // Sidebar resize handlers
   const startResizing = (e) => {
     setIsResizing(true);
-    setResizeStartX(e.clientX);
-    setResizeStartWidth(sidebarWidth);
+    setResizeIconStartX(e.clientX);
+    setResizeIconStartWidth(sidebarWidth);
   };
 
   useEffect(() => {
@@ -109,8 +111,8 @@ const ProfessionalLayout = ({ children }) => {
     document.body.classList.add('resizing');
 
     const handleMouseMove = (e) => {
-      const delta = e.clientX - resizeStartX;
-      const newWidth = resizeStartWidth + delta;
+      const delta = e.clientX - resizeIconStartX;
+      const newWidth = resizeIconStartWidth + delta;
       if (newWidth >= 200 && newWidth <= 600) {
         setSidebarWidth(newWidth);
       }
@@ -130,10 +132,10 @@ const ProfessionalLayout = ({ children }) => {
       document.removeEventListener('mouseup', handleMouseUp);
       document.body.classList.remove('resizing');
     };
-  }, [isResizing, resizeStartX, resizeStartWidth, sidebarWidth]);
+  }, [isResizing, resizeIconStartX, resizeIconStartWidth, sidebarWidth]);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(prev => !prev);
+  const toggleMobileIconMenu2 = () => {
+    setMobileIconMenu2Open(prev => !prev);
   };
 
   const handleLogout = () => {
@@ -156,11 +158,11 @@ const ProfessionalLayout = ({ children }) => {
     {
       id: 'properties',
       title: 'Свойства',
-      icon: Folder,
+      icon: IconFolder,
       items: [
-        { path: '/taskbases', label: 'TaskBase', icon: Database },
-        { path: '/groups', label: 'Группы', icon: Folder },
-        { path: '/priorities', label: 'Приоритеты', icon: Star },
+        { path: '/taskbases', label: 'TaskBase', icon: IconDatabase },
+        { path: '/groups', label: 'Ключи', icon: IconKey },
+        { path: '/priorities', label: 'Теги', icon: IconTags },
       ]
     },
   ];
@@ -170,8 +172,8 @@ const ProfessionalLayout = ({ children }) => {
     ...(location.pathname === '/calendar' ? [{ label: 'Календарь', path: '/calendar' }] : []),
     ...(location.pathname === '/events' ? [{ label: 'События', path: '/events' }] : []),
     ...(location.pathname === '/taskbases' ? [{ label: 'TaskBase', path: '/taskbases' }] : []),
-    ...(location.pathname === '/groups' ? [{ label: 'Группы', path: '/groups' }] : []),
-    ...(location.pathname === '/priorities' ? [{ label: 'Приоритеты', path: '/priorities' }] : []),
+    ...(location.pathname === '/groups' ? [{ label: 'Ключи', path: '/groups' }] : []),
+    ...(location.pathname === '/priorities' ? [{ label: 'Теги', path: '/priorities' }] : []),
     ...(location.pathname === '/terminal' ? [{ label: 'Shell', path: '/terminal' }] : []),
     ...(location.pathname === '/settings' ? [{ label: 'Настройки', path: '/settings' }] : []),
     ...(location.pathname.startsWith('/tasks/') ? [
@@ -183,10 +185,10 @@ const ProfessionalLayout = ({ children }) => {
   return (
     <div className="professional-layout">
       {/* Mobile Overlay */}
-      {isMobile && mobileMenuOpen && (
+      {isMobile && mobileIconMenu2Open && (
         <div
           className="mobile-overlay active"
-          onClick={toggleMobileMenu}
+          onClick={toggleMobileIconMenu2}
         />
       )}
 
@@ -194,7 +196,7 @@ const ProfessionalLayout = ({ children }) => {
         {/* Sidebar Navigation Tree */}
         <>
           <div
-            className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}
+            className={`sidebar-nav ${sidebarCollapsed ? 'collapsed' : ''} ${mobileIconMenu2Open ? 'mobile-open' : ''}`}
             style={{ width: sidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
           >
             <div className="nav-tree">
@@ -217,17 +219,17 @@ const ProfessionalLayout = ({ children }) => {
                 onClick={() => navigate('/')}
                 title={sidebarCollapsed ? 'Админ-панель' : ''}
               >
-                <BarChart3 size={16} />
+                <IconChartBar size={16} />
                 {!sidebarCollapsed && <span className="nav-item-label">Админ-панель</span>}
               </button>
 
-              {/* Calendar */}
+              {/* IconCalendar */}
               <button
                 className={`nav-item-standalone ${isActive('/calendar') ? 'active' : ''}`}
                 onClick={() => navigate('/calendar')}
                 title={sidebarCollapsed ? 'Календарь' : ''}
               >
-                <Calendar size={16} />
+                <IconCalendar size={16} />
                 {!sidebarCollapsed && <span className="nav-item-label">Календарь</span>}
               </button>
 
@@ -244,9 +246,9 @@ const ProfessionalLayout = ({ children }) => {
                       <>
                         <span className="nav-section-title">{section.title}</span>
                         {expandedSections[section.id] ? (
-                          <ChevronDown size={14} className="nav-chevron" />
+                          <IconChevronDown size={14} className="nav-chevron" />
                         ) : (
-                          <ChevronRight size={14} className="nav-chevron" />
+                          <IconChevronRight size={14} className="nav-chevron" />
                         )}
                       </>
                     )}
@@ -290,7 +292,7 @@ const ProfessionalLayout = ({ children }) => {
                 onClick={() => navigate('/events')}
                 title={sidebarCollapsed ? 'События' : ''}
               >
-                <Clock size={16} />
+                <IconClock size={16} />
                 {!sidebarCollapsed && <span className="nav-item-label">События</span>}
               </button>
 
@@ -300,17 +302,17 @@ const ProfessionalLayout = ({ children }) => {
                 onClick={() => navigate('/terminal')}
                 title={sidebarCollapsed ? 'Shell' : ''}
               >
-                <Terminal size={16} />
+                <IconTerminal2 size={16} />
                 {!sidebarCollapsed && <span className="nav-item-label">Shell</span>}
               </button>
 
-              {/* Settings */}
+              {/* IconSettings */}
               <button
                 className={`nav-item-standalone ${isActive('/settings') ? 'active' : ''}`}
                 onClick={() => navigate('/settings')}
                 title={sidebarCollapsed ? 'Настройки' : ''}
               >
-                <Settings size={16} />
+                <IconSettings size={16} />
                 {!sidebarCollapsed && <span className="nav-item-label">Настройки</span>}
               </button>
             </div>
@@ -323,7 +325,7 @@ const ProfessionalLayout = ({ children }) => {
                 onClick={toggleTheme}
                 title={theme === 'dark' ? 'Светлая тема' : 'Темная тема'}
               >
-                {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                {theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />}
                 {!sidebarCollapsed && <span>{theme === 'dark' ? 'Светлая' : 'Темная'}</span>}
               </button>
 
@@ -337,7 +339,7 @@ const ProfessionalLayout = ({ children }) => {
                       className="sidebar-avatar"
                     />
                   ) : (
-                    <Users size={16} />
+                    <IconUsers size={16} />
                   )}
                   <span className="sidebar-user-name">{user?.name}</span>
                   <button
@@ -348,7 +350,7 @@ const ProfessionalLayout = ({ children }) => {
                     }}
                     title="Выйти"
                   >
-                    <LogOut size={14} />
+                    <IconLogout size={14} />
                   </button>
                 </div>
               )}
@@ -360,7 +362,7 @@ const ProfessionalLayout = ({ children }) => {
               onClick={toggleSidebar}
               title={sidebarCollapsed ? 'Развернуть' : 'Свернуть'}
             >
-              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              {sidebarCollapsed ? <IconChevronRight size={16} /> : <IconChevronLeft size={16} />}
             </button>
 
             {/* Resize Handle */}
@@ -384,7 +386,7 @@ const ProfessionalLayout = ({ children }) => {
             <div className="bottom-breadcrumbs">
               {breadcrumbs.map((crumb, index) => (
                 <React.Fragment key={crumb.path}>
-                  {index > 0 && <ChevronRight size={14} className="breadcrumb-separator" />}
+                  {index > 0 && <IconChevronRight size={14} className="breadcrumb-separator" />}
                   <button
                     className={`breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}`}
                     onClick={() => navigate(crumb.path)}

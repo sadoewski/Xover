@@ -4,6 +4,9 @@ import { groupsService, dataTasksService } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import ProfessionalLayout from '../components/ProfessionalLayout';
 import '../styles/CreateTaskBasePage.css';
+import TablerIconRenderer from "../components/TablerIconRenderer";
+import IconPickerButton from "../components/IconPicker/IconPickerButton";
+
 
 const CreateTaskBasePage = () => {
   const { showSuccess, showError, showWarning } = useNotification();
@@ -15,6 +18,8 @@ const CreateTaskBasePage = () => {
   const [timeSlotEnd, setTimeSlotEnd] = useState('10:00');
   const [groups, setGroups] = useState([]);
   const [selectedDates, setSelectedDates] = useState([]);
+  const [selectedIcon, setSelectedIcon] = useState("refresh");
+
   const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
   const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(false);
@@ -95,6 +100,7 @@ const CreateTaskBasePage = () => {
       const response = await dataTasksService.create({
         name,
         groupId: selectedGroup,
+        icon: selectedIcon,
         isTimeBound,
         timeSlotStart: isTimeBound ? timeSlotStart : null,
         timeSlotEnd: isTimeBound ? timeSlotEnd : null,
@@ -144,6 +150,15 @@ const CreateTaskBasePage = () => {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="create-taskbase-field">
+        <label>Иконка</label>
+        <IconPickerButton
+          currentIcon={selectedIcon}
+          groupColor={groups.find(g => g.id === selectedGroup)?.color || '#6366f1'}
+          onSelectIcon={setSelectedIcon}
+        />
       </div>
 
       <div className="create-taskbase-field">
@@ -274,6 +289,20 @@ const CreateTaskBasePage = () => {
                 style={{ backgroundColor: selectedGroupData?.color }}
               />
               <span>{selectedGroupData?.name}</span>
+            </div>
+          </div>
+
+          <div className="summary-item">
+            <span className="summary-label">Иконка:</span>
+            <div className="summary-value">
+              <TablerIconRenderer
+                iconName={selectedIcon}
+                size={24}
+                color={selectedGroupData?.color || '#6366f1'}
+              />
+              <span style={{ marginLeft: '8px', fontFamily: 'monospace', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                {selectedIcon}
+              </span>
             </div>
           </div>
 
